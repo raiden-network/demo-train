@@ -3,7 +3,7 @@ A model train  is traveling the world (in our case it's just a circle but hey we
 Durint it's travels it passes multiple tollgates asking it to pay for the next section.
 The train however has a Raiden node on board and an open payment channel with it's home toll station.
 Since the tollgate mafia knows eachother they all have statechannels among them in such a ways as Displayed in Image 1 \
-[Image 1 - Network Topology]("~/demo/Images/Network_topology.png") \
+[Image 1 - Network Topology](Images/Network_topology.png) \
 With the Raiden Network the train is now able to pay each and every tollage on it's travel in real time, without the need to stop at any point in time. 
 
 ## Setup on the "main" Computer
