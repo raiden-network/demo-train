@@ -4,14 +4,15 @@ import os
 import random
 import subprocess
 import requests
+import networkx as nx
+import matplotlib.pyplot as plt
 from socket import error as socket_error
 from time import sleep
 
 import qrcode
 from ethereum.utils import checksum_encode
 
-from const import TOKEN_ADDRESS, SENDER_ADDRESS, KEYSTOREPATHRECEIVER, ETH_RPC_ENDPOINT, \
-    PASSWORDFILE
+from const import *
 
 log = logging.getLogger(__name__)
 
@@ -86,11 +87,13 @@ def display_qr_code(qr_code):
     qr_code.show()
 
 
-def querry_for_payment(receiver_id, nonce):
+def querry_for_payment(network, receiver_id, nonce):
     token_address = TOKEN_ADDRESS
     sender_address = SENDER_ADDRESS
     event_url = "http://localhost:500" + str(receiver_id) + "/api/1/payments/" \
                 + token_address + '/' + sender_address
+    # TODO This needs to be provided to the Frontend
+    print(nx.shortest_path(network, source=sender_address, target=receiver_id))
     try:
         r = requests.get(event_url)
         print("Querring URL %s" % event_url)
@@ -106,6 +109,28 @@ def querry_for_payment(receiver_id, nonce):
         print("Couldn't send to Raiden client.")
         print("URL was: %s" % event_url)
         return False
+
+
+def create_token_network_topology():
+    # This is hardcoded. To see the topology checkout Images/Network_topology.png
+    G = nx.Graph()
+    G.add_edge(SENDER_ADDRESS, RECEIVER_1_ADDRESS)
+    G.add_edges_from([
+        (RECEIVER_1_ADDRESS, RECEIVER_2_ADDRESS),
+        (RECEIVER_1_ADDRESS, RECEIVER_5_ADDRESS),
+        (RECEIVER_1_ADDRESS, RECEIVER_8_ADDRESS)
+    ])
+    G.add_edge(RECEIVER_2_ADDRESS, RECEIVER_3_ADDRESS)
+    G.add_edge(RECEIVER_3_ADDRESS, RECEIVER_4_ADDRESS)
+    G.add_edge(RECEIVER_5_ADDRESS, RECEIVER_6_ADDRESS)
+    G.add_edge(RECEIVER_6_ADDRESS, RECEIVER_7_ADDRESS)
+
+    """Belows code can be used to debug the Graph"""
+    # plt.subplot(121)
+    # nx.draw(G, with_labels=True, font_weight='bold')
+    # plt.show()
+
+    return G
 
 
 def await_barrier_input():
@@ -131,7 +156,7 @@ def turn_on_power():
     print("Turning power for train on")
 
 
-def run(receivers, nonce=1):
+def run(receivers, network, nonce=1):
     while True:
         # Pick a random receiver
         receiver_id, address = random.choice(list(receivers.items()))
@@ -143,7 +168,7 @@ def run(receivers, nonce=1):
         # Waiting till train passes light barrier
         await_barrier_input()
         # Check if payment was received
-        if querry_for_payment(receiver_id, nonce):
+        if querry_for_payment(network, receiver_id, nonce):
             nonce += 1
             print("Payment received")
             turn_leds_green()
@@ -151,7 +176,7 @@ def run(receivers, nonce=1):
         else:
             turn_off_power()
             while True:
-                if querry_for_payment(receiver_id, nonce):
+                if querry_for_payment(network, receiver_id, nonce):
                     break
                 # TODO remove this sleep
                 sleep(1)
@@ -161,5 +186,6 @@ def run(receivers, nonce=1):
 
 if __name__ == "__main__":
     receivers = get_receiver_addresses()
+    network = create_token_network_topology()
     starting_raiden_nodes(receivers)
-    run(receivers)
+    run(receivers, network)
