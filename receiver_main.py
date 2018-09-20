@@ -87,17 +87,17 @@ def display_qr_code(qr_code):
     qr_code.show()
 
 
-def querry_for_payment(network, receiver_id, nonce):
+def querry_for_payment(network, receiver_address, receiver_id, nonce):
     token_address = TOKEN_ADDRESS
     sender_address = SENDER_ADDRESS
     event_url = "http://localhost:500" + str(receiver_id) + "/api/1/payments/" \
                 + token_address + '/' + sender_address
     # TODO This needs to be provided to the Frontend
-    print(nx.shortest_path(network, source=sender_address, target=receiver_id))
+    print(nx.shortest_path(network, source=sender_address, target=receiver_address))
     try:
         r = requests.get(event_url)
-        print("Querring URL %s" % event_url)
-        print("Request response is: %s" % r.json())
+        # print("Querring URL %s" % event_url)
+        # print("Request response is: %s" % r.json())
         for data in r.json():
             if data["event"] == "EventPaymentReceivedSuccess" and \
                     data["amount"] == 1 and \
@@ -106,8 +106,8 @@ def querry_for_payment(network, receiver_id, nonce):
         return False
     except socket_error:
         # TODO handle connection errors
-        print("Couldn't send to Raiden client.")
-        print("URL was: %s" % event_url)
+        print("Raiden client not available.")
+        # print("URL was: %s" % event_url)
         return False
 
 
@@ -168,7 +168,7 @@ def run(receivers, network, nonce=1):
         # Waiting till train passes light barrier
         await_barrier_input()
         # Check if payment was received
-        if querry_for_payment(network, receiver_id, nonce):
+        if querry_for_payment(network, address, receiver_id, nonce):
             nonce += 1
             print("Payment received")
             turn_leds_green()
@@ -176,7 +176,7 @@ def run(receivers, network, nonce=1):
         else:
             turn_off_power()
             while True:
-                if querry_for_payment(network, receiver_id, nonce):
+                if querry_for_payment(network, address, receiver_id, nonce):
                     break
                 # TODO remove this sleep
                 sleep(1)
