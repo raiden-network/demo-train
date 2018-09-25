@@ -3,6 +3,13 @@
 
 ## Requirements
 
+### Install raiden requirements
+You will need to install a couple of requirements in order to proceed with the installation. You can do so by executing
+```
+sudo apt install  build-essential automake pkg-config libtool libffi-dev libgmp-dev
+```
+
+
 ### Install Python3.6
 Raiden uses >Python3.5.  Therefore you will need a python version >3.5. Depending on your OS you can either installid via PPA `sudo apt install python3.6`. \
 But if you run e.g. raspbian you will need to compile Python yourself.\
