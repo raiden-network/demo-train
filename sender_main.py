@@ -3,7 +3,10 @@ import io
 
 import requests
 from PIL import Image
-import picamera
+try:
+    import picamera
+except ModuleNotFoundError:
+    pass
 from pyzbar.pyzbar import decode
 
 from const import TOKEN_ADDRESS
@@ -40,6 +43,7 @@ def send_payment(address, nonce):
                       json={"amount": 1, "identifier": nonce}
                       )
     if r.status_code == 200:
+        # TODO querry payment history if nonce is used in PaymentSentSuccessfullEvent
         print("Payment successfull")
     else:
         print("Response = %s" % r.text)

@@ -7,7 +7,7 @@ import requests
 import networkx as nx
 import matplotlib.pyplot as plt
 from socket import error as socket_error
-from time import sleep
+from time import sleep, monotonic
 
 import qrcode
 from ethereum.utils import checksum_encode
@@ -50,22 +50,25 @@ def get_receiver_addresses():
     return addresses
 
 
-def starting_raiden_nodes(receivers):
-    print("Removing old Raiden Databases")
-    subprocess.run(
-        "rm -fr ~/.raiden",
-        shell=True,
-        stderr=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL
-    )
+def starting_raiden_nodes(receivers, key_store_path=KEYSTOREPATHRECEIVER, delete_keystore=True):
+    if delete_keystore:
+        print("Removing old Raiden Databases")
+        subprocess.run(
+            "rm -fr ~/.raiden",
+            shell=True,
+            stderr=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL
+        )
 
     for receiver_id, address in list(receivers.items()):
-        raiden = "raiden --keystore-path " + KEYSTOREPATHRECEIVER \
+        # FIXME setting the matrix server manually is just a hotfix for matrix issues
+        raiden = "raiden --keystore-path " + key_store_path \
                  + " --eth-rpc-endpoint " + ETH_RPC_ENDPOINT \
                  + " --address " + str(address) \
                  + " --password-file " + str(PASSWORDFILE) \
                  + " --api-address 127.0.0.1:500" + str(receiver_id) \
-                 + " --no-web-ui --accept-disclaimer &"
+                 + " --no-web-ui --accept-disclaimer"\
+                 + " --matrix-server=https://transport02.raiden.network &"
         print(
             "Starting Raiden Node for address %s on Port %s" %
             (address, ("500" + str(receiver_id)))
@@ -73,12 +76,25 @@ def starting_raiden_nodes(receivers):
         subprocess.Popen(
             raiden,
             shell=True,
-            stderr=subprocess.DEVNULL,
-            stdout=subprocess.DEVNULL
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
         )
-    # Sleeping until raiden Nodes are online
-    print("Waiting for Raiden Nodes to start up. This takes ~ 45s")
-    sleep(45)
+
+    # Waiting until all Raiden nodes are live
+    # TODO Find a more elegant way to check if raiden nodes are online
+    start_time = monotonic()
+    for receiver_id, address in list(receivers.items()):
+        url = "http://localhost:500"+str(receiver_id)+"/api/1/address"
+        while True:
+            try:
+                r = requests.get(url)
+                if r.json()["our_address"] == address:
+                    break
+            except socket_error:
+                sleep(1)
+            if monotonic() - start_time > 300:
+                raise TimeoutError("It took more than 5 minutes to start the Raiden Nodes")
+
     print("Raiden nodes are started")
 
 
