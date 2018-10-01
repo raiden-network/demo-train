@@ -13,9 +13,11 @@ from ethereum.utils import checksum_encode
 
 from const import *
 
-
-ArduinoSerial = serial.Serial('/dev/ttyACM0', 9600, timeout=.1)  # open serial port
-time.sleep(2)
+try:
+   ArduinoSerial = serial.Serial('/dev/ttyACM0', 9600, timeout=.1)  # open serial port
+   time.sleep(2)
+except serial.serialutil.SerialException:
+    pass
 
 
 def get_receiver_addresses():
