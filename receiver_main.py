@@ -1,11 +1,10 @@
 import json
-import logging
-import os
+import serial
+import time
 import random
 import subprocess
 import requests
 import networkx as nx
-import matplotlib.pyplot as plt
 from socket import error as socket_error
 from time import sleep, monotonic
 
@@ -14,7 +13,9 @@ from ethereum.utils import checksum_encode
 
 from const import *
 
-log = logging.getLogger(__name__)
+
+ArduinoSerial = serial.Serial('/dev/ttyACM0', 9600, timeout=.1)  # open serial port
+time.sleep(2)
 
 
 def get_receiver_addresses():
@@ -45,7 +46,6 @@ def get_receiver_addresses():
                         msg = 'Can not read account file (errno=%s)' % ex.errno
                     if isinstance(ex, json.decoder.JSONDecodeError):
                         msg = 'The account file is not valid JSON format'
-                    log.warning(msg, path=fullpath, ex=ex)
     print("Addresses are %s" % addresses)
     return addresses
 
@@ -163,12 +163,14 @@ def turn_leds_green():
 
 
 def turn_off_power():
-    # TODO
+    ArduinoSerial.write(b'0')  # set Arduino output pin 13 low
+    print(ArduinoSerial.readline().decode('utf-8').strip())  # get Arduino output pin 13 status
     print("Turning power for train off")
 
 
 def turn_on_power():
-    # TODO
+    ArduinoSerial.write(b'1')  # set Arduino output pin 13 high
+    print(ArduinoSerial.readline().decode('utf-8').strip())  # get Arduino output pin 13 status
     print("Turning power for train on")
 
 
