@@ -1,6 +1,8 @@
-import os
+import subprocess
 import random
+import os
 
+from time import sleep
 from const import RECEIVER_1_ADDRESS, RECEIVER_2_ADDRESS, RECEIVER_3_ADDRESS, RECEIVER_4_ADDRESS, \
     RECEIVER_5_ADDRESS, RECEIVER_6_ADDRESS, RECEIVER_7_ADDRESS, RECEIVER_8_ADDRESS, SENDER_ADDRESS
 from receiver_main import get_receiver_addresses, starting_raiden_nodes, \
@@ -57,6 +59,8 @@ def test_payment():
     for i, address in enumerate(receivers):
         nonce = random.randint(1, 20)
         send_payment(address=address, nonce=nonce)
+        # Wait for 5 seconds - This is needed to wait for the payment to succeed
+        sleep(5)
         assert querry_for_payment(
             network,
             receiver_address=address,
@@ -64,4 +68,11 @@ def test_payment():
             nonce=nonce
         )
 
-test_payment()
+    # Cleaning up the Database & killing running raiden instances
+    subprocess.run(
+        "rm -fr ~/.raiden",
+        shell=True,
+        stderr=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL
+    )
+
