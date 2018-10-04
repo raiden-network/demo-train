@@ -205,10 +205,14 @@ def qr_factory(address, nonce):
 
 
 async def run_track_loop(receivers, network, nonce=1):
+    # This should be the only function writing to the global variables!
+    global current_receiver, current_nonce
 
     while True:
         # Pick a random receiver
         receiver_id, address = random.choice(list(receivers.items()))
+        current_receiver = address
+        current_nonce = nonce
         # Generate QR code with receiver address
         qr_code = qr_factory(address, nonce)
         # Display new QR Code on LCD
@@ -226,8 +230,7 @@ async def run_track_loop(receivers, network, nonce=1):
             while True:
                 if await query_for_payment(network, address, receiver_id, nonce):
                     break
-                # TODO remove this sleep
-                await asyncio.sleep(1)
+                await asyncio.sleep(0.05)
             turn_on_power()
             turn_leds_green()
 
@@ -238,7 +241,7 @@ async def get_current_provider():
     # we don't need the identifier now
     data = {
         "address": current_receiver,
-        "identifier": 0
+        "identifier": current_nonce
     }
     return jsonify(data)
 
