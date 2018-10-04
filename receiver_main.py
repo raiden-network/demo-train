@@ -110,8 +110,8 @@ def start_raiden_nodes(receivers, key_store_path=KEYSTOREPATHRECEIVER, delete_ke
                     break
             except socket_error:
                 sleep(1)
-            if monotonic() - start_time > 300:
-                raise TimeoutError("It took more than 5 minutes to start the Raiden Nodes")
+            if monotonic() - start_time > 600:
+                raise TimeoutError("It took more than 10 minutes to start the Raiden Nodes")
 
     print("Raiden nodes are started")
 
