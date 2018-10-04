@@ -117,9 +117,6 @@ def start_raiden_nodes(receivers, key_store_path=KEYSTOREPATHRECEIVER, delete_ke
 
 
 def on_new_qr_code(qr_code):
-    # TODO since we only need the file with the qr-code, this global var is not
-    # neccessary anymore
-
     img = qr_code.make_image(fill_color="black", back_color="white")
     img.save(qrcode_file_path, 'JPEG', quality=70)
 
@@ -212,7 +209,6 @@ async def run_track_loop(receivers, network, nonce=1):
     while True:
         # Pick a random receiver
         receiver_id, address = random.choice(list(receivers.items()))
-        # TODO: Overwrite old displayed QR code with new one
         # Generate QR code with receiver address
         qr_code = qr_factory(address, nonce)
         # Display new QR Code on LCD
@@ -263,8 +259,7 @@ async def start_services():
 
     receivers = get_receiver_addresses()
     network = create_token_network_topology()
-    # start_raiden_nodes(receivers)
-    # CHECKME: is using globals the recommended way in quart?
+    start_raiden_nodes(receivers)
     track_loop_task = asyncio.create_task(run_track_loop(receivers, network))
 
 
