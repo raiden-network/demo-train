@@ -1,3 +1,7 @@
+from const import *
+
+import asyncio
+import os
 import json
 import serial
 import time
@@ -8,10 +12,22 @@ import networkx as nx
 from socket import error as socket_error
 from time import sleep, monotonic
 
+from eth_utils import to_checksum_address
 import qrcode
-from ethereum.utils import checksum_encode
 
-from const import *
+
+from quart import Quart
+from quart import jsonify
+from quart_cors import cors
+
+app = Quart(__name__)
+app = cors(app)
+
+
+track_loop_task = None
+current_receiver = None
+qrcode_file_path = os.path.abspath('current_qrcode.jpeg')
+
 
 try:
    ArduinoSerial = serial.Serial('/dev/ttyACM0', 9600, timeout=.1)  # open serial port
@@ -31,7 +47,7 @@ def get_receiver_addresses():
             try:
                 with open(fullpath) as data_file:
                     data = json.load(data_file)
-                    addresses[i + 1] = checksum_encode(str(data['address']))
+                    addresses[i + 1] = to_checksum_address(str(data['address']))
 
             except (
                     IOError,
@@ -52,7 +68,7 @@ def get_receiver_addresses():
     return addresses
 
 
-def starting_raiden_nodes(receivers, key_store_path=KEYSTOREPATHRECEIVER, delete_keystore=True):
+def start_raiden_nodes(receivers, key_store_path=KEYSTOREPATHRECEIVER, delete_keystore=True):
     if delete_keystore:
         print("Removing old Raiden Databases")
         subprocess.run(
@@ -100,12 +116,15 @@ def starting_raiden_nodes(receivers, key_store_path=KEYSTOREPATHRECEIVER, delete
     print("Raiden nodes are started")
 
 
-def display_qr_code(qr_code):
-    # TODO this should push the QR-Code to the display
-    qr_code.show()
+def on_new_qr_code(qr_code):
+    # TODO since we only need the file with the qr-code, this global var is not
+    # neccessary anymore
+
+    img = qr_code.make_image(fill_color="black", back_color="white")
+    img.save(qrcode_file_path, 'JPEG', quality=70)
 
 
-def querry_for_payment(network, receiver_address, receiver_id, nonce):
+async def query_for_payment(network, receiver_address, receiver_id, nonce):
     token_address = TOKEN_ADDRESS
     sender_address = SENDER_ADDRESS
     event_url = "http://localhost:500" + str(receiver_id) + "/api/1/payments/" \
@@ -151,10 +170,10 @@ def create_token_network_topology():
     return G
 
 
-def await_barrier_input():
+async def barrier_input():
     # TODO this function awaits the input of the light barrier
     print("Waiting for light barrier trigger")
-    sleep(5)
+    await asyncio.sleep(5)
     print("Light barrier was triggered")
 
 
@@ -176,19 +195,32 @@ def turn_on_power():
     print("Turning power for train on")
 
 
-def run(receivers, network, nonce=1):
+def qr_factory(address, nonce):
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data((address, nonce))
+    qr.make(fit=True)
+    return qr
+
+
+async def run_track_loop(receivers, network, nonce=1):
+
     while True:
         # Pick a random receiver
         receiver_id, address = random.choice(list(receivers.items()))
         # TODO: Overwrite old displayed QR code with new one
         # Generate QR code with receiver address
-        qr_code = qrcode.make((address, nonce))
+        qr_code = qr_factory(address, nonce)
         # Display new QR Code on LCD
-        display_qr_code(qr_code)
+        on_new_qr_code(qr_code)
         # Waiting till train passes light barrier
-        await_barrier_input()
+        await barrier_input()
         # Check if payment was received
-        if querry_for_payment(network, address, receiver_id, nonce):
+        if await query_for_payment(network, address, receiver_id, nonce):
             nonce += 1
             print("Payment received")
             turn_leds_green()
@@ -196,16 +228,47 @@ def run(receivers, network, nonce=1):
         else:
             turn_off_power()
             while True:
-                if querry_for_payment(network, address, receiver_id, nonce):
+                if await query_for_payment(network, address, receiver_id, nonce):
                     break
                 # TODO remove this sleep
-                sleep(1)
+                await asyncio.sleep(1)
             turn_on_power()
             turn_leds_green()
 
 
-if __name__ == "__main__":
+@app.route('/api/1/provider/current')
+async def get_current_provider():
+    # to leave interface as is, just send a 0 indentifier for now,
+    # we don't need the identifier now
+    data = {
+        "address": current_receiver,
+        "identifier": 0
+    }
+    return jsonify(data)
+
+#
+# @app.route('/api/1/provider/qr/current')
+# async def get_current_qr_code():
+#     return send_file(str(qrcode_file_path))
+
+
+@app.route('/api/1/debug/')
+async def show_debug_info():
+    return str(track_loop_task)
+
+
+@app.before_serving
+async def start_services():
+    global track_loop_task
+
     receivers = get_receiver_addresses()
     network = create_token_network_topology()
-    starting_raiden_nodes(receivers)
-    run(receivers, network)
+    # start_raiden_nodes(receivers)
+    # CHECKME: is using globals the recommended way in quart?
+    track_loop_task = asyncio.create_task(run_track_loop(receivers, network))
+
+
+@app.after_serving
+async def end_services():
+    track_loop_task.cancel()
+
