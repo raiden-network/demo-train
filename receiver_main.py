@@ -84,7 +84,7 @@ def start_raiden_nodes(receivers, key_store_path=KEYSTOREPATHRECEIVER, delete_ke
                  + " --eth-rpc-endpoint " + ETH_RPC_ENDPOINT \
                  + " --address " + str(address) \
                  + " --password-file " + str(PASSWORDFILE) \
-                 + " --api-address 0.0.0.1:500" + str(receiver_id) \
+                 + " --api-address 127.0.0.1:500" + str(receiver_id) \
                  + " --no-web-ui --accept-disclaimer"\
                  + " --matrix-server=https://transport02.raiden.network &"
         print(
