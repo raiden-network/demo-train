@@ -16,17 +16,22 @@ from eth_utils import to_checksum_address
 import qrcode
 
 
-from quart import Quart
-from quart import jsonify
+from quart import Quart, jsonify, send_file, safe_join
 from quart_cors import cors
 
 app = Quart(__name__)
 app = cors(app)
 
 
-track_loop_task = None
-current_receiver = None
-qrcode_file_path = os.path.abspath('current_qrcode.jpeg')
+track_loop_future = None
+current_provider = None
+current_nonce = None
+shortest_paths = None
+
+qrcode_file_name = 'current_qrcode.jpeg'
+script_path = os.path.dirname(os.path.realpath(__file__))
+
+qrcode_file_path = os.path.abspath(qrcode_file_name)
 
 
 try:
@@ -116,9 +121,9 @@ def start_raiden_nodes(receivers, key_store_path=KEYSTOREPATHRECEIVER, delete_ke
     print("Raiden nodes are started")
 
 
-def on_new_qr_code(qr_code):
+def on_new_qr_code(qr_code, file_path):
     img = qr_code.make_image(fill_color="black", back_color="white")
-    img.save(qrcode_file_path, 'JPEG', quality=70)
+    img.save(file_path, 'JPEG', quality=70)
 
 
 async def query_for_payment(network, receiver_address, receiver_id, nonce):
@@ -126,8 +131,6 @@ async def query_for_payment(network, receiver_address, receiver_id, nonce):
     sender_address = SENDER_ADDRESS
     event_url = "http://localhost:500" + str(receiver_id) + "/api/1/payments/" \
                 + token_address + '/' + sender_address
-    # TODO This needs to be provided to the Frontend
-    print(nx.shortest_path(network, source=sender_address, target=receiver_address))
     try:
         r = requests.get(event_url)
         # print("Querring URL %s" % event_url)
@@ -165,6 +168,10 @@ def create_token_network_topology():
     # plt.show()
 
     return G
+
+
+def get_shortest_path_to(receiver_address):
+    return shortest_paths[receiver_address]
 
 
 async def barrier_input():
@@ -206,17 +213,17 @@ def qr_factory(address, nonce):
 
 async def run_track_loop(receivers, network, nonce=1):
     # This should be the only function writing to the global variables!
-    global current_receiver, current_nonce
+    global current_provider, current_nonce
 
     while True:
         # Pick a random receiver
         receiver_id, address = random.choice(list(receivers.items()))
-        current_receiver = address
+        current_provider = address
         current_nonce = nonce
         # Generate QR code with receiver address
         qr_code = qr_factory(address, nonce)
         # Display new QR Code on LCD
-        on_new_qr_code(qr_code)
+        on_new_qr_code(qrcode_file_path, qr_code)
         # Waiting till train passes light barrier
         await barrier_input()
         # Check if payment was received
@@ -240,33 +247,38 @@ async def get_current_provider():
     # to leave interface as is, just send a 0 indentifier for now,
     # we don't need the identifier now
     data = {
-        "address": current_receiver,
+        "address": current_provider,
         "identifier": current_nonce
     }
     return jsonify(data)
 
-#
-# @app.route('/api/1/provider/qr/current')
-# async def get_current_qr_code():
-#     return send_file(str(qrcode_file_path))
+
+@app.route('/api/1/provider/qr/current')
+def get_current_qr_code():
+    return send_file(safe_join(script_path, qrcode_file_name))
 
 
-@app.route('/api/1/debug/')
+@app.route('/api/1/_debug/')
 async def show_debug_info():
-    return str(track_loop_task)
+    return str(track_loop_future)
+
+
+@app.route('/api/1/path/current')
+async def get_current_path():
+    return jsonify(get_shortest_path_to(current_provider))
 
 
 @app.before_serving
 async def start_services():
-    global track_loop_task
+    global track_loop_future, shortest_paths
 
     receivers = get_receiver_addresses()
     network = create_token_network_topology()
+    shortest_paths = nx.single_source_shortest_path(network, SENDER_ADDRESS)
     start_raiden_nodes(receivers)
-    track_loop_task = asyncio.create_task(run_track_loop(receivers, network))
+    track_loop_future = asyncio.ensure_future(run_track_loop(receivers, network))
 
 
 @app.after_serving
 async def end_services():
-    track_loop_task.cancel()
-
+    track_loop_future.cancel()
