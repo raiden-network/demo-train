@@ -1,6 +1,11 @@
+import json
+import networkx
+import networkx as nx
 import os
 
 # Defining global variables
+from eth_utils import to_checksum_address
+
 TOKEN_ADDRESS = "0xC1bF364ed86E2a8cd9766FCDa51a53ef3c5fFCb8"
 SENDER_ADDRESS = "0x00D384EF74575E97884215e9f39142228c7ACfa8"
 RECEIVER_1_ADDRESS = "0x002857f3a3BEa9DC0301D6DCf573692720f88B5a"
@@ -17,3 +22,65 @@ KEYSTOREPATHRECEIVER = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 ETH_RPC_ENDPOINT = "http://geth.ropsten.ethnodes.brainbot.com:8545"
 PASSWORDFILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             'wallet_password.txt')
+
+MATRIX_SERVER = "https://transport02.raiden.network"
+
+
+def get_receiver_addresses():
+    """"Puts all addresses in our KeyStorePath in a dict with key 'receiver_id' """
+    KeyStorePath = KEYSTOREPATHRECEIVER
+    addresses = {}
+
+    for i, f in enumerate(os.listdir(KeyStorePath)):
+        fullpath = os.path.join(KeyStorePath, f)
+        if os.path.isfile(fullpath):
+            try:
+                with open(fullpath) as data_file:
+                    data = json.load(data_file)
+                    addresses[i + 1] = to_checksum_address(str(data['address']))
+
+            except (
+                    IOError,
+                    json.JSONDecodeError,
+                    KeyError,
+                    OSError,
+                    UnicodeDecodeError,
+            ) as ex:
+                # Invalid file - skip
+                if f.startswith('UTC--'):
+                    # Should be a valid account file - warn user
+                    msg = 'Invalid account file'
+                    if isinstance(ex, IOError) or isinstance(ex, OSError):
+                        msg = 'Can not read account file (errno=%s)' % ex.errno
+                    if isinstance(ex, json.decoder.JSONDecodeError):
+                        msg = 'The account file is not valid JSON format'
+    print("Addresses are %s" % addresses)
+    return addresses
+
+
+SHORTEST_PATHS = None
+QRCODE_FILE_NAME = 'current_qrcode.jpeg'
+SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
+QRCODE_FILE_PATH = os.path.abspath(QRCODE_FILE_NAME)
+
+
+def create_token_network_topology():
+    # This is hardcoded. To see the topology checkout Images/Network_topology.png
+    g = nx.Graph()
+    g.add_edge(SENDER_ADDRESS, RECEIVER_1_ADDRESS)
+    g.add_edges_from([
+        (RECEIVER_1_ADDRESS, RECEIVER_2_ADDRESS),
+        (RECEIVER_1_ADDRESS, RECEIVER_5_ADDRESS),
+        (RECEIVER_1_ADDRESS, RECEIVER_8_ADDRESS)
+    ])
+    g.add_edge(RECEIVER_2_ADDRESS, RECEIVER_3_ADDRESS)
+    g.add_edge(RECEIVER_3_ADDRESS, RECEIVER_4_ADDRESS)
+    g.add_edge(RECEIVER_5_ADDRESS, RECEIVER_6_ADDRESS)
+    g.add_edge(RECEIVER_6_ADDRESS, RECEIVER_7_ADDRESS)
+
+    """Belows code can be used to debug the Graph"""
+    # plt.subplot(121)
+    # nx.draw(G, with_labels=True, font_weight='bold')
+    # plt.show()
+
+    return g

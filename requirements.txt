@@ -1,4 +1,5 @@
 quart
+aiohttp
 hypercorn
 Quart-CORS
 eth-utils

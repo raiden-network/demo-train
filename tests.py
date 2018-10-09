@@ -4,9 +4,10 @@ import os
 
 from time import sleep
 from const import RECEIVER_1_ADDRESS, RECEIVER_2_ADDRESS, RECEIVER_3_ADDRESS, RECEIVER_4_ADDRESS, \
-    RECEIVER_5_ADDRESS, RECEIVER_6_ADDRESS, RECEIVER_7_ADDRESS, RECEIVER_8_ADDRESS, SENDER_ADDRESS
-from receiver_main import get_receiver_addresses, start_raiden_nodes, \
-    create_token_network_topology, query_for_payment
+    RECEIVER_5_ADDRESS, RECEIVER_6_ADDRESS, RECEIVER_7_ADDRESS, RECEIVER_8_ADDRESS, SENDER_ADDRESS, \
+    get_receiver_addresses, create_token_network_topology
+from receiver_main import query_for_payment
+from deployment import start_raiden_nodes
 from sender_main import send_payment
 
 receivers = [
