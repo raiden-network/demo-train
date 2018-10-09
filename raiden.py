@@ -27,11 +27,12 @@ class RaidenNode:
 
     def start(self):
         # start the subprocess
+        # FIXME better stripping of http:// in api-address
         raiden = "raiden --keystore-path " + str(self.keystore_path) \
                  + " --eth-rpc-endpoint " + self.eth_rpc_endpoint \
                  + " --address " + str(self.address) \
                  + " --password-file " + str(self.password_file) \
-                 + " --api-address " + str(self.api_endpoint) \
+                 + " --api-address " + str(self.api_endpoint[8:]) \
                  + " --no-web-ui --accept-disclaimer"\
                  + " --matrix-server={}&".format(self.matrix_server)
         print(
