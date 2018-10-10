@@ -32,7 +32,7 @@ class RaidenNode:
                  + " --eth-rpc-endpoint " + self.eth_rpc_endpoint \
                  + " --address " + str(self.address) \
                  + " --password-file " + str(self.password_file) \
-                 + " --api-address " + str(self.api_endpoint[8:]) \
+                 + " --api-address " + str(self.api_endpoint[7:]) \
                  + " --no-web-ui --accept-disclaimer"\
                  + " --matrix-server={}&".format(self.matrix_server)
         print(
