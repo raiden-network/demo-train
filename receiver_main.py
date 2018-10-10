@@ -9,19 +9,18 @@ from raiden import RaidenNode, RaidenNodeMock
 from track_control import TrackControlMock
 from typing import List
 
-import qrcode
-
+import barcode
 
 from quart import Quart, jsonify, send_file, safe_join
 from quart_cors import cors
 
-from const import get_receiver_addresses, SHORTEST_PATHS, QRCODE_FILE_NAME, SCRIPT_PATH, QRCODE_FILE_PATH, \
+from const import get_receiver_addresses, SHORTEST_PATHS, QRCODE_FILE_NAME, SCRIPT_PATH, \
+    BAR_CODE_FILE_PATH, \
     create_token_network_topology, SENDER_ADDRESS, TOKEN_ADDRESS
 from deployment import start_raiden_nodes
 
 app = Quart(__name__)
 app = cors(app)
-
 
 track_loop_future = None
 current_provider = None
@@ -31,25 +30,16 @@ mocking = None
 current_nonce = None
 
 
-def on_new_qr_code(qr_code, file_path):
-    img = qr_code.make_image(fill_color="black", back_color="white")
-    img.save(file_path, 'JPEG', quality=70)
+def on_new_bar_code(bar_code, file_path):
+    bar_code.save(str(file_path))
 
 
 def get_shortest_path_to(receiver_address):
     return SHORTEST_PATHS[receiver_address]
 
 
-def qr_factory(address, nonce):
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_M,
-        box_size=10,
-        border=4,
-    )
-    qr.add_data((address, nonce))
-    qr.make(fit=True)
-    return qr
+def barcode_factory(address, nonce):
+    return barcode.get('code128', "(" + str(address) + "," + str(nonce) + ")")
 
 
 async def run_track_loop(raiden_receivers: List[RaidenNode], track_control, nonce=1):
@@ -63,11 +53,12 @@ async def run_track_loop(raiden_receivers: List[RaidenNode], track_control, nonc
         current_provider = receiver.address
         current_nonce = nonce
         # Generate QR code with receiver address
-        # qr_code = qr_factory(receiver.address, nonce)
-        # on_new_qr_code(QRCODE_FILE_PATH, qr_code)
+        barcode_code = barcode_factory(receiver.address, nonce)
+        on_new_bar_code(BAR_CODE_FILE_PATH, barcode_code)
 
         payment_received_task = asyncio.create_task(
-            receiver.ensure_payment_received(sender_address=SENDER_ADDRESS, token_address=TOKEN_ADDRESS,
+            receiver.ensure_payment_received(sender_address=SENDER_ADDRESS,
+                                             token_address=TOKEN_ADDRESS,
                                              nonce=current_nonce, poll_interval=0.05)
         )
         await track_control.next_barrier_trigger()
@@ -81,14 +72,15 @@ async def run_track_loop(raiden_receivers: List[RaidenNode], track_control, nonc
             payment_received_task.cancel()
 
         if payment_successful is True:
-                nonce += 1
-                print("Payment received")
+            nonce += 1
+            print("Payment received")
         else:
             print("Payment not received before next barrier trigger")
             track_control.power_off()
 
             payment_received_task = asyncio.create_task(
-                receiver.ensure_payment_received(sender_address=SENDER_ADDRESS, token_address=TOKEN_ADDRESS,
+                receiver.ensure_payment_received(sender_address=SENDER_ADDRESS,
+                                                 token_address=TOKEN_ADDRESS,
                                                  poll_interval=0.05)
             )
             await payment_received_task
@@ -143,7 +135,8 @@ async def start_services():
     const.SHORTEST_PATHS = nx.single_source_shortest_path(network, SENDER_ADDRESS)
 
     raiden_nodes = await start_raiden_nodes(raiden_node_cls, receivers)
-    raiden_receivers = [node for node in raiden_nodes.values() if node.address is not SENDER_ADDRESS]
+    raiden_receivers = [node for node in raiden_nodes.values() if
+                        node.address is not SENDER_ADDRESS]
     track_control = track_control_cls()
 
     track_loop_future = asyncio.ensure_future(run_track_loop(raiden_receivers, track_control))

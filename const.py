@@ -61,9 +61,9 @@ def get_receiver_addresses():
 
 
 SHORTEST_PATHS = None
-QRCODE_FILE_NAME = 'current_qrcode.jpeg'
+CODE_FILE_NAME = 'current_barcode'
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
-QRCODE_FILE_PATH = os.path.abspath(QRCODE_FILE_NAME)
+BAR_CODE_FILE_PATH = os.path.abspath(CODE_FILE_NAME)
 
 
 def create_token_network_topology():
