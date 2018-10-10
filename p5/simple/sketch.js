@@ -178,7 +178,7 @@ function getRelativePos(xRel, yRel) {
 
 
 function fetchImage() {
-	qrImg = loadImage("../../current_qrcode.jpeg");
+	qrImg = loadImage("../../current_barcode.svg");
 }
 
 

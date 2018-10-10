@@ -36,7 +36,7 @@ class TrackControl:
     async def next_barrier_trigger(self):
         # waits until the next time the barrier is passed and then returns true
         # TODO see how we can wait for this asynchronously on the arduino!
-        await asyncio.sleep(2)
+        await asyncio.sleep(20)
         return True
 
 

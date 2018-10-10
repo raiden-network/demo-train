@@ -96,12 +96,24 @@ class RaidenNode:
                     print("Raiden client not available.")
                     return False
 
-    async def ensure_payment_received(self, sender_address, token_address, nonce, poll_interval=1):
-        while True:
-            await self.query_for_payment_received(sender_address, token_address, nonce)
-            if True is True:
+    async def ensure_payment_received(self,
+                                      sender_address,
+                                      token_address,
+                                      nonce,
+                                      poll_interval=1,
+                                      mocking=False):
+        # If we mock this should return true
+        if mocking:
+            while True:
+                await self.query_for_payment_received(sender_address, token_address, nonce)
                 return True
-            await asyncio.sleep(poll_interval)
+
+        else:
+            while True:
+                received = await self.query_for_payment_received(sender_address, token_address, nonce)
+                if received:
+                    return True
+                await asyncio.sleep(poll_interval)
 
 
 class RaidenNodeMock(RaidenNode):

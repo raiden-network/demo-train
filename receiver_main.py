@@ -6,7 +6,6 @@ import networkx as nx
 
 from track_control import TrackControl, TrackControlMock
 from raiden import RaidenNode, RaidenNodeMock
-from track_control import TrackControlMock
 from typing import List
 
 import barcode
@@ -14,7 +13,7 @@ import barcode
 from quart import Quart, jsonify, send_file, safe_join
 from quart_cors import cors
 
-from const import get_receiver_addresses, SHORTEST_PATHS, QRCODE_FILE_NAME, SCRIPT_PATH, \
+from const import get_receiver_addresses, SHORTEST_PATHS, CODE_FILE_NAME, SCRIPT_PATH, \
     BAR_CODE_FILE_PATH, \
     create_token_network_topology, SENDER_ADDRESS, TOKEN_ADDRESS
 from deployment import start_raiden_nodes
@@ -24,7 +23,7 @@ app = cors(app)
 
 track_loop_future = None
 current_provider = None
-mocking = None
+mocking = False
 
 # TODO the nonce should be counted PER PROVIDER
 current_nonce = None
@@ -42,7 +41,7 @@ def barcode_factory(address, nonce):
     return barcode.get('code128', "(" + str(address) + "," + str(nonce) + ")")
 
 
-async def run_track_loop(raiden_receivers: List[RaidenNode], track_control, nonce=1):
+async def run_track_loop(raiden_receivers: List[RaidenNode], track_control, nonce=1, mocking=False):
     # This should be the only function writing to the global variables!
     global current_provider, current_nonce
     print("Track loop started")
@@ -59,7 +58,8 @@ async def run_track_loop(raiden_receivers: List[RaidenNode], track_control, nonc
         payment_received_task = asyncio.create_task(
             receiver.ensure_payment_received(sender_address=SENDER_ADDRESS,
                                              token_address=TOKEN_ADDRESS,
-                                             nonce=current_nonce, poll_interval=0.05)
+                                             nonce=current_nonce, poll_interval=0.05,
+                                             mocking=mocking)
         )
         await track_control.next_barrier_trigger()
 
@@ -81,10 +81,11 @@ async def run_track_loop(raiden_receivers: List[RaidenNode], track_control, nonc
             payment_received_task = asyncio.create_task(
                 receiver.ensure_payment_received(sender_address=SENDER_ADDRESS,
                                                  token_address=TOKEN_ADDRESS,
-                                                 poll_interval=0.05)
+                                                 poll_interval=0.05,
+                                                 mocking=mocking)
             )
             await payment_received_task
-            if payment_received_task.result() is True:
+            if payment_received_task.result():
                 track_control.power_on()
             else:
                 # this shouldn't happen
@@ -105,7 +106,7 @@ async def get_current_provider():
 
 @app.route('/api/1/provider/qr/current')
 def get_current_qr_code():
-    return send_file(safe_join(SCRIPT_PATH, QRCODE_FILE_NAME))
+    return send_file(safe_join(SCRIPT_PATH, CODE_FILE_NAME))
 
 
 @app.route('/api/1/_debug/')
@@ -139,7 +140,9 @@ async def start_services():
                         node.address is not SENDER_ADDRESS]
     track_control = track_control_cls()
 
-    track_loop_future = asyncio.ensure_future(run_track_loop(raiden_receivers, track_control))
+    track_loop_future = asyncio.ensure_future(
+        run_track_loop(raiden_receivers, track_control, mocking=mocking)
+                                              )
     print('Initialization completed')
 
 
