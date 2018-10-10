@@ -17,14 +17,6 @@ class RaidenNode:
         self.matrix_server = matrix_server
         self._raiden_process = None
 
-    @property
-    def _api_address(self):
-        return self.api_endpoint.split(":")[0]
-
-    @property
-    def _api_port(self):
-        return self.api_endpoint.split(":")[1]
-
     def start(self):
         # start the subprocess
         # FIXME better stripping of http:// in api-address
@@ -37,7 +29,7 @@ class RaidenNode:
                  + " --matrix-server={}&".format(self.matrix_server)
         print(
             "Starting Raiden Node for address %s on Port %s" %
-            (self.address, (self._api_port))
+            (self.address, self.api_endpoint)
         )
         self._raiden_process = subprocess.Popen(
             raiden,
@@ -49,26 +41,30 @@ class RaidenNode:
     def stop(self):
         print(
             "Stopping Raiden Node for address %s on Port %s" %
-            (self.address, (self._api_port))
+            (self.address, self.api_endpoint)
         )
         self._raiden_process.terminate()
 
     async def query_for_started(self):
         url = self.api_endpoint + "/api/1/address"
         async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                data = await response.json()
-                if response.status == 200:
-                    if data["our_address"] == self.address:
-                        return True
-                    # wrong address, this shouldn't happen
-                    # TODO remove assert for production
-                    assert False
-                else:
-                    # no 200 OK means the Raiden Node is somehow not available
-                    # TODO handle different connection errors
-                    print("Raiden client not available.")
-                    return False
+            try:
+                async with session.get(url) as response:
+                    data = await response.json()
+                    if response.status == 200:
+                        if data["our_address"] == self.address:
+                            return True
+                        # wrong address, this shouldn't happen
+                        # TODO remove assert for production
+                        assert False
+                    else:
+                        # no 200 OK means the Raiden Node is somehow not available
+                        # TODO handle different connection errors
+                        print("Raiden client not available.")
+                        return False
+            # If Raiden not online it will raise a ClientConnectorError
+            except aiohttp.ClientConnectorError:
+                return False
 
     async def ensure_is_started(self, poll_interval=1):
         # poll the raiden api and check if the process is started

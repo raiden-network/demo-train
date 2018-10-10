@@ -1,10 +1,13 @@
 import asyncio
 import subprocess
 
-from const import KEYSTOREPATHRECEIVER, PASSWORDFILE, ETH_RPC_ENDPOINT, MATRIX_SERVER
+from const import KEYSTOREPATHRECEIVER, PASSWORDFILE, ETH_RPC_ENDPOINT, MATRIX_SERVER, \
+    RAIDEN_NODE_TIMEOUT
 
 
-async def start_raiden_nodes(raiden_cls, receivers, delete_keystore=True, timeout=10):
+async def start_raiden_nodes(raiden_cls, receivers, delete_keystore=True,
+                             timeout=RAIDEN_NODE_TIMEOUT
+                             ):
     if delete_keystore:
         print("Removing old Raiden Databases")
         subprocess.run(
@@ -33,7 +36,9 @@ async def start_raiden_nodes(raiden_cls, receivers, delete_keystore=True, timeou
     if len(pending) != 0:
         for task in pending:
             task.cancel()
-        raise TimeoutError("It took more than {} minutes to start the Raiden Nodes".format(timeout))
+        raise TimeoutError("It took more than {} minutes to start the Raiden Nodes"
+                           .format(timeout / 60)
+                           )
 
     print("Raiden nodes are started")
     return raiden_nodes
