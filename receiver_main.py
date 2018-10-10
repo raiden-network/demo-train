@@ -46,14 +46,15 @@ async def run_track_loop(raiden_receivers: List[RaidenNode], track_control, nonc
     global current_provider, current_nonce
     print("Track loop started")
 
+    track_control.power_on()
     while True:
         # Pick a random receiver
         receiver = random.choice(raiden_receivers)
         current_provider = receiver.address
         current_nonce = nonce
-        # Generate QR code with receiver address
+        # Generate barcode with receiver address
         barcode_code = barcode_factory(receiver.address, nonce)
-        on_new_bar_code(BAR_CODE_FILE_PATH, barcode_code)
+        on_new_bar_code(barcode_code, BAR_CODE_FILE_PATH)
 
         payment_received_task = asyncio.create_task(
             receiver.ensure_payment_received(sender_address=SENDER_ADDRESS,
