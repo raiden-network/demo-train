@@ -9,7 +9,7 @@ except ModuleNotFoundError:
     pass
 from pyzbar.pyzbar import decode
 
-from const import TOKEN_ADDRESS
+from const import TOKEN_ADDRESS, RECEIVER_LIST
 
 
 def start_scanning():
@@ -58,7 +58,8 @@ def get_channels():
 def run():
     # We assume that Raiden is already started
     while True:
-        address, nonce = start_scanning()
+        address_id, nonce = start_scanning()
+        address = RECEIVER_LIST[address_id]
         send_payment(address, nonce)
 
 

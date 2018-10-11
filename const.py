@@ -17,6 +17,17 @@ RECEIVER_6_ADDRESS = "0x00a614cf3C67CF541c633728224Ca0d5EC82f1dE"
 RECEIVER_7_ADDRESS = "0x00C68910D9C719a5612790343862bcdF49d6a29A"
 RECEIVER_8_ADDRESS = "0x00673b5556Db5Fe0DdDB0875bF565a3a4AE51Dcb"
 
+RECEIVER_LIST = [
+    RECEIVER_1_ADDRESS,
+    RECEIVER_2_ADDRESS,
+    RECEIVER_3_ADDRESS,
+    RECEIVER_4_ADDRESS,
+    RECEIVER_5_ADDRESS,
+    RECEIVER_6_ADDRESS,
+    RECEIVER_7_ADDRESS,
+    RECEIVER_8_ADDRESS
+]
+
 KEYSTOREPATHRECEIVER = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                     'receiver/key_storage/')
 ETH_RPC_ENDPOINT = "http://geth.ropsten.ethnodes.brainbot.com:8545"
@@ -25,7 +36,7 @@ PASSWORDFILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 MATRIX_SERVER = "https://transport02.raiden.network"
 
-RAIDEN_NODE_TIMEOUT = 15*60
+RAIDEN_NODE_TIMEOUT = 15 * 60
 
 
 def get_receiver_addresses():
