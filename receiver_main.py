@@ -8,7 +8,7 @@ from track_control import TrackControl, TrackControlMock
 from raiden import RaidenNode, RaidenNodeMock
 from typing import List
 
-import barcode
+import code128
 
 from quart import Quart, jsonify, send_file, safe_join
 from quart_cors import cors
@@ -30,6 +30,8 @@ current_nonce = None
 
 
 def on_new_bar_code(bar_code, file_path):
+    factor = 4
+    bar_code = bar_code.resize((int(bar_code.width * factor), int(bar_code.height * factor)))
     bar_code.save(str(file_path))
 
 
@@ -38,7 +40,7 @@ def get_shortest_path_to(receiver_address):
 
 
 def barcode_factory(address, nonce):
-    return barcode.get('code128', "(" + str(address) + "," + str(nonce) + ")")
+    return code128.image("(" + str(address) + "," + str(nonce) + ")")
 
 
 async def run_track_loop(raiden_receivers: List[RaidenNode], track_control, nonce=1, mocking=False):
@@ -115,9 +117,9 @@ async def show_debug_info():
     return str(track_loop_future)
 
 
-@app.route('/api/1/path/current')
-async def get_current_path():
-    return jsonify(get_shortest_path_to(current_provider))
+#@app.route('/api/1/path/current')
+#async def get_current_path():
+#    return jsonify(get_shortest_path_to(current_provider))
 
 
 @app.before_serving
