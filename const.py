@@ -36,7 +36,7 @@ PASSWORDFILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 MATRIX_SERVER = "https://transport02.raiden.network"
 
-RAIDEN_NODE_TIMEOUT = 15 * 60
+RAIDEN_NODE_TIMEOUT = 25 * 60
 
 
 def get_receiver_addresses():
