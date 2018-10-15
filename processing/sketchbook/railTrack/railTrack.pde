@@ -1,6 +1,6 @@
-int numberOfSegments = 500; // resolution of track
-float railRadius = 630; // not global
-float railLength = 630; // no need to be global
+int numberOfSegments = 64; // resolution of track
+float railRadius = 200; // not global
+float railLength = 300; // no need to be global
 
 PVector[] railSegmentsLookUp;
 
@@ -8,6 +8,9 @@ float trainPosition = 0; // in units of segments
 float trainSpeed = 0.5; // in units of segments
 
 int offsetStart = 60;
+
+final color redColor = color(255, 0, 0);
+final color greenColor = color(0, 255, 0);
 
 
 void setup(){
@@ -24,17 +27,19 @@ void setup(){
 
 void draw(){
   
+  background(0);
+  
   trainPosition += trainSpeed;
 
   for(int segId = 0; segId < railSegmentsLookUp.length; segId++){
   
-    setSegColor(trainPosition, segId);
-    printSeg(railSegmentsLookUp[segId].x, railSegmentsLookUp[segId].y);
+    int c = setSegColor(trainPosition, segId);
+    printSeg(railSegmentsLookUp[segId].x, railSegmentsLookUp[segId].y, c);
   }
   
   // keep train position circular
   trainPosition %= railSegmentsLookUp.length; 
-  //println(trainPosition);
+  // println(trainPosition);
 }
 
 PVector[] generateRailLookUp(int numberOfSegs){
@@ -87,26 +92,44 @@ PVector[] generateRailLookUp(int numberOfSegs){
 
 
 
-void setSegColor(float tp, float si){
-    if(tp > si){
-      stroke(12,144,63,90); // green
+color setSegColor(float tp, float si){
+    if(tp < si){
+      stroke(greenColor & ~#000000); // green
       fill(12,144,63,70); // green
+      return greenColor;
     }
     else{
-      stroke(182,34,63,50); // red
+      stroke(redColor & ~#000000); // red
       fill(182,34,63,10); // red
       // noStroke();
       // noFill();
+      return redColor;
     } 
 }
 
 
-void printSeg(float x, float y){
+void printSeg(float x, float y, color c){
     //noFill();
     //point(x, y);
     
+    color alphaColor = 5 << 030;
+    fill(c & ~#000000 | alphaColor);
+    noStroke();
+    ellipse(x, y,55,55);
+    
+    
+    alphaColor = 25 << 030;
+    fill(c & ~#000000 | alphaColor);
+    noStroke();
+    ellipse(x, y,25,25);
+
+
+    alphaColor = 150 << 030;
+    fill(c & ~#000000 | alphaColor);
     strokeWeight(1);
-    rect(x, y,5,5);
+    rect(x, y,2,2);
+    
+
     
     //strokeWeight(1);
     //noStroke();
