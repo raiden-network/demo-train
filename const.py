@@ -30,7 +30,7 @@ RECEIVER_LIST = [
 
 KEYSTOREPATHRECEIVER = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                     'receiver/key_storage/')
-ETH_RPC_ENDPOINT = "http://geth.ropsten.ethnodes.brainbot.com:8545"
+ETH_RPC_ENDPOINT = "http://parity.kovan.ethnodes.brainbot.com:8545"
 PASSWORDFILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             'wallet_password.txt')
 
@@ -72,7 +72,7 @@ def get_receiver_addresses():
 
 
 SHORTEST_PATHS = None
-CODE_FILE_NAME = 'current_barcode'
+CODE_FILE_NAME = 'current_barcode.jpg'
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 BAR_CODE_FILE_PATH = os.path.abspath(CODE_FILE_NAME)
 

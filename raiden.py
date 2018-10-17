@@ -26,6 +26,7 @@ class RaidenNode:
                  + " --password-file " + str(self.password_file) \
                  + " --api-address " + str(self.api_endpoint[7:]) \
                  + " --no-web-ui --accept-disclaimer"\
+                 + " --network-id 42"\
                  + " --matrix-server={}&".format(self.matrix_server)
         print(
             "Starting Raiden Node for address %s on Port %s" %
@@ -33,9 +34,9 @@ class RaidenNode:
         )
         self._raiden_process = subprocess.Popen(
             raiden,
-            shell=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
+            shell=True
+            #stdout=subprocess.DEVNULL,
+            #stderr=subprocess.DEVNULL
         )
 
     def stop(self):
