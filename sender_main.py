@@ -15,8 +15,11 @@ from const import TOKEN_ADDRESS, RECEIVER_LIST
 def start_scanning():
     stream = io.BytesIO()
     camera = picamera.PiCamera()
-    camera.resolution = (320, 240)
+    camera.resolution = (640, 240)
     camera.framerate = 10
+    camera.color_effects = (128, 128)
+    camera.contrast = 100 
+    camera.zoom = (0.39, 0.51, 0.3, 0.55) 
     camera.start_preview()
     time.sleep(2)
     while True:
@@ -24,6 +27,7 @@ def start_scanning():
         camera.capture(stream, format='jpeg')
         stream.seek(0)
         image = Image.open(stream)
+        image.save("/home/pi/Images/" + str(time.monotonic()) + ".jpg")
         try:
             data = decode(image)[0].data
             camera.close()

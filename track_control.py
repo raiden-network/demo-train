@@ -22,22 +22,30 @@ class TrackControl:
         return self._is_powered
 
     def power_off(self):
-        self.arduino_serial.write(b'0')  # set Arduino output pin 13 low
-        print(self.arduino_serial.readline().decode('utf-8').strip())  # get Arduino output pin 13 status
+        self.arduino_serial.write(bytes([0]))  # Sets Arduino pin 3 LOW
+        print(self.arduino_serial.readline().decode(
+            'utf-8').strip())  # get Arduino output pin 13 status
         print("Turned power for train off")
         self._is_powered = False
 
     def power_on(self):
-        self.arduino_serial.write(b'1')  # set Arduino output pin 13 high
-        print(self.arduino_serial.readline().decode('utf-8').strip())  # get Arduino output pin 13 status
+        self.arduino_serial.write(bytes([1]))  # Sets Arduino pin 3 HIGH
+        print(self.arduino_serial.readline().decode(
+            'utf-8').strip())  # get Arduino output pin 13 status
         print("Turned power for train on")
         self._is_powered = True
 
     async def next_barrier_trigger(self):
-        # waits until the next time the barrier is passed and then returns true
-        # TODO see how we can wait for this asynchronously on the arduino!
-        await asyncio.sleep(20)
-        return True
+        self.arduino_serial.write(bytes([2]))  # Triggers a series of distance measurements
+        self.arduino_serial.flush()  # Make sure arduino reads the above command
+        while True:
+            data = self.arduino_serial.readline()
+            try:
+                data = float(data.decode().strip())
+            except ValueError:
+                data = 100
+            if data < 20:  # If something passes closer than 20cm
+                return True
 
 
 class TrackControlMock:
