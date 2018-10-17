@@ -17,7 +17,7 @@ def start_scanning():
     camera = picamera.PiCamera()
     camera.resolution = (640, 240)
     camera.framerate = 10
-    camera.color_effects = (128, 128)
+    camera.color_effects = (128, 128)  # Make a black and white picture
     camera.contrast = 100 
     camera.zoom = (0.39, 0.51, 0.3, 0.55) 
     camera.start_preview()
