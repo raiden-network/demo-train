@@ -1,4 +1,4 @@
-int numberOfSegments = 64; // resolution of track
+int numberOfSegments = 42; // resolution of track
 float railRadius = 200; // not global
 float railLength = 300; // no need to be global
 
@@ -12,34 +12,73 @@ int offsetStart = 60;
 final color redColor = color(255, 0, 0);
 final color greenColor = color(0, 255, 0);
 
+final int railJitter = 2;
+
+int[] rs = {40,40,40,120, width, height,20,20,width,height,20,20};
+int[] rands;
 
 void setup(){
-   fullScreen();
+   fullScreen(P3D);
    //size(1000,600);
+   rs[4] = width;
+   rs[5] = height;
+   rs[8] = width;
+   rs[9] = height;
    background(0);
    fill(100);
    stroke(100);
    noFill();
    strokeWeight(7);
-
+   frameRate(25);
+   
   railSegmentsLookUp = generateRailLookUp(numberOfSegments);
+  //drawLandscape();
+  drawMovingLandscape(true);
+  drawMiddleTree();
+  clearRails();
 }
 
 void draw(){
   
   background(0);
+  clearRails();
+  drawMiddleTree();
+  println(frameRate);
   
   trainPosition += trainSpeed;
 
+
+  beginShape(QUAD_STRIP);
+  //vertex(width/2.,height/2.);
   for(int segId = 0; segId < railSegmentsLookUp.length; segId++){
-  
-    int c = setSegColor(trainPosition, segId);
+    
+    // begin new shape on train position
+    if(int(trainPosition) == segId){
+      endShape(); 
+      //beginShape(QUAD_STRIP);
+      beginShape(QUADS);
+    }
+    
+    int c = getSegColor(trainPosition, segId);
     printSeg(railSegmentsLookUp[segId].x, railSegmentsLookUp[segId].y, c);
+    
+    
   }
-  
+  //vertex(width/2.,height/2.);
+  endShape();
+  drawMovingLandscape(false);
+  drawMiddleTree();
   // keep train position circular
-  trainPosition %= railSegmentsLookUp.length; 
-  // println(trainPosition);
+  if(trainPosition >= railSegmentsLookUp.length){
+    trainPosition = 0;
+    background(0);
+    //drawLandscape();
+    drawMovingLandscape(true);
+    drawMiddleTree();
+  }
+
+  // printMiddleTree();
+
 }
 
 PVector[] generateRailLookUp(int numberOfSegs){
@@ -92,18 +131,19 @@ PVector[] generateRailLookUp(int numberOfSegs){
 
 
 
-color setSegColor(float tp, float si){
-    if(tp < si){
-      stroke(greenColor & ~#000000); // green
-      fill(12,144,63,70); // green
+color getSegColor(float tp, float si){
+    if(int(tp) < si){
+      //stroke(greenColor & ~#000000); // green
+      //fill(12,144,63,70); // green
       return greenColor;
     }
     else{
-      stroke(redColor & ~#000000); // red
-      fill(182,34,63,10); // red
+      //stroke(redColor & ~#000000); // red
+      //fill(182,34,63,10); // red
       // noStroke();
       // noFill();
-      return redColor;
+      // return redColor;
+      return color(255, random(100), random(100));
     } 
 }
 
@@ -113,25 +153,127 @@ void printSeg(float x, float y, color c){
     //point(x, y);
     
     color alphaColor = 5 << 030;
-    fill(c & ~#000000 | alphaColor);
-    noStroke();
-    ellipse(x, y,55,55);
+    //fill(c & ~#000000 | alphaColor);
+    //noStroke();
+    //ellipse(x, y,55,55);
     
     
+    //alphaColor = 25 << 030;
+    //fill(c & ~#000000 | alphaColor);
+    //noStroke();
+    //ellipse(x, y,25,25);
+
+
+    //alphaColor = 150 << 030;
+    //fill(c & ~#000000 | alphaColor);
+    //strokeWeight(1);
+    //rect(x, y,2,2);
+    
+
+    alphaColor = (75 + int(random(30))) << 030;
+    stroke(c & ~#000000 | alphaColor);
     alphaColor = 25 << 030;
-    fill(c & ~#000000 | alphaColor);
-    noStroke();
-    ellipse(x, y,25,25);
-
-
-    alphaColor = 150 << 030;
-    fill(c & ~#000000 | alphaColor);
-    strokeWeight(1);
-    rect(x, y,2,2);
+    //fill(c & ~#000000 | alphaColor);
     
-
+    strokeWeight(10+random(12));
+    vertex(x+random(railJitter),y+random(railJitter));
     
+    //alphaColor = 115 << 030;
+    //stroke(c & ~#000000 | alphaColor);
+    //strokeWeight(1);
+    //noFill();
+    //vertex(x+random(railJitter),y+random(railJitter));    
     //strokeWeight(1);
     //noStroke();
     //ellipse(x, y,10,10);
+}
+
+
+void drawMiddleTree(){
+  //PImage img = loadImage("tree-network.jpg");
+  //noStroke();
+  //beginShape();
+  //texture(img);
+
+  //vertex(10+random(railJitter), 20, 0, 0);
+  //vertex(80+random(railJitter), 5, 400, 0);
+  //vertex(95+random(railJitter), 90, 400, 400);
+  //vertex(40+random(railJitter), 95, 0, 400);
+  //endShape();
+  
+
+  
+  fill(0);
+  stroke(0);
+  //strokeWeight(30);
+  beginShape();
+  vertex(railSegmentsLookUp[0].x,railSegmentsLookUp[0].y);
+  for (PVector v : railSegmentsLookUp) {
+    vertex(v.x, v.y);
+  }
+  vertex(railSegmentsLookUp[0].x,railSegmentsLookUp[0].y);
+  endShape();
+}
+
+void drawLandscape(){
+  noStroke();
+  //strokeWeight(random(6));
+  int r = int(random(255));
+  int g = int(random(255));
+  int b = int(random(255));
+  int siz = int(random(800));
+  for(int i = 0; i < random(1000); i++){
+   fill(r+ random(40),g + random(40),b + random(40),random(120));
+   //stroke(r+ random(20),g + random(20),b + random(20));
+   rect(random(width),random(height),siz + random(20),siz + random(20));
+   ellipse(random(width),random(height),siz + random(20),siz + random(20));
+  }
+  
+}
+void drawMovingLandscape(boolean init){
+  noStroke();
+  //strokeWeight(random(6));
+  int r = int(random(255));
+  int g = int(random(255));
+  int b = int(random(255));
+  //color col = color(r,g,b);
+  
+  
+  
+  
+  if(init){
+  rands = new int[int(random(1000))*rs.length];
+    for(int i = 0; i < rands.length/rs.length; i+=rs.length){
+      for(int j=0; j < rs.length; j++){
+        rands[i+j] = int(random(rs[j]));
+      }  
+    }
+  }
+  else{
+    
+    for(int i = 0; i < rands.length; i++){
+      rands[i]+=random(-2,4); 
+    }
+    
+    for(int i = 0; i < rands.length/rs.length; i+=rs.length){
+     fill(r+ rands[i+0],g + rands[i+1],b + rands[i+2],rands[i+3]);
+     //stroke(r+ random(20),g + random(20),b + random(20));
+     rect(rands[i+4],rands[i+5],rands[i+6],rands[i+7]);
+     ellipse(rands[i+8],rands[i+9],rands[i+10],rands[i+11]);
+    }
+  }
+  
+}
+
+
+void clearRails(){
+  noFill();
+  stroke(0);
+  strokeWeight(65);
+  beginShape();
+  for (PVector v : railSegmentsLookUp) {
+    vertex(v.x, v.y);
+  }
+  vertex(railSegmentsLookUp[0].x,railSegmentsLookUp[0].y);
+  endShape();
 }
