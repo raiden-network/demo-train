@@ -16,10 +16,14 @@ def start_scanning():
     stream = io.BytesIO()
     camera = picamera.PiCamera()
     camera.resolution = (640, 240)
+    # camera.resolution = (1280, 480)
     camera.framerate = 10
-    camera.color_effects = (128, 128)
+    camera.color_effects = (128,128)
     camera.contrast = 100 
-    camera.zoom = (0.39, 0.51, 0.3, 0.55) 
+    camera.ISO = 30
+    #camera.zoom = (0.41, 0.40, 0.22, 0.30) 
+    camera.zoom = (0.41, 0.40, 0.22, 0.20)
+    #camera.exposure_mode = "backlight"
     camera.start_preview()
     time.sleep(2)
     while True:
@@ -27,7 +31,9 @@ def start_scanning():
         camera.capture(stream, format='jpeg')
         stream.seek(0)
         image = Image.open(stream)
-        image.save("/home/pi/Images/" + str(time.monotonic()) + ".jpg")
+        width, heigh = image.size
+        image = image.crop(((width - 0.9*width), (heigh - 0.9* heigh), width*0.75, heigh*0.6))
+        # image.save("/home/pi/Images/" + str(time.monotonic()) + ".jpg")
         try:
             data = decode(image)[0].data
             camera.close()
