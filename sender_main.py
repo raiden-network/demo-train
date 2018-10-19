@@ -22,7 +22,7 @@ def start_scanning():
     camera.contrast = 100 
     camera.ISO = 30
     #camera.zoom = (0.41, 0.40, 0.22, 0.30) 
-    camera.zoom = (0.41, 0.40, 0.22, 0.20)
+    camera.zoom = (0.35, 0.35, 0.28, 0.20)
     #camera.exposure_mode = "backlight"
     camera.start_preview()
     time.sleep(2)
@@ -32,7 +32,7 @@ def start_scanning():
         stream.seek(0)
         image = Image.open(stream)
         width, heigh = image.size
-        image = image.crop(((width - 0.9*width), (heigh - 0.9* heigh), width*0.75, heigh*0.6))
+        image = image.crop(((width - 0.8*width), (heigh - 0.7* heigh), width*0.85, heigh*0.9))
         # image.save("/home/pi/Images/" + str(time.monotonic()) + ".jpg")
         try:
             data = decode(image)[0].data
