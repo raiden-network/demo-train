@@ -15,12 +15,12 @@ The UDOO runs a virtualenvironment with all dependencies provided in the require
 
 ## Setup on the Raspberry Pi Zero W
 The Raspberypi has a Raiden Service in /etc/systemd/system/raiden.service.\
-It calls the shell script in ~/demo/StartServiceRaiden/StartService.sh during the bootup process. This takes ~5 minutes.\
+It calls the shell script in ~/demo-train/StartServiceRaiden/StartService.sh during the bootup process. This takes ~5 minutes.\
 The raspberry uses two virtualenvironments. One is the "raiden" virtualenv which is used by the shell script to run raiden. Ofcourse it requires raiden to be installed `pip install raiden`. The other one is called "demo" and should be used to run "sender_main.py".
 
 ## Blockchain Setup
-Right now the demo uses the Ropsten Testnet.\
-All accounts hold a certain balance of "Raiden Demo Tokens". The Raiden Demo Token as address is `0xed6612cf4E07982490b8512acC51ff7c474438B0` and it is a minimalistic standard ERC20 Token. The channels as illustrated in Image 1 are all bilateral with a balance of 1000 and a timeout of 500.
+Right now the demo uses the Kovan Testnet.\
+All accounts hold a certain balance of "Raiden Demo Tokens". The Raiden Demo Token as address is `0xDe99085F789f99568f891c6370fB6b7dD4C90323` and it is a minimalistic standard ERC20 Token. The channels as illustrated in Image 1 are all unidirectional with a balance of 1000 and a timeout of 500.
 
 
 
