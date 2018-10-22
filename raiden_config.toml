@@ -1,0 +1,10 @@
+# File paths
+keystore-path = './receiver/key_storage/'
+password-file = './wallet_password.txt'
+
+# Networking
+matrix-server = "https://transport02.raiden.network"
+eth-rpc-endpoint = "http://geth.ropsten.ethnodes.brainbot.com:8545"
+
+no-web-ui = true
+accept-disclaimer = true
