@@ -30,7 +30,7 @@ KEYSTORE_PATH_RECEIVER = os.path.join(os.path.dirname(os.path.abspath(__file__))
 DEFAULT_CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'raiden_config.toml')
 RAIDEN_NODE_TIMEOUT = 25 * 60
 SHORTEST_PATHS = None
-CODE_FILE_NAME = 'current_barcode.png'
+CODE_FILE_NAME = 'current_barcode.jpg'
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 BAR_CODE_FILE_PATH = os.path.abspath(CODE_FILE_NAME)
 
