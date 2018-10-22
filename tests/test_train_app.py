@@ -1,5 +1,4 @@
 import pytest
-import json
 
 from app import TrainApp
 import asyncio
@@ -52,3 +51,8 @@ async def test_track_loop(fake_raiden, token_address, sender_address, train_app,
     assert train_app.track_control.is_powered
 
     train_app.stop()
+
+
+@pytest.mark.skip
+async def test_track_loop_not_paid():
+    pass

@@ -14,6 +14,7 @@ log = logging.getLogger()
 async def start_raiden_nodes(raiden_cls, receivers, delete_keystore=True, timeout=RAIDEN_NODE_TIMEOUT,
                              config_file=None):
     # TODO define the datadir separately to avoid deleting all raiden data!
+    # TODO find a possibility to persist blockchain data for faster startup
     if delete_keystore:
         log.debug("Removing old Raiden Databases")
         subprocess.run(
@@ -45,6 +46,7 @@ async def start_raiden_nodes(raiden_cls, receivers, delete_keystore=True, timeou
     return raiden_nodes
 
 
+# TODO refactor/ determine if needed
 def get_receiver_addresses():
     """"Puts all addresses in our KeyStorePath in a dict with key 'receiver_id' """
     keystore_path = KEYSTORE_PATH_RECEIVER

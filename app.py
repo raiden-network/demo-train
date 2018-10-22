@@ -3,7 +3,7 @@ import random
 import sys
 from typing import List
 
-from const import SENDER_ADDRESS, TOKEN_ADDRESS, DEFAULT_CONFIG_FILE
+from const import SENDER_ADDRESS, TOKEN_ADDRESS
 from deployment import start_raiden_nodes
 from raiden import RaidenNode, RaidenNodeMock
 from track_control import TrackControl, ArduinoSerial, MockSerial
@@ -66,12 +66,14 @@ class TrainApp:
                 if payment_received_task.result() is True:
                     payment_successful = True
             # cancel the pending task(s), we don't need it anymore
+            # TODO don't cancel the barrier event
             for task in pending:
                 task.cancel()
 
             if payment_successful is True:
                 log.info("Payment received")
                 self._increment_nonce_for_current_provider()
+                # TODO await barrier event
             else:
                 log.info("Payment not received before next barrier trigger")
                 self.track_control.power_off()

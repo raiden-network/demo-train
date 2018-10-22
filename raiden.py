@@ -27,6 +27,7 @@ class RaidenNode:
                  + " --api-address " + str(self.api_endpoint[7:])
         if self.config_file is not None:
             raiden += " --config-file " + str(self.config_file)
+        # TODO determine if still neccessary
         raiden += "&"
         log.info("Starting {}".format(self))
         with open(f'./raiden_{self.address[:10]}.log', 'w') as logfile:
