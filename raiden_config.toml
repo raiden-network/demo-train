@@ -4,7 +4,8 @@ password-file = './wallet_password.txt'
 
 # Networking
 matrix-server = "https://transport02.raiden.network"
-eth-rpc-endpoint = "http://geth.ropsten.ethnodes.brainbot.com:8545"
+eth-rpc-endpoint = "http://parity.kovan.ethnodes.brainbot.com:8545"
+network-id = 42 
 
 no-web-ui = true
 accept-disclaimer = true
