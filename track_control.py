@@ -12,6 +12,8 @@ class ArduinoSerial:
 
     def __init__(self, port, baudrate, timeout):
         self._serial = None
+        # TODO is the default off?
+        self._is_high = False
         try:
             self._serial = serial.Serial(port, baudrate, timeout)  # open serial port
             # TODO check for initialisation instead of waiting?
@@ -21,19 +23,26 @@ class ArduinoSerial:
             pass
 
     def set_high(self):
-        self._serial.write(b'1')
+        self._serial.write(bytes([1]))  # Sets Arduino pin 3 HIGH
+        self._is_high = True
 
     def set_low(self):
-        self._serial.write(b'0')
+        self._serial.write(bytes([0]))  # Sets Arduino pin 3 LOW
+        self._is_high = False
 
-    # TODO return true if bit is high and false when bit is low
+    def trigger_measure(self):
+        self._serial.write(bytes([2]))  # Triggers a series of distance measurements
+        self._serial.flush()  # Make sure arduino reads the above command
+
+    # TODO check if you can poll immediately from arduino, otherwise use internal flag
     @property
     def is_high(self):
-        return NotImplementedError()
+        return self._is_high
 
     @property
     def status(self):
-        return self._serial.readline().decode('utf-8').strip()
+        return self._serial.readline().decode(
+            'utf-8').strip()
 
 
 class MockSerial:
@@ -46,6 +55,9 @@ class MockSerial:
 
     def set_low(self):
         self._bit_set = False
+
+    def trigger_measure(self):
+        pass
 
     @property
     def is_high(self):
@@ -78,12 +90,22 @@ class TrackControl:
         return self._barrier_event
 
     def start(self):
+        # TODO maybe this can run in a different executor/thread
         self._barrier_task = asyncio.create_task(self.run_barrier_loop())
 
     async def run_barrier_loop(self):
         while True:
-            await asyncio.sleep(10)
-            await self._trigger_barrier()
+            self.track_power_serial.trigger_measure()
+            while True:
+                data = self.track_power_serial.status
+                try:
+                    data = float(data)
+                # if no float is provided, this assumes the distance sensor didn't trigger
+                except ValueError:
+                    data = 100
+                if data < 20.:  # If something passes closer than 20cm
+                    await self._trigger_barrier()
+                await context_switch()
 
     async def _trigger_barrier(self):
         # set event so that all tasks waiting on it will continue
@@ -103,6 +125,3 @@ class TrackControl:
         self.track_power_serial.set_high()
         log.debug("Serial read for track power is {}".format(self.track_power_serial.status))
         log.info("Turned power for train on")
-
-
-
