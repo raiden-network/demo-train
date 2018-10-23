@@ -12,15 +12,11 @@ class ArduinoSerial:
 
     def __init__(self, port, baudrate, timeout):
         self._serial = None
-        # TODO is the default off?
         self._is_high = False
-        try:
-            self._serial = serial.Serial(port, baudrate, timeout)  # open serial port
-            # TODO check for initialisation instead of waiting?
-            time.sleep(2)
-        except serial.serialutil.SerialException:
-            # TODO why are we passing this exception?
-            pass
+        self._serial = serial.Serial(port, baudrate, timeout=timeout)  # open serial port
+
+        # TODO check for initialisation instead of waiting?
+        time.sleep(2)
 
     def set_high(self):
         self._serial.write(bytes([1]))  # Sets Arduino pin 3 HIGH
