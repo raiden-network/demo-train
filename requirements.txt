@@ -3,7 +3,12 @@ aiohttp
 hypercorn
 Quart-CORS
 eth-utils
-qrcode[pil]
+eth-hash[pycryptodome]
 networkx
 pyserial
-requests
+pyzbar
+Pillow
+code128
+pytest
+pytest-asyncio
+aioresponses

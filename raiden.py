@@ -1,48 +1,45 @@
 import subprocess
 import asyncio
 import aiohttp
+import logging
 
 from os import PathLike
+
+log = logging.getLogger()
 
 
 class RaidenNode:
 
-    def __init__(self, address: str, keystore_path: PathLike, password_file: PathLike, eth_rpc_endpoint: str,
-                 api_endpoint: str, matrix_server: str):
+    def __init__(self, address: str, api_endpoint: str, config_file: PathLike):
         self.address = address
-        self.keystore_path = keystore_path
-        self.password_file = password_file
-        self.eth_rpc_endpoint = eth_rpc_endpoint
+        self.config_file = config_file
         self.api_endpoint = api_endpoint
-        self.matrix_server = matrix_server
         self._raiden_process = None
+
+    def __repr__(self):
+        return "{}<address={}, api-endpoint={}>".format(self.__class__.__name__, self.address, self.api_endpoint)
 
     def start(self):
         # start the subprocess
         # FIXME better stripping of http:// in api-address
-        raiden = "raiden --keystore-path " + str(self.keystore_path) \
-                 + " --eth-rpc-endpoint " + self.eth_rpc_endpoint \
+        raiden = "raiden"\
                  + " --address " + str(self.address) \
-                 + " --password-file " + str(self.password_file) \
-                 + " --api-address " + str(self.api_endpoint[7:]) \
-                 + " --no-web-ui --accept-disclaimer"\
-                 + " --matrix-server={}&".format(self.matrix_server)
-        print(
-            "Starting Raiden Node for address %s on Port %s" %
-            (self.address, self.api_endpoint)
-        )
-        self._raiden_process = subprocess.Popen(
-            raiden,
-            shell=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
-        )
+                 + " --api-address " + str(self.api_endpoint[7:])
+        if self.config_file is not None:
+            raiden += " --config-file " + str(self.config_file)
+        # TODO determine if still neccessary
+        raiden += "&"
+        log.info("Starting {}".format(self))
+        with open(f'./raiden_{self.address[:10]}.log', 'w') as logfile:
+            self._raiden_process = subprocess.Popen(
+                raiden,
+                shell=True,
+                stdout=logfile,
+                stderr=subprocess.DEVNULL
+            )
 
     def stop(self):
-        print(
-            "Stopping Raiden Node for address %s on Port %s" %
-            (self.address, self.api_endpoint)
-        )
+        log.info("Stopping {}".format(self))
         self._raiden_process.terminate()
 
     async def query_for_started(self):
@@ -54,13 +51,11 @@ class RaidenNode:
                     if response.status == 200:
                         if data["our_address"] == self.address:
                             return True
-                        # wrong address, this shouldn't happen
-                        # TODO remove assert for production
-                        assert False
+                        raise ValueError("Address doesn't match expected address")
                     else:
                         # no 200 OK means the Raiden Node is somehow not available
                         # TODO handle different connection errors
-                        print("Raiden client not available.")
+                        log.info("Node not available: {}".format(self))
                         return False
             # If Raiden not online it will raise a ClientConnectorError
             except aiohttp.ClientConnectorError:
@@ -93,54 +88,51 @@ class RaidenNode:
                 else:
                     # no 200 OK means the Raiden Node is somehow not available
                     # TODO handle different connection errors
-                    print("Raiden client not available.")
+                    # This should probably raise an exception, since the node is unhealthy or
+                    # something in the query is wrong
+                    log.info("Node not available: {}".format(self))
                     return False
 
     async def ensure_payment_received(self,
                                       sender_address,
                                       token_address,
                                       nonce,
-                                      poll_interval=1,
-                                      mocking=False):
-        # If we mock this should return true
-        if mocking:
-            while True:
-                await self.query_for_payment_received(sender_address, token_address, nonce)
+                                      poll_interval=1):
+        while True:
+            received = await self.query_for_payment_received(sender_address, token_address, nonce)
+            if received is True:
                 return True
-
-        else:
-            while True:
-                received = await self.query_for_payment_received(sender_address, token_address, nonce)
-                if received:
-                    return True
-                await asyncio.sleep(poll_interval)
+            await asyncio.sleep(poll_interval)
 
 
 class RaidenNodeMock(RaidenNode):
+    # TODO instead of mocking the node in-process, rather use the FakeRaiden server in the background
+    # to allow actual network requests and the logic of the RaidenNode
     """
     this is mainly to provide the same interface as a raiden node without actually starting
     a subprocess and querying the raiden api
     """
 
-    def __init__(self, address: str, keystore_path: PathLike, password_file: PathLike, eth_rpc_endpoint: str,
-                 api_endpoint: str, matrix_server: str):
-        super(RaidenNodeMock, self).__init__(address, keystore_path, password_file, eth_rpc_endpoint,
-                                             api_endpoint, matrix_server)
+    def __init__(self, address: str, api_endpoint: str, config_file: PathLike):
+        super(RaidenNodeMock, self).__init__(address, api_endpoint, config_file)
         self._started = False
 
     def start(self):
+        # don't start the raiden subprocess, but
+        # TODO rather start the FakeRaiden server
         self._started = True
 
     def stop(self):
+        # TODO stop the FakeRaiden server
         self._started = False
 
     async def query_for_started(self):
+        # TODO remove
         await asyncio.sleep(0.1)
         return self._started
 
     async def query_for_payment_received(self, sender_address, token_address, nonce):
+        # TODO remove
         await asyncio.sleep(0.1)
-        # TODO enable to set a received payment externally
         # always say the payment was received for now
         return True
-

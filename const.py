@@ -1,10 +1,7 @@
-import json
-import networkx
 import networkx as nx
 import os
 
 # Defining global variables
-from eth_utils import to_checksum_address
 
 TOKEN_ADDRESS = "0xDe99085F789f99568f891c6370fB6b7dD4C90323"
 SENDER_ADDRESS = "0x00D384EF74575E97884215e9f39142228c7ACfa8"
@@ -28,51 +25,12 @@ RECEIVER_LIST = [
     RECEIVER_8_ADDRESS
 ]
 
-KEYSTOREPATHRECEIVER = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                    'receiver/key_storage/')
-ETH_RPC_ENDPOINT = "http://geth.ropsten.ethnodes.brainbot.com:8545"
-PASSWORDFILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                            'wallet_password.txt')
-
-MATRIX_SERVER = "https://transport02.raiden.network"
-
+KEYSTORE_PATH_RECEIVER = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                      'receiver/key_storage/')
+DEFAULT_CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'raiden_config.toml')
 RAIDEN_NODE_TIMEOUT = 25 * 60
-
-
-def get_receiver_addresses():
-    """"Puts all addresses in our KeyStorePath in a dict with key 'receiver_id' """
-    KeyStorePath = KEYSTOREPATHRECEIVER
-    addresses = {}
-
-    for i, f in enumerate(os.listdir(KeyStorePath)):
-        fullpath = os.path.join(KeyStorePath, f)
-        if os.path.isfile(fullpath):
-            try:
-                with open(fullpath) as data_file:
-                    data = json.load(data_file)
-                    addresses[i + 1] = to_checksum_address(str(data['address']))
-
-            except (
-                    IOError,
-                    json.JSONDecodeError,
-                    KeyError,
-                    OSError,
-                    UnicodeDecodeError,
-            ) as ex:
-                # Invalid file - skip
-                if f.startswith('UTC--'):
-                    # Should be a valid account file - warn user
-                    msg = 'Invalid account file'
-                    if isinstance(ex, IOError) or isinstance(ex, OSError):
-                        msg = 'Can not read account file (errno=%s)' % ex.errno
-                    if isinstance(ex, json.decoder.JSONDecodeError):
-                        msg = 'The account file is not valid JSON format'
-    print("Addresses are %s" % addresses)
-    return addresses
-
-
 SHORTEST_PATHS = None
-CODE_FILE_NAME = 'current_barcode'
+CODE_FILE_NAME = 'current_barcode.jpg'
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 BAR_CODE_FILE_PATH = os.path.abspath(CODE_FILE_NAME)
 
@@ -97,3 +55,6 @@ def create_token_network_topology():
     # plt.show()
 
     return g
+
+
+NETWORK_GRAPH = create_token_network_topology()
