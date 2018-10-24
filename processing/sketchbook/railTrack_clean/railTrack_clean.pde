@@ -5,7 +5,7 @@ float railLength = 300; // no need to be global
 PVector[] railSegmentsLookUp;
 
 float trainPosition = 0; // in units of segments
-float trainSpeed = 0.15; // in units of segments
+float trainSpeed = 0.95; // in units of segments
 
 int offsetStart = 60;
 
@@ -18,8 +18,8 @@ int[] rs = {40,40,40,120, width, height,20,20,width,height,20,20};
 int[] rands;
 
 void setup(){
-   fullScreen(P2D);
-   smooth(8);
+   fullScreen(P3D);
+   //smooth(8);
    //size(1000,600);
    rs[4] = width;
    rs[5] = height;
@@ -37,52 +37,30 @@ void setup(){
   //drawMovingLandscape(true);
   drawMiddleTree();
   clearRails();
-  drawBarcode();
+  drawBarcode(300,300);
 }
 
 void draw(){
-  
-  //background(0);
-  clearRails();
-  drawMiddleTree();
-  println(frameRate);
-  
   trainPosition += trainSpeed;
-
-
-  beginShape(QUAD_STRIP);
-  //vertex(width/2.,height/2.);
-  for(int segId = 0; segId < railSegmentsLookUp.length*0.83; segId++){
-    
-    // begin new shape on train position
-    if(int(trainPosition) == segId){
-      endShape(); 
-      //beginShape(QUAD_STRIP);
-      beginShape(QUADS);
-    }
-    
-    int c = getSegColor(trainPosition, segId);
-    printSeg(railSegmentsLookUp[segId].x, railSegmentsLookUp[segId].y, c);
-    
-    
-  }
-  //vertex(width/2.,height/2.);
-  endShape();
-  //drawMovingLandscape(false);
-  //drawMiddleTree();
-  // keep train position circular
+  //println(frameRate);  
+  //background(0);
+  
+  drawMiddleTree();
+  clearRails();
+  drawRails();
+  
+  // draw stuff once per circle
   if(trainPosition >= railSegmentsLookUp.length){
     trainPosition = 0;
-    //background(0);
     drawLandscape();
-    //drawMovingLandscape(true);
     drawMiddleTree();
-    //drawGreen();
-    drawBarcode();
-    
+    drawBarcode(300,300); 
   }
-//drawGlow(trainPosition/railSegmentsLookUp.length);
+  
+  //drawGlow(trainPosition/railSegmentsLookUp.length);
   // printMiddleTree();
+  drawTrainText(2, trainPosition + railSegmentsLookUp.length/2., 2);
+  //drawMiddleTree();
 
 }
 
@@ -135,25 +113,34 @@ PVector[] generateRailLookUp(int numberOfSegs){
 }
 
 
+void drawRails(){
+    beginShape(QUAD_STRIP);
+  //vertex(width/2.,height/2.);
+  for(int segId = 0; segId < railSegmentsLookUp.length*0.83; segId++){
+    
+    // begin new shape on train position
+    if(int(trainPosition) == segId){
+      endShape(); 
+      //beginShape(QUAD_STRIP);
+      beginShape(QUADS);
+    }   
+    int c = getSegColor(trainPosition, segId);
+    printSeg(railSegmentsLookUp[segId].x, railSegmentsLookUp[segId].y, c, segId);   
+  }
+  endShape();
+}
 
 color getSegColor(float tp, float si){
     if(int(tp) < si){
-      //stroke(greenColor & ~#000000); // green
-      //fill(12,144,63,70); // green
       return greenColor;
     }
     else{
-      //stroke(redColor & ~#000000); // red
-      //fill(182,34,63,10); // red
-      // noStroke();
-      // noFill();
-      // return redColor;
       return color(255, random(100), random(100));
     } 
 }
 
 
-void printSeg(float x, float y, color c){
+void printSeg(float x, float y, color c, int id){
     //noFill();
     //point(x, y);
     
@@ -191,6 +178,10 @@ void printSeg(float x, float y, color c){
     //strokeWeight(1);
     //noStroke();
     //ellipse(x, y,10,10);
+    
+    //fill(255);
+    //noStroke();
+    //text(id,x,y);
 }
 
 
@@ -218,6 +209,7 @@ void drawMiddleTree(){
   }
   vertex(railSegmentsLookUp[0].x,railSegmentsLookUp[0].y);
   endShape();
+
 }
 
 void drawLandscape(){
@@ -334,13 +326,13 @@ void drawGreen(){
   endShape();
 }
 
-void drawBarcode(){
-  //1320x400
+void drawBarcode(int x, int y){
+  //1320x400 
   PImage img = loadImage("../../current_barcode.jpg");
   
   pushMatrix();
-  translate(300,300);
-  rotate(PI);
+  translate(x,y);
+  rotate(HALF_PI);
   
   noStroke();
   noFill();
@@ -348,11 +340,58 @@ void drawBarcode(){
 
   beginShape();
   texture(img);
-  vertex(0, 0, 0, 0);
-  vertex(100, 0, 1320, 0);
-  vertex(100, 100, 1320, 400);
-  vertex(0, 100, 0, 400);
+  vertex(0, 0, 200, 0);
+  vertex(400, 0, 1120, 0);
+  vertex(400, 100, 1120, 400);
+  vertex(0, 100, 200, 400);
   endShape();
  
   popMatrix();
+}
+
+
+void drawTrainText(float scale, float tp, float range){
+  PVector v;
+  //fill(55,234,8,random(33,120));
+  noFill();
+  stroke(255,234,98,70);
+  strokeWeight(4);
+  
+  beginShape();
+
+  for(int i = int(sqrt((tp - range)*(tp - range)));  i < int(sqrt((tp + range)*(tp + range))); i++){
+    //println(i);
+    v = railSegmentsLookUp[i % railSegmentsLookUp.length];
+    vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));  
+  }
+   endShape();
+   
+   v = railSegmentsLookUp[int(tp) % railSegmentsLookUp.length];
+   
+    //beginShape();
+    //println(tp % railSegmentsLookUp.length);
+    
+    //v = railSegmentsLookUp[0];
+    //vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.)); 
+
+    //v = railSegmentsLookUp[1];
+    //vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
+    
+    //v = railSegmentsLookUp[int(tp) % railSegmentsLookUp.length];
+    //vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));  
+    //endShape();
+   textMode(SHAPE);
+   textAlign(CENTER, CENTER);
+   textSize(22);
+   
+   
+   v = railSegmentsLookUp[int(tp) % railSegmentsLookUp.length];
+   float scale2 = scale - 0.4;
+   line(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
+   fill(0);
+   ellipse(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),70,50);
+     
+   fill(255,234,98,70);
+   noStroke();
+   text(int(trainPosition), v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.)); 
 }
