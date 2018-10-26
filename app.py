@@ -49,10 +49,10 @@ class TrainApp:
             current_nonce = self.current_nonce
 
             # Generate barcode with current provider and nonce
-            self.create_new_barcode(provider=RECEIVER_LIST.index(self.current_provider_address),
-                                    nonce=current_nonce
-                                    )
-
+            self.create_new_barcode(
+                provider=RECEIVER_LIST.index(self.current_provider_address),
+                nonce=current_nonce
+            )
 
             payment_received_task = asyncio.create_task(
                 provider.ensure_payment_received(
