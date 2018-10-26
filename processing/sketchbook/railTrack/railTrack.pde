@@ -13,6 +13,9 @@ float trainSpeed = 1.05; // in units of segments
 
 int offsetStart = 60;
 
+int xBarcode = 545;
+int yBarcode = 1450;
+
 final color redColor = color(255, 0, 0);
 final color greenColor = color(0, 255, 0);
 
@@ -41,7 +44,7 @@ void setup(){
   //drawMovingLandscape(true);
   //drawMiddleTree();
   clearRails();
-  drawBarcode(545,1450);
+  drawBarcode(xBarcode,yBarcode);
   drawTextBox(0,0);
 }
 
@@ -59,7 +62,7 @@ void draw(){
     trainPosition = 0;
     drawLandscape();
     drawMiddleTree();
-    drawBarcode(300,300); 
+    drawBarcode(xBarcode,yBarcode); 
   }
   
   //drawGlow(trainPosition/railSegmentsLookUp.length);
