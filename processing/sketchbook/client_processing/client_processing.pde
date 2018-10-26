@@ -1,6 +1,6 @@
 import processing.net.*; 
 Client myClient;
-
+int i = 0;
 void setup() { 
   size(200, 200); 
   /* Connect to the local machine at port 5204
@@ -13,5 +13,11 @@ void setup() {
 } 
 
 void draw() { 
-  myClient.write("Paging Python!"); // send whatever you need to send here
+  i++;
+  myClient.write("raiden train rolls in"+i); // send whatever you need to send here
+  for(int j =0; j<1000; j++){
+    
+    println("do shit");
+  }
+  println(str(myClient.read()));
 } 

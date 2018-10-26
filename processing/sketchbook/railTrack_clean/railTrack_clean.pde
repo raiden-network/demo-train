@@ -59,8 +59,8 @@ void draw(){
   
   //drawGlow(trainPosition/railSegmentsLookUp.length);
   // printMiddleTree();
-  drawTrainText(2, trainPosition + railSegmentsLookUp.length/2., 2);
-  //drawMiddleTree();
+  drawTrain(2, trainPosition + railSegmentsLookUp.length/2., 2);
+  drawTrainText(1.6, trainPosition + railSegmentsLookUp.length/2.);
 
 }
 
@@ -141,64 +141,19 @@ color getSegColor(float tp, float si){
 
 
 void printSeg(float x, float y, color c, int id){
-    //noFill();
-    //point(x, y);
-    
-    color alphaColor = 5 << 030;
-    //fill(c & ~#000000 | alphaColor);
-    //noStroke();
-    //ellipse(x, y,55,55);
-    
-    
-    //alphaColor = 25 << 030;
-    //fill(c & ~#000000 | alphaColor);
-    //noStroke();
-    //ellipse(x, y,25,25);
-
-
-    //alphaColor = 150 << 030;
-    //fill(c & ~#000000 | alphaColor);
-    //strokeWeight(1);
-    //rect(x, y,2,2);
-    
+   
+    color alphaColor = 5 << 030;  
 
     alphaColor = (75 + int(random(30))) << 030;
     stroke(c & ~#000000 | alphaColor);
     alphaColor = 25 << 030;
-    //fill(c & ~#000000 | alphaColor);
     
     strokeWeight(10+random(12));
     vertex(x+random(railJitter),y+random(railJitter));
-    
-    //alphaColor = 115 << 030;
-    //stroke(c & ~#000000 | alphaColor);
-    //strokeWeight(1);
-    //noFill();
-    //vertex(x+random(railJitter),y+random(railJitter));    
-    //strokeWeight(1);
-    //noStroke();
-    //ellipse(x, y,10,10);
-    
-    //fill(255);
-    //noStroke();
-    //text(id,x,y);
 }
 
 
 void drawMiddleTree(){
-  //PImage img = loadImage("tree-network.jpg");
-  //noStroke();
-  //beginShape();
-  //texture(img);
-
-  //vertex(10+random(railJitter), 20, 0, 0);
-  //vertex(80+random(railJitter), 5, 400, 0);
-  //vertex(95+random(railJitter), 90, 400, 400);
-  //vertex(40+random(railJitter), 95, 0, 400);
-  //endShape();
-  
-
-  
   fill(0);
   stroke(0);
   //strokeWeight(30);
@@ -276,53 +231,50 @@ void clearRails(){
 }
 
 void drawGlow(float scale){
-  
-  //fill(55,234,8,random(33,120));
+  noFill();
   stroke(255,234,98,120);
   strokeWeight(7);
+  
   beginShape();
-  for (PVector v : railSegmentsLookUp) {
-    vertex(v.x-scale*(v.x-width/2.)*random(0.9,1.1), v.y-scale*(v.y-height/2.)*random(0.9,1.1));
-  }
-  //vertex(railSegmentsLookUp[0].x,railSegmentsLookUp[0].y);
-  PVector vv = railSegmentsLookUp[0];
-  vertex(vv.x-scale*(vv.x-width/2.)*random(0.9,1.1), vv.y-scale*(vv.y-height/2.)*random(0.9,1.1));
+    for (PVector v : railSegmentsLookUp) {
+      vertex(v.x-scale*(v.x-width/2.)*random(0.9,1.1), v.y-scale*(v.y-height/2.)*random(0.9,1.1));
+    }
+    PVector vv = railSegmentsLookUp[0];
+    vertex(vv.x-scale*(vv.x-width/2.)*random(0.9,1.1), vv.y-scale*(vv.y-height/2.)*random(0.9,1.1));
   endShape();
   
-  noFill();
   stroke(255,234,98,73);
   strokeWeight(33);
   beginShape();
-  scale *=random(0.9,1.1);
-    for (PVector v : railSegmentsLookUp) {
-    vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
-  }
-  //vertex(railSegmentsLookUp[0].x,railSegmentsLookUp[0].y);
-  vertex(vv.x-scale*(vv.x-width/2.), vv.y-scale*(vv.y-height/2.));
+    scale *=random(0.9,1.1);
+      for (PVector v : railSegmentsLookUp) {
+      vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
+    }
+    vertex(vv.x-scale*(vv.x-width/2.), vv.y-scale*(vv.y-height/2.));
   endShape();
   
   stroke(255,234,98,24);
   strokeWeight(17);
   beginShape();
-  scale *=2.6;
-    for (PVector v : railSegmentsLookUp) {
-    vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
-  }
-  vertex(vv.x-scale*(vv.x-width/2.), vv.y-scale*(vv.y-height/2.));
+    scale *=2.6;
+      for (PVector v : railSegmentsLookUp) {
+      vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
+    }
+    vertex(vv.x-scale*(vv.x-width/2.), vv.y-scale*(vv.y-height/2.));
   endShape();
 }
 
 void drawGreen(){
   PVector vv = railSegmentsLookUp[0];
-    beginShape();
-      stroke(55,random(200,234),98,random(40,124));
-  strokeWeight(17);
-  float scale =6.6;
-    for (PVector v : railSegmentsLookUp) {
-    scale = random(30);
-    vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
-  }
-  vertex(vv.x-scale*(vv.x-width/2.), vv.y-scale*(vv.y-height/2.));
+  beginShape();
+    stroke(55,random(200,234),98,random(40,124));
+    strokeWeight(17);
+    float scale =6.6;
+      for (PVector v : railSegmentsLookUp) {
+      scale = random(30);
+      vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
+    }
+    vertex(vv.x-scale*(vv.x-width/2.), vv.y-scale*(vv.y-height/2.));
   endShape();
 }
 
@@ -337,7 +289,6 @@ void drawBarcode(int x, int y){
   noStroke();
   noFill();
   
-
   beginShape();
   texture(img);
   vertex(0, 0, 200, 0);
@@ -350,48 +301,37 @@ void drawBarcode(int x, int y){
 }
 
 
-void drawTrainText(float scale, float tp, float range){
+void drawTrain(float scale, float tp, float range){
   PVector v;
-  //fill(55,234,8,random(33,120));
   noFill();
   stroke(255,234,98,70);
   strokeWeight(4);
+  float scale2 = scale - 0.4;
   
   beginShape();
-
-  for(int i = int(sqrt((tp - range)*(tp - range)));  i < int(sqrt((tp + range)*(tp + range))); i++){
-    //println(i);
-    v = railSegmentsLookUp[i % railSegmentsLookUp.length];
-    vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));  
-  }
+    for(int i = int(sqrt((tp - range)*(tp - range)));  i < int(sqrt((tp + range)*(tp + range))); i++){
+      //println(i);
+      v = railSegmentsLookUp[i % railSegmentsLookUp.length];
+      vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));  
+    }
    endShape();
    
    v = railSegmentsLookUp[int(tp) % railSegmentsLookUp.length];
-   
-    //beginShape();
-    //println(tp % railSegmentsLookUp.length);
-    
-    //v = railSegmentsLookUp[0];
-    //vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.)); 
-
-    //v = railSegmentsLookUp[1];
-    //vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
-    
-    //v = railSegmentsLookUp[int(tp) % railSegmentsLookUp.length];
-    //vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));  
-    //endShape();
-   textMode(SHAPE);
-   textAlign(CENTER, CENTER);
-   textSize(22);
-   
-   
-   v = railSegmentsLookUp[int(tp) % railSegmentsLookUp.length];
-   float scale2 = scale - 0.4;
    line(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
+   
    fill(0);
    ellipse(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),70,50);
-     
-   fill(255,234,98,70);
-   noStroke();
-   text(int(trainPosition), v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.)); 
+}
+
+
+void drawTrainText(float scale, float tp){
+  PVector v;
+  textMode(SHAPE);
+  textAlign(CENTER, CENTER);
+  textSize(22);
+  fill(255,234,98,70);
+  noStroke();
+  
+  v = railSegmentsLookUp[int(tp) % railSegmentsLookUp.length];
+  text(int(trainPosition), v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.)); 
 }
