@@ -7,5 +7,6 @@ matrix-server = "https://transport02.raiden.network"
 eth-rpc-endpoint = "http://parity.kovan.ethnodes.brainbot.com:8545"
 network-id = 42 
 
-no-web-ui = true
+environment-type = "development"
+log-config = "raiden:ERROR"
 accept-disclaimer = true
