@@ -6,7 +6,7 @@ from time import sleep
 from numpy import random
 
 HOST = ''                 # Symbolic name meaning all available interfaces
-PORT = 5203              	# Arbitrary non-privileged port
+PORT = 5206             	# Arbitrary non-privileged port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
 s.listen(5)
@@ -17,10 +17,10 @@ while True:
     conn.send("a")
     conn.send("b")
     conn.send("c")
-    sleep(random.random(5))
-    # data = conn.recv(1024)
-    # if not data: break
-    # print(data) # Paging Python!
+    # sleep(random.random(5))
+    data = conn.recv(1024)
+    if not data: break
+    print(data) # Paging Python!
     # # do whatever you need to do with the data
 conn.close()
 # optionally put a loop here so that you start 

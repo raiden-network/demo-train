@@ -9,15 +9,11 @@ void setup() {
    * This example will not run if you haven't
    *  previously started a server on this port.
    */
-  myClient = new Client(this, "127.0.0.1", 5204); 
+  myClient = new Client(this, "127.0.0.1", 5205); 
 } 
 
 void draw() { 
   i++;
   myClient.write("raiden train rolls in"+i); // send whatever you need to send here
-  for(int j =0; j<1000; j++){
-    
-    println("do shit");
-  }
-  println(str(myClient.read()));
+  println(myClient.readChar());
 } 

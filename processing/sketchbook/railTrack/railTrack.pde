@@ -1,14 +1,21 @@
+import processing.net.*;
+
+Client pyClient = new Client(this, "127.0.0.1", 5204);
+
 int numberOfSegments = 42; // resolution of track
 
 int realNumberOfSegments;
 int loopCounter = 0;
 int oldLoopCounter = 1;
-float railRadius = 630; // not global
-float railLength = 1300; // no need to be global
+//float railRadius = 630; // not global
+//float railLength = 1300; // no need to be global
+
+float railRadius = 330; // not global
+float railLength = 500; // no need to be global
 
 PVector[] railSegmentsLookUp;
 
-float trainPosition = 0; // in units of segments
+float trainPosition; // in units of segments
 float trainSpeed = 1.05; // in units of segments
 
 int offsetStart = 60;
@@ -21,54 +28,65 @@ final color greenColor = color(0, 255, 0);
 
 final int railJitter = 2;
 
-int[] rs = {40,40,40,120, width, height,20,20,width,height,20,20};
-int[] rands;
+NetTopo topo = new NetTopo();
+
+//int[] rs = {40,40,40,120, width, height,20,20,width,height,20,20};
+//int[] rands;
 
 void setup(){
-   fullScreen(P2D);
-   //size(1000,600);
-   rs[4] = width;
-   rs[5] = height;
-   rs[8] = width;
-   rs[9] = height;
-   background(0);
-   fill(100);
-   stroke(100);
-   noFill();
-   strokeWeight(7);
+   fullScreen(P3D);
+   //translate(0,0,5000);
+   //size(1000,600,P3D);
+   //rs[4] = width;
+   //rs[5] = height;
+   //rs[8] = width;
+   //rs[9] = height;
+   //background(0);
+   //fill(100);
+   //stroke(100);
+   //noFill();
+   //strokeWeight(7);
+   
    frameRate(15);
 
   railSegmentsLookUp = generateRailLookUp(numberOfSegments);
+  trainPosition = railSegmentsLookUp.length;
+  
+  topo.dsetup();
+  
   background(0);
-  drawLandscape();
+  //drawLandscape();
   //drawMovingLandscape(true);
   //drawMiddleTree();
-  clearRails();
-  drawBarcode(xBarcode,yBarcode);
-  drawTextBox(0,0);
+  //clearRails();
+  //drawBarcode(xBarcode,yBarcode);
+  //drawTextBox(0,0);
 }
 
 void draw(){
   trainPosition += trainSpeed;
+  readClient();
   //println(frameRate);  
   //background(0);
   
-  drawMiddleTree();
+  //drawMiddleTree();
   clearRails();
   drawRails();
   
   // draw stuff once per circle
   if(trainPosition >= railSegmentsLookUp.length){
-    trainPosition = 0;
-    drawLandscape();
-    drawMiddleTree();
-    drawBarcode(xBarcode,yBarcode); 
+      trainPosition = 0;
+      drawLandscape();
+      drawMiddleTree();
+      drawBarcode(xBarcode,yBarcode); 
+      //drawTopologie(int(random(30)));
+   
   }
   
   //drawGlow(trainPosition/railSegmentsLookUp.length);
   // printMiddleTree();
-  drawTrain(2, trainPosition + railSegmentsLookUp.length/2., 2);
-  drawTrainText(1.6, trainPosition + railSegmentsLookUp.length/2.);
+  //drawTrain(2, trainPosition + railSegmentsLookUp.length/2., 2);
+  //drawTrainText(1.6, trainPosition + railSegmentsLookUp.length/2.);
 
 }
 PVector[] generateRailLookUp(int numberOfSegs){
@@ -203,40 +221,40 @@ void drawLandscape(){
   }
 
 }
-void drawMovingLandscape(boolean init){
-  noStroke();
-  //strokeWeight(random(6));
-  int r = int(random(255));
-  int g = int(random(255));
-  int b = int(random(255));
-  //color col = color(r,g,b);
+//void drawMovingLandscape(boolean init){
+//  noStroke();
+//  //strokeWeight(random(6));
+//  int r = int(random(255));
+//  int g = int(random(255));
+//  int b = int(random(255));
+//  //color col = color(r,g,b);
 
 
 
 
-  if(init){
-  rands = new int[int(random(1000))*rs.length];
-    for(int i = 0; i < rands.length/rs.length; i+=rs.length){
-      for(int j=0; j < rs.length; j++){
-        rands[i+j] = int(random(rs[j]));
-      }
-    }
-  }
-  else{
+//  if(init){
+//  rands = new int[int(random(1000))*rs.length];
+//    for(int i = 0; i < rands.length/rs.length; i+=rs.length){
+//      for(int j=0; j < rs.length; j++){
+//        rands[i+j] = int(random(rs[j]));
+//      }
+//    }
+//  }
+//  else{
 
-    for(int i = 0; i < rands.length; i++){
-      rands[i]+=random(-2,4);
-    }
+//    for(int i = 0; i < rands.length; i++){
+//      rands[i]+=random(-2,4);
+//    }
 
-    for(int i = 0; i < rands.length/rs.length; i+=rs.length){
-     fill(r+ rands[i+0],g + rands[i+1],b + rands[i+2],rands[i+3]);
-     //stroke(r+ random(20),g + random(20),b + random(20));
-     rect(rands[i+4],rands[i+5],rands[i+6],rands[i+7]);
-     ellipse(rands[i+8],rands[i+9],rands[i+10],rands[i+11]);
-    }
-  }
+//    for(int i = 0; i < rands.length/rs.length; i+=rs.length){
+//     fill(r+ rands[i+0],g + rands[i+1],b + rands[i+2],rands[i+3]);
+//     //stroke(r+ random(20),g + random(20),b + random(20));
+//     rect(rands[i+4],rands[i+5],rands[i+6],rands[i+7]);
+//     ellipse(rands[i+8],rands[i+9],rands[i+10],rands[i+11]);
+//    }
+//  }
 
-}
+//}
 
 
 void clearRails(){
@@ -350,4 +368,40 @@ void drawTrainText(float scale, float tp){
   
   v = railSegmentsLookUp[int(tp) % railSegmentsLookUp.length];
   text(int(trainPosition), v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.)); 
+}
+
+void drawTopologie(int pch){
+  pushMatrix();
+    translate(width/2-topo.topoSizex/2,height/2-topo.topoSizey/2);
+    topo.ddraw(pch);
+  popMatrix();
+  //text()
+  
+}
+
+
+void readClient(){
+  char c = pyClient.readChar();
+  switch(c){
+  case 't': 
+    println("train passed by");
+    break;
+  case 's': 
+    println("let the show begin");
+    break;
+  case '1': 
+    println("pay me!");
+    println(int(c));
+    break;
+  default:
+    int n = int(c) - 48;
+    if(n < 7){
+     println("receiver " + n + " will get paid"); 
+     drawTopologie(n);
+     break;
+    }
+  
+  }
+  
+  
 }
