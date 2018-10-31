@@ -381,10 +381,14 @@ void drawTopologie(int pch){
 
 
 void readClient(){
+  textSize(30);
+  fill(200,100);
+  
   char c = pyClient.readChar();
   switch(c){
   case 't': 
-    println("train passed by");
+    //println("train passed by");
+    text("tell me why\nthe train passed by", width/4., height/2);
     break;
   case 's': 
     println("let the show begin");
@@ -392,8 +396,10 @@ void readClient(){
   default:
     int n = int(c) - 48;
     if(n < 7){
-     println("receiver " + n + " will get paid"); 
+     //println("receiver " + n + " will get paid"); 
+     text("receiver " + n + "\nwill get paid", width/4., height/2);
      drawTopologie(n);
+
      break;
     }
   

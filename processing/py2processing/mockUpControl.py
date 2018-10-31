@@ -4,8 +4,8 @@
 import socket
 from time import sleep
 
-HOST = ''                 # Symbolic name meaning all available interfaces
-PORT = 5206             	# Arbitrary non-privileged port
+HOST = ''          # Symbolic name meaning all available interfaces
+PORT = 5204        # Arbitrary non-privileged port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
 s.listen(5)
@@ -19,13 +19,10 @@ while True:
     sleep(5)
     conn.send("t")
     sleep(5)
-
-
-    # sleep(random.random(5))
-    data = conn.recv(1024)
-    if not data: break
-    print(data) # Paging Python!
-    # # do whatever you need to do with the data
+    conn.send("3")
+    sleep(5)
+    conn.send("5")
+    sleep(5)
+    conn.send("t")
+    sleep(5)
 conn.close()
-# optionally put a loop here so that you start 
-# listening again after the connection closes
