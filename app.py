@@ -75,15 +75,16 @@ class TrainApp:
             if payment_received_task in done:
                 if payment_received_task.result() is True:
                     payment_successful = True
-            # cancel the pending task(s), we don't need it anymore
-            # TODO don't cancel the barrier event
-            for task in pending:
-                task.cancel()
+            else:
+                # cancel the payment received task
+                for task in pending:
+                    task.cancel()
 
             if payment_successful is True:
                 log.info("Payment received")
                 self._increment_nonce_for_current_provider()
-                # TODO await barrier event
+                assert barrier_event_task in pending
+                await barrier_event_task
             else:
                 log.info("Payment not received before next barrier trigger")
                 self.track_control.power_off()

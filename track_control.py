@@ -42,6 +42,7 @@ class ArduinoSerial:
 
 
 class MockSerial:
+    # TODO implement the trigger behaviour also in mock class
 
     def __init__(self):
         self._bit_set = False
