@@ -29,6 +29,7 @@ class TrainApp:
         self._provider_nonces = {provider.address: 0 for provider in self.raiden_nodes}
 
     def start(self):
+        self.track_control.start()
         self._track_loop = asyncio.create_task(self.run())
 
     # FIXME make awaitable so that errors can raise
@@ -36,6 +37,8 @@ class TrainApp:
     def stop(self):
         try:
             self._track_loop.cancel()
+            # TODO implement stop
+            # self.track_control.stop()
         except asyncio.CancelledError:
             pass
 
