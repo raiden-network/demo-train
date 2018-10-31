@@ -79,7 +79,7 @@ void draw(){
       drawLandscape();
       drawMiddleTree();
       drawBarcode(xBarcode,yBarcode); 
-      //drawTopologie(int(random(30)));
+      drawTopologie(0);
    
   }
   
@@ -388,10 +388,6 @@ void readClient(){
     break;
   case 's': 
     println("let the show begin");
-    break;
-  case '1': 
-    println("pay me!");
-    println(int(c));
     break;
   default:
     int n = int(c) - 48;

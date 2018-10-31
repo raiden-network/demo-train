@@ -3,7 +3,6 @@
 # Echo server program
 import socket
 from time import sleep
-from numpy import random
 
 HOST = ''                 # Symbolic name meaning all available interfaces
 PORT = 5206             	# Arbitrary non-privileged port
@@ -14,9 +13,14 @@ conn, addr = s.accept()
 print('Connected by', addr)
 
 while True:
-    conn.send("a")
-    conn.send("b")
-    conn.send("c")
+    conn.send("4")
+    sleep(5)
+    conn.send("6")
+    sleep(5)
+    conn.send("t")
+    sleep(5)
+
+
     # sleep(random.random(5))
     data = conn.recv(1024)
     if not data: break
