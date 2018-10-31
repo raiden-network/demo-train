@@ -3,7 +3,9 @@ import random
 import sys
 from typing import List
 
-from const import SENDER_ADDRESS, TOKEN_ADDRESS
+import code128
+
+from const import SENDER_ADDRESS, TOKEN_ADDRESS, BAR_CODE_FILE_PATH, RECEIVER_LIST
 from deployment import start_raiden_nodes
 from raiden import RaidenNode, RaidenNodeMock
 from track_control import TrackControl, ArduinoSerial, MockSerial
@@ -46,17 +48,22 @@ class TrainApp:
             provider = self._current_provider
             current_nonce = self.current_nonce
 
-            # Generate barcode with current provider address and nonce
-            # barcode_code = barcode_factory(const.RECEIVER_LIST.index(self.current_provider_address), current_nonce)
-            # on_new_bar_code(barcode_code, BAR_CODE_FILE_PATH)
+            # Generate barcode with current provider and nonce
+            self.create_new_barcode(
+                provider=RECEIVER_LIST.index(self.current_provider_address),
+                nonce=current_nonce
+            )
 
             payment_received_task = asyncio.create_task(
-                provider.ensure_payment_received(sender_address=self.network_topology.sender_address,
-                                                 token_address=self.network_topology.token_address,
-                                                 nonce=current_nonce, poll_interval=0.05)
+                provider.ensure_payment_received(
+                    sender_address=self.network_topology.sender_address,
+                    token_address=self.network_topology.token_address,
+                    nonce=current_nonce, poll_interval=0.05)
             )
-            barrier_event_task = asyncio.create_task(wait_for_event(self.track_control.barrier_event))
-            log.info('Waiting for payment to provider={}, nonce={}'.format(provider.address, current_nonce))
+            barrier_event_task = asyncio.create_task(
+                wait_for_event(self.track_control.barrier_event))
+            log.info('Waiting for payment to provider={}, nonce={}'.format(provider.address,
+                                                                           current_nonce))
 
             # await both awaitables but return when one of them is finished first
             done, pending = await asyncio.wait([payment_received_task, barrier_event_task],
@@ -95,6 +102,12 @@ class TrainApp:
     def _choose_and_set_next_provider(self):
         self._current_provider = random.choice(self.raiden_nodes)
 
+    def create_new_barcode(self, provider, nonce):
+        barcode = code128.image("(" + str(provider) + "," + str(nonce) + ")")
+        factor = 4
+        barcode = barcode.resize((int(barcode.width * factor), int(barcode.height * factor)))
+        barcode.save(str(BAR_CODE_FILE_PATH))
+
     @property
     def current_provider_address(self):
         return self._current_provider.address
@@ -122,10 +135,12 @@ class TrainApp:
         # TODO for mock nodes, we should skip the deployment script
         # FIXME asyncio.run() is not the correct method
         try:
-            raiden_nodes_dict = asyncio.run(start_raiden_nodes(raiden_node_cls, receivers=network.receivers,
-                                                           config_file=config_file))
+            raiden_nodes_dict = asyncio.run(
+                start_raiden_nodes(raiden_node_cls, receivers=network.receivers,
+                                   config_file=config_file))
         except (asyncio.TimeoutError, TimeoutError):
-            log.info('Not all raiden nodes could get started, check the log files for more info. Shutting down')
+            log.info(
+                'Not all raiden nodes could get started, check the log files for more info. Shutting down')
             sys.exit()
         raiden_nodes = list(raiden_nodes_dict.values())
         track_control = TrackControl(serial_track_power)
