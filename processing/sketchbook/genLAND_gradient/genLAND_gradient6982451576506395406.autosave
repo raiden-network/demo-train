@@ -1,0 +1,73 @@
+// Constantss
+int Y_AXIS = 1;
+int X_AXIS = 2;
+color b1, b2, c1, c2, r1;
+
+void setup() {
+  size(640, 360);
+  background(0);
+
+  // Define colors
+  b1 = color(255);
+  b2 = color(0);
+  c1 = color(204, 102, 0);
+  c2 = color(0, 102, 153);
+  r1 = color(random(255),random(255),random(255),random(255));
+
+  noLoop();
+}
+
+void draw() {
+  // Background
+  //setGradient(0, 0, width/2, height, b1, b2, X_AXIS);
+  //setGradient(width/2, 0, width/2, height, b2, b1, X_AXIS);
+  // Foreground
+  //setGradient(50, 90, 540, 80, c1, c2, Y_AXIS);
+  //setGradient(50, 190, 540, 80, c2, c1, X_AXIS);
+  drawMountain(0.05,0.1,0.03,5,0.4,300,350);
+  vertexInterpolation();
+  
+}
+
+void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, int strokew,float t_min, int rad_min, int rad_max) { 
+  pushMatrix();
+    translate(width/2., height/2.);
+    float r_rand = random(r_jitter);
+    
+    //outer loop creates radial virtual lines
+    for (float r=0; r<TWO_PI;r+= r_stepsize + r_rand) {
+      r_rand = random(r_jitter);  
+      
+      float rad_rand = random(rad_min,rad_max);
+      float t_rand = random(0.001, t_stepsize);
+      
+      //inner circle connects to radial lines
+      for (float t=t_min; t<1; t+=t_rand) {
+        float tt = map(t, t_min, 1, 0, 1);
+        stroke(lerpColor(b2,r1,tt));
+        strokeWeight(strokew);
+        // check if map(t,0,rad_rand,0,1) is faster
+        line(rad_rand*t*cos(r),rad_rand*t*sin(r),rad_rand*t*cos(r+r_stepsize+r_rand),rad_rand*t*sin(r+r_stepsize+r_rand));
+                    
+      } 
+        //draw radial lines...looks shitty
+        //stroke(0);
+        //strokeWeight(0.1);
+        //line(rad_rand*cos(r),rad_rand*sin(r),0,0); 
+    }  
+  popMatrix();
+}
+
+void vertexInterpolation()  {
+  PShape s;
+  s = createShape();
+  s.beginShape();
+  s.curveVertex(0, 0);
+  s.curveVertex(60, 0);
+  s.curveVertex(60, 60);
+  s.curveVertex(0, 60);
+  s.endShape(CLOSE);
+  fill(255);
+  stroke(255);
+  s.draw
+}
