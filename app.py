@@ -8,6 +8,7 @@ import code128
 from const import SENDER_ADDRESS, TOKEN_ADDRESS, BAR_CODE_FILE_PATH, RECEIVER_LIST
 from deployment import start_raiden_nodes
 from raiden import RaidenNode, RaidenNodeMock
+from server import Server
 from track_control import TrackControl, ArduinoSerial, MockSerial
 from network import NetworkTopology
 import logging
@@ -44,11 +45,14 @@ class TrainApp:
 
     async def run(self):
         log.debug("Track loop started")
+        server = Server()
+        server.start()
         self.track_control.power_on()
         while True:
             # Pick a random receiver
             self._choose_and_set_next_provider()
             provider = self._current_provider
+            server.new_receiver(provider)
             current_nonce = self.current_nonce
 
             # Generate barcode with current provider and nonce
@@ -75,19 +79,24 @@ class TrainApp:
             if payment_received_task in done:
                 if payment_received_task.result() is True:
                     payment_successful = True
+                    server.payment_received()
             else:
                 # cancel the payment received task
                 for task in pending:
                     task.cancel()
+
 
             if payment_successful is True:
                 log.info("Payment received")
                 self._increment_nonce_for_current_provider()
                 assert barrier_event_task in pending
                 await barrier_event_task
+                server.barrier_triggered()
+
             else:
                 log.info("Payment not received before next barrier trigger")
                 self.track_control.power_off()
+                server.payment_missing()
 
                 payment_received_task = asyncio.create_task(
                     provider.ensure_payment_received(sender_address=SENDER_ADDRESS,
@@ -98,6 +107,7 @@ class TrainApp:
                 await payment_received_task
                 if payment_received_task.result() is True:
                     self.track_control.power_on()
+                    server.payment_received()
                 else:
                     # this shouldn't happen
                     # FIXME remove assert in production code
