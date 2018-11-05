@@ -8,5 +8,7 @@ eth-rpc-endpoint = "http://parity.kovan.ethnodes.brainbot.com:8545"
 network-id = 42 
 
 environment-type = "development"
-log-config = "raiden:ERROR"
 accept-disclaimer = true
+
+[log-config]
+"raiden" = "ERROR"
