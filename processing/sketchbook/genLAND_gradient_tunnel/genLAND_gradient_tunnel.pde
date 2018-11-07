@@ -13,7 +13,7 @@ void setup() {
   b2 = color(0);
   c1 = color(204, 102, 0);
   c2 = color(0, 102, 153);
-  r1 = color(random(255),random(255),random(255),random(255));
+  r1 = color(random(255),random(255),random(255),random(200,255));
 
   noLoop();
 }
@@ -25,23 +25,24 @@ void draw() {
   // Foreground
   //setGradient(50, 90, 540, 80, c1, c2, Y_AXIS);
   //setGradient(50, 190, 540, 80, c2, c1, X_AXIS);
-  drawMountain(0.5,0.1,0.01,5,0.2,400,500);
+  drawMountain(0.08,0.82,0.001,1,0.3,5.3,5.9);
   vertexInterpolation();
   
 }
 
-void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, int strokew,float t_min, int rad_min, int rad_max) { 
+void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, int strokew,float t_min, float rad_min, float rad_max) { 
   pushMatrix();
     translate(width/2., height/2.);
     float r_rand = random(r_jitter);
-    PVector[] vs = generateRailLookUp(100);
+    PVector[] vs = generateRailLookUp(20);
     
     //outer loop creates radial virtual lines
     for (float r=0; r<TWO_PI;r+= r_stepsize + r_rand) {
       r_rand = random(r_jitter); 
       
       int rr = int(map(r,0,TWO_PI,0,vs.length));
-      println(rr);
+      int rrr = int(map(r+r_stepsize+r_rand,0,TWO_PI,0,vs.length));
+      
       
       float rad_rand = random(rad_min,rad_max);
       float t_rand = random(0.001, t_stepsize);
@@ -54,10 +55,13 @@ void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, int stroke
         // check if map(t,0,rad_rand,0,1) is faster
         
         //two circles in the middle
-        line(rad_rand*t*cos(r),rad_rand*t*sin(r),rad_rand*t*cos(r+r_stepsize+r_rand),rad_rand*t*sin(r+r_stepsize+r_rand));
-                    
-        //line(rad_rand*t*vs[rr].x,rad_rand*t*vs[rr].y,rad_rand*t*vs[rr+1].x,rad_rand*t*vs[rr+1].y);
-                    
+        //line(rad_rand*t*cos(r),rad_rand*t*sin(r),rad_rand*t*cos(r+r_stepsize+r_rand),rad_rand*t*sin(r+r_stepsize+r_rand));
+          
+        // racetrack shape
+        if(rr<vs.length){
+          //line(rad_rand*t*(vs[rr].x-width/2.),rad_rand*t*(vs[rr].y-height/2.),rad_rand*t*(vs[rr+1].x-width/2.),rad_rand*t*(vs[rr].x-width/2.));
+          line(rad_rand*t*(vs[rr].x-width/2.),rad_rand*t*(vs[rr%vs.length].y-height/2.),rad_rand*t*(vs[rrr%vs.length].x-width/2.),rad_rand*t*(vs[rrr%vs.length].y-height/2.));
+        }          
       } 
         //draw radial lines...looks shitty
         //stroke(0);
@@ -87,10 +91,15 @@ void vertexInterpolation()  {
   s.endShape(CLOSE);
   shape(s);
 
-  //PVector[] vs = generateRailLookUp(100);
-  //for (PVector v: vs) {
-  //  point(v.x,v.y);
-  //}
+  beginShape();
+  fill(0);
+  stroke(0);
+  PVector[] vs = generateRailLookUp(100);
+  for (PVector v: vs) {
+    //point(v.x,v.y);
+    vertex(v.x,v.y);
+  }
+  endShape();
 
 }
 

@@ -25,7 +25,7 @@ void draw() {
   // Foreground
   //setGradient(50, 90, 540, 80, c1, c2, Y_AXIS);
   //setGradient(50, 190, 540, 80, c2, c1, X_AXIS);
-  drawMountain(0.5,0.1,0.01,5,0.2,400,500);
+  drawMountain(0.6,1,0.01,6,0.4,400,500);
   vertexInterpolation();
   
 }
@@ -54,7 +54,7 @@ void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, int stroke
         // check if map(t,0,rad_rand,0,1) is faster
         
         //two circles in the middle
-        line(rad_rand*t*cos(r),rad_rand*t*sin(r),rad_rand*t*cos(r+r_stepsize+r_rand),rad_rand*t*sin(r+r_stepsize+r_rand));
+        line(rad_rand*t*cos(r*random(0.99,1.05)),rad_rand*t*sin(r*random(0.99,1.05)),rad_rand*t*cos(random(0.99,1.05)*r+r_stepsize+r_rand),rad_rand*t*sin(r*random(0.99,1.05)+r_stepsize+r_rand));
                     
         //line(rad_rand*t*vs[rr].x,rad_rand*t*vs[rr].y,rad_rand*t*vs[rr+1].x,rad_rand*t*vs[rr+1].y);
                     

@@ -142,7 +142,7 @@ PVector[] generateRailLookUp(int numberOfSegs){
 void drawRails(){
     beginShape(QUAD_STRIP);
   //vertex(width/2.,height/2.);
-  for(int segId = 0; segId < railSegmentsLookUp.length*0.83; segId++){
+  for(int segId = 0; segId < railSegmentsLookUp.length*1; segId++){
     
     // begin new shape on train position
     if(int(trainPosition) == segId){
@@ -181,19 +181,6 @@ void printSeg(float x, float y, color c, int id){
 
 
 void drawMiddleTree(){
-  //PImage img = loadImage("tree-network.jpg");
-  //noStroke();
-  //beginShape();
-  //texture(img);
-
-  //vertex(10+random(railJitter), 20, 0, 0);
-  //vertex(80+random(railJitter), 5, 400, 0);
-  //vertex(95+random(railJitter), 90, 400, 400);
-  //vertex(40+random(railJitter), 95, 0, 400);
-  //endShape();
-
-
-
   fill(0);
   stroke(0);
   //strokeWeight(30);
@@ -221,41 +208,6 @@ void drawLandscape(){
   }
 
 }
-//void drawMovingLandscape(boolean init){
-//  noStroke();
-//  //strokeWeight(random(6));
-//  int r = int(random(255));
-//  int g = int(random(255));
-//  int b = int(random(255));
-//  //color col = color(r,g,b);
-
-
-
-
-//  if(init){
-//  rands = new int[int(random(1000))*rs.length];
-//    for(int i = 0; i < rands.length/rs.length; i+=rs.length){
-//      for(int j=0; j < rs.length; j++){
-//        rands[i+j] = int(random(rs[j]));
-//      }
-//    }
-//  }
-//  else{
-
-//    for(int i = 0; i < rands.length; i++){
-//      rands[i]+=random(-2,4);
-//    }
-
-//    for(int i = 0; i < rands.length/rs.length; i+=rs.length){
-//     fill(r+ rands[i+0],g + rands[i+1],b + rands[i+2],rands[i+3]);
-//     //stroke(r+ random(20),g + random(20),b + random(20));
-//     rect(rands[i+4],rands[i+5],rands[i+6],rands[i+7]);
-//     ellipse(rands[i+8],rands[i+9],rands[i+10],rands[i+11]);
-//    }
-//  }
-
-//}
-
 
 void clearRails(){
   noFill();
@@ -385,6 +337,10 @@ void readClient(){
   fill(200,100);
   
   char c = pyClient.readChar();
+  if(int(c)!=65535){
+    println("received something from backend: "+c);
+    text("backend says: "+c, width/5., height*2/5.);
+  }
   switch(c){
   case 't': 
     //println("train passed by");
