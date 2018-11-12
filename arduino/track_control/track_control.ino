@@ -1,3 +1,5 @@
+#include <avr/wdt.h>
+
 // defines pins numbers
 const int trigPin = 6;
 const int echoPin = 7;
@@ -21,6 +23,8 @@ int barrierSensor = 0;
 // 2: power Track on
 // 3: turn barrier measuring off
 // 4: turn barrier measuring on
+// 5: Keepalive signal
+// 6: request arduino reset
 int inByte = 0;
 
 int maxTriggerDistance = 20;
@@ -33,6 +37,8 @@ void setup() {
  Serial.begin(9600); // Starts the serial communication
  measuring = false;
  establishContact();
+ //Aktiviere Watchdog mit 8s Zeitkonstante
+ wdt_enable(WDTO_8S);
 }
 
 void loop() {
@@ -48,20 +54,30 @@ void loop() {
       delayMicroseconds(10);
       sendAck();
       sendSensorData();
+      break;
     //  Turn Train power off
     case 1:
       turnPowerOff();
       sendAck();
+      break;
       //  Turn Train power on
     case 2:
       turnPowerOn();
       sendAck();
+      break;
     case 3:
       measuring = false;
       sendAck();
+      break;
     case 4:
       measuring = true;
       sendAck();
+      break;
+    case 5:
+      // received keepalive, reset the watchdog timer
+      wdt_reset();
+      sendAck();
+      break;
     default:
       break;
   }
