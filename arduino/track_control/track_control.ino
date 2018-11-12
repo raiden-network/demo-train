@@ -48,28 +48,22 @@ void loop() {
       delayMicroseconds(10);
       sendAck();
       sendSensorData();
-      break;
     //  Turn Train power off
     case 1:
       turnPowerOff();
       sendAck();
-      break;
       //  Turn Train power on
     case 2:
       turnPowerOn();
       sendAck();
-      break;
     case 3:
       measuring = false;
       sendAck();
-      break;
     case 4:
       measuring = true;
       sendAck();
     default:
-//      if no bytes are present, the client is not expecting computation from us
-//      TODO just continue loop
-      break;   
+      break;
   }
 }
 
