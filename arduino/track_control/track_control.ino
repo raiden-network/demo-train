@@ -7,6 +7,24 @@ float distance;
 bool measuring;
 int value = 9;
 
+// 0: Power is Off, 
+// 1: Power is On
+int powerSensor = 0;
+
+// 0: not measuring,
+// 1: object is not close,
+// 2: object is close
+int barrierSensor = 0;
+
+// 0: request Sensor Data/'ACK Signal' 
+// 1: power Track off
+// 2: power Track on
+// 3: turn barrier measuring off
+// 4: turn barrier measuring on
+int inByte = 0;
+
+int maxTriggerDistance = 20;
+
 void setup() {
  pinMode(3, OUTPUT); //make the pin (3) as output
  pinMode(13, OUTPUT); //make the LED pin (13) as output
@@ -14,41 +32,109 @@ void setup() {
  pinMode(echoPin, INPUT); // Sets the echoPin as an Input
  Serial.begin(9600); // Starts the serial communication
  measuring = false;
+ establishContact();
 }
 
 void loop() {
  int data;
   
- if (Serial.available()> 0){
-   data = Serial.read();
- }
+ if (Serial.available() > 0){
+   inByte = Serial.read();
 
- if (data == 1)  // Turn Train power on
-   {
-   digitalWrite(3, HIGH);
-   Serial.println(digitalRead(3));
-   }
-  if (data == 0)  // Turn Train power off
-   {
-   digitalWrite(3, LOW);
-   Serial.println(digitalRead(3));
-   }
-   
- if (data == 2){  // Start measuiring
-  measuring = true;
- }
+   switch (inByte) {
+    //  send Sensor data
+    case 0:
+      updateSensorData();
+      delayMicroseconds(10);
+      sendAck();
+      sendSensorData();
+      break;
+    //  Turn Train power off
+    case 1:
+      turnPowerOff();
+      sendAck();
+      break;
+      //  Turn Train power on
+    case 2:
+      turnPowerOn();
+      sendAck();
+      break;
+    case 3:
+      measuring = false;
+      sendAck();
+      break;
+    case 4:
+      measuring = true;
+      sendAck();
+    default:
+//      if no bytes are present, the client is not expecting computation from us
+//      TODO just continue loop
+      break;   
+  }
+}
 
  if (measuring == true){
    int value = getAverage();
-   if (value < 20){
-     Serial.println(value);
-     measuring = false;
+   if (value < maxTriggerDistance){
+     barrierSensor = 2;
+   }
+   else {
+     barrierSensor = 1;
    }
  }
  else {
-     delayMicroseconds(10);
-   }
+   barrierSensor = 0;
+   delayMicroseconds(10);
+ }
 }
+
+void establishContact() {
+  while (Serial.available() <= 0) {
+     sendHandshake();
+    delay(300);
+  }
+
+  while (true) {
+   if (Serial.available() > 0){
+     inByte = Serial.read();
+//   we expect the ACK from the client
+     if (inByte == 0){
+      sendAck();
+      break;
+     }
+    }
+  }
+}
+
+void sendSensorData() {
+  Serial.write(powerSensor);
+  Serial.write(barrierSensor);
+}
+
+void sendAck() {
+  Serial.write('A'); 
+}
+
+void sendHandshake(){
+  Serial.write('H'); 
+}
+
+void turnPowerOff() {
+  digitalWrite(3, LOW);
+}
+
+void turnPowerOn() {
+  digitalWrite(3, HIGH);
+}
+
+void updateSensorData() {
+  if (digitalRead(3) == HIGH) {
+    powerSensor = 1;
+  } else {
+    powerSensor = 0;
+  }
+}
+
 
 int getDistance(){
   // Clears the trigPin
