@@ -7,11 +7,11 @@ int numberOfSegments = 42; // resolution of track
 int realNumberOfSegments;
 int loopCounter = 0;
 int oldLoopCounter = 1;
-//float railRadius = 630; // not global
-//float railLength = 1300; // no need to be global
+//float railRadius = 630; // this is 
+//float railLength = 1300; // for the big screen
 
-float railRadius = 330; // not global
-float railLength = 500; // no need to be global
+float railRadius = 330; // this is
+float railLength = 500; // for the laptop screen
 
 PVector[] railSegmentsLookUp;
 
@@ -348,6 +348,16 @@ void readClient(){
     break;
   case 's': 
     println("let the show begin");
+    background(246,102,205);
+    textSize(30);
+    fill(200,100);
+    text("INIT", width/2., height/2);
+    break;
+   case 'p': 
+    println("received payment");
+    break;
+   case 'm': 
+    println("a apyment is missing");
     break;
   default:
     int n = int(c) - 48;

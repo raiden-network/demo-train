@@ -1,7 +1,9 @@
 // Constantss
 int Y_AXIS = 1;
 int X_AXIS = 2;
-color b1, b2, c1, c2, r1;
+color b1, b2, c1, c2, r1,
+color0;
+color[] colors;
 PShape s;
 
 void setup() {
@@ -13,7 +15,17 @@ void setup() {
   b2 = color(0);
   c1 = color(204, 102, 0);
   c2 = color(0, 102, 153);
-  r1 = color(random(255),random(255),random(255),random(200,255));
+  colors = new color[8];
+  colors[0] = color(204,0,215);
+  colors[1] = color(#3bfa96);
+  colors[2] = color(#f5ff3d);
+  colors[3] = color(#02d9ff);
+  
+  colors[4] = color(#3bfa96);
+  colors[5] = color(#f5ff3d);
+  colors[6] = color(#02d9ff);
+  colors[7] = color(random(255),random(255),random(255),random(200,255));
+  r1=colors[int(random(7))];
 
   noLoop();
 }
