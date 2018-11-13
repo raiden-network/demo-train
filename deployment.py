@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 import logging
+from time import sleep
 
 from eth_utils import to_checksum_address
 
@@ -31,6 +32,9 @@ async def start_raiden_nodes(raiden_cls, receivers, delete_keystore=True, timeou
                                  config_file=config_file)
         raiden_nodes[address] = raiden_node
         raiden_node.start()
+        # Added a little sleep to avoid a race for debug files
+        # This throws an error which is handled by raiden but it's still better to avoid it
+        sleep(15)
 
     done, pending = await asyncio.wait([asyncio.create_task(raiden_node.ensure_is_started())
                                         for raiden_node in raiden_nodes.values()], timeout=timeout)

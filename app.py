@@ -8,6 +8,7 @@ import code128
 from const import BAR_CODE_FILE_PATH, RECEIVER_LIST
 from deployment import start_raiden_nodes
 from raiden import RaidenNode, RaidenNodeMock
+from server import Server
 from track_control import (
     TrackControl,
     ArduinoSerial,
@@ -83,11 +84,14 @@ class TrainApp:
         # TODO make sure that every neccessary task is running:
         # (barrier_etf, barrier_ltr instantiated, etc)
         log.debug("Track loop started")
+        server = Server()
+        server.start()
         self.track_control.power_on()
         while True:
             # Pick a random receiver
             self._set_next_provider()
             provider = self._current_provider
+            server.new_receiver(provider)
             current_nonce = self.current_nonce
 
             payment_received_task = asyncio.create_task(
@@ -106,6 +110,7 @@ class TrainApp:
             if payment_received_task in done:
                 if payment_received_task.result() is True:
                     payment_successful = True
+                    server.payment_received()
             else:
                 assert barrier_event_task in done
                 assert payment_received_task in pending
@@ -113,15 +118,18 @@ class TrainApp:
                 for task in pending:
                     task.cancel()
 
+
             if payment_successful is True:
                 log.info("Payment received")
                 assert barrier_event_task in pending
                 await barrier_event_task
+                server.barrier_triggered()
                 # increment the nonce after the barrier was triggered
                 self._increment_nonce_for_current_provider()
             else:
                 log.info("Payment not received before next barrier trigger")
                 self.track_control.power_off()
+                server.payment_missing()
 
                 payment_received_task = asyncio.create_task(
                     provider.ensure_payment_received(sender_address=self.network_topology.sender_address,
@@ -133,6 +141,7 @@ class TrainApp:
                 if payment_received_task.result() is True:
                     self._increment_nonce_for_current_provider()
                     self.track_control.power_on()
+                    server.payment_received()
                     log.info("Payment received, turning track power on again")
                 else:
                     # this shouldn't happen
