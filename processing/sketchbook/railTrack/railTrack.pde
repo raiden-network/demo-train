@@ -32,12 +32,14 @@ NetTopo topo = new NetTopo();
 
 void setup(){
    fullScreen(P3D);
-   railRadius = 330; // this is
-   railLength = 500; // for the laptop screen
+   println(displayWidth);
    if(displayWidth>1440){
      railRadius = 630; // this is 
      railLength = 1300; // for the big screen
-     
+   }
+   else{
+     railRadius = 330; // this is
+     railLength = 500; // for the laptop screen
    }
    //translate(0,0,5000);
    //size(1000,600,P3D);
