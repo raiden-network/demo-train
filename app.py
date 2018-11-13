@@ -21,14 +21,12 @@ from track_control import (
 from network import NetworkTopology
 import logging
 
-
 log = logging.getLogger()
 
 ADDRESS_MAP = {address: index for index, address in enumerate(RECEIVER_LIST)}
 
 
 class BarcodeHandler():
-
     _address_map = ADDRESS_MAP
 
     def save_barcode(self, address, nonce):
@@ -50,7 +48,7 @@ class TrainApp:
 
     def __init__(self, track_control: TrackControl, raiden_nodes: List[RaidenNode],
                  network_topology: NetworkTopology,
-                 barcode_handler: Optional[BarcodeHandler]=None):
+                 barcode_handler: Optional[BarcodeHandler] = None):
         self.track_control = track_control
         self.raiden_nodes = raiden_nodes
         self.network_topology = network_topology
@@ -129,7 +127,6 @@ class TrainApp:
                 for task in pending:
                     task.cancel()
 
-
             if payment_successful is True:
                 log.info("Payment received")
                 assert barrier_event_task in pending
@@ -143,10 +140,11 @@ class TrainApp:
                 server.payment_missing()
 
                 payment_received_task = asyncio.create_task(
-                    provider.ensure_payment_received(sender_address=self.network_topology.sender_address,
-                                                     token_address=self.network_topology.token_address,
-                                                     nonce=self.current_nonce,
-                                                     poll_interval=0.05)
+                    provider.ensure_payment_received(
+                        sender_address=self.network_topology.sender_address,
+                        token_address=self.network_topology.token_address,
+                        nonce=self.current_nonce,
+                        poll_interval=0.05)
                 )
                 await payment_received_task
                 if payment_received_task.result() is True:
