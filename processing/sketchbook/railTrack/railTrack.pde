@@ -350,7 +350,8 @@ void readClient(){
     println("let the show begin");
     background(246,102,205);
     textSize(30);
-    fill(200,100);
+    stroke(0);
+    fill(0);
     text("INIT", width/2., height/2);
     break;
    case 'p': 
