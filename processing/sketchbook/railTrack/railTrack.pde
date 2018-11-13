@@ -66,10 +66,7 @@ void draw(){
   if(trainPosition >= railSegmentsLookUp.length){
       trainPosition = 0;
       //drawLandscape();
-
-      
-
-      drawTopologie(0);  
+      //really nothing happening here
   }
 }
 
@@ -318,7 +315,7 @@ void readClient(){
   char c = pyClient.readChar();
   if(int(c)!=65535){
     println("received something from backend: "+c);
-    text("backend says: "+c, width/5., height*2/5.);
+    //text("backend says: "+c, width/5., height*2/5.);
   }
   switch(c){
   case 't': 
