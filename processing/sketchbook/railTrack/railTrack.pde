@@ -27,9 +27,6 @@ final int railJitter = 2;
 
 NetTopo topo = new NetTopo();
 
-//int[] rs = {40,40,40,120, width, height,20,20,width,height,20,20};
-//int[] rands;
-
 void setup(){
    fullScreen(P3D);
    println(displayWidth);
@@ -41,18 +38,6 @@ void setup(){
      railRadius = 330; // this is
      railLength = 500; // for the laptop screen
    }
-   //translate(0,0,5000);
-   //size(1000,600,P3D);
-   //rs[4] = width;
-   //rs[5] = height;
-   //rs[8] = width;
-   //rs[9] = height;
-   //background(0);
-   //fill(100);
-   //stroke(100);
-   //noFill();
-   //strokeWeight(7);
-   
    frameRate(15);
 
   railSegmentsLookUp = generateRailLookUp(numberOfSegments);
@@ -61,12 +46,6 @@ void setup(){
   topo.dsetup();
   
   background(0);
-  //drawLandscape();
-  //drawMovingLandscape(true);
-  //drawMiddleTree();
-  //clearRails();
-  //drawBarcode(xBarcode,yBarcode);
-  //drawTextBox(0,0);
 }
 
 void draw(){
