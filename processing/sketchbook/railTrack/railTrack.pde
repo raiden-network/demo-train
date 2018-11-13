@@ -26,6 +26,7 @@ final color greenColor = color(0, 255, 0);
 final int railJitter = 2;
 
 NetTopo topo = new NetTopo();
+TunnelLandscape land = new TunnelLandscape();
 
 void setup(){
    fullScreen(P3D);
@@ -44,41 +45,40 @@ void setup(){
   trainPosition = railSegmentsLookUp.length;
   
   topo.dsetup();
+  land.tsetup();
   
   background(0);
 }
 
 void draw(){
+  if(!pyClient.active()){
+    textSize(100);
+    stroke(200,100,250);
+    text("Client not active",width/2,height/2);
+    pyClient = new Client(this, "127.0.0.1", 5204);
+  }
   trainPosition += trainSpeed;
   readClient();
-  //println(frameRate);  
-  //background(0);
-  
-  //drawMiddleTree();
   clearRails();
   drawRails();
   
   // draw stuff once per circle
   if(trainPosition >= railSegmentsLookUp.length){
       trainPosition = 0;
-      drawLandscape();
-      drawMiddleTree();
-      drawBarcode(xBarcode,yBarcode); 
-      drawTopologie(0);
-   
-  }
-  
-  //drawGlow(trainPosition/railSegmentsLookUp.length);
-  // printMiddleTree();
-  //drawTrain(2, trainPosition + railSegmentsLookUp.length/2., 2);
-  //drawTrainText(1.6, trainPosition + railSegmentsLookUp.length/2.);
+      //drawLandscape();
 
+      
+
+      drawTopologie(0);  
+  }
 }
-PVector[] generateRailLookUp(int numberOfSegs){
+
+
   // function to generate array of vectors along the track
   // specialized to racetrack-shape
   // coordinates are just generated for half the track and
   // the rest is obtained by point reflection
+PVector[] generateRailLookUp(int numberOfSegs){
 
   //calculate ratios in length between different segments
   float stepsRatio = railLength / railRadius / PI ;
@@ -86,10 +86,6 @@ PVector[] generateRailLookUp(int numberOfSegs){
   int stepsStraight = int(numberOfSegs * stepsRatio);
   float temp_x = 0;
   float temp_y = 0;
-
-  //println(stepsRatio);
-  //println(stepsRad);
-  //println(stepsStraight);
 
   realNumberOfSegments = 2 * (stepsRad + stepsStraight);
 
@@ -124,6 +120,7 @@ PVector[] generateRailLookUp(int numberOfSegs){
   return rvectors;
 }
 
+//
 void drawRails(){
     beginShape(QUAD_STRIP);
   //vertex(width/2.,height/2.);
@@ -141,6 +138,7 @@ void drawRails(){
   endShape();
 }
 
+// helper function for rail segments
 color getSegColor(float tp, float si){
     if(int(tp) < si){
       return greenColor;
@@ -149,8 +147,6 @@ color getSegColor(float tp, float si){
       return color(255, random(100), random(100));
     } 
 }
-
-
 
 void printSeg(float x, float y, color c, int id){
    
@@ -164,8 +160,7 @@ void printSeg(float x, float y, color c, int id){
     vertex(x+random(railJitter),y+random(railJitter));
 }
 
-
-void drawMiddleTree(){
+void clearInnerRegion(){
   fill(0);
   stroke(0);
   //strokeWeight(30);
@@ -242,7 +237,6 @@ void drawBarcode(int x, int y){
 
   noStroke();
   noFill();
-
 
   beginShape();
   texture(img);
@@ -341,6 +335,7 @@ void readClient(){
     break;
    case 'p': 
     println("received payment");
+    drawBarcode(xBarcode,yBarcode); 
     break;
    case 'm': 
     println("a apyment is missing");
@@ -350,8 +345,10 @@ void readClient(){
     if(n < 7){
      //println("receiver " + n + " will get paid"); 
      text("receiver " + n + "\nwill get paid", width/4., height/2);
+     background(0);
+     land.drawMountain(0.08,0.82,0.001,1,.1,24,37,n);
+     clearInnerRegion();
      drawTopologie(n%7);
-
      break;
     }
   
