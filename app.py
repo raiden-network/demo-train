@@ -90,7 +90,9 @@ class TrainApp:
             "DISPLAY=:0.0 "
             "/home/train/processing-3.4/processing-java "
             "--sketch=/home/train/demo-train/processing/sketchbook/railTrack --force --run",
-            shell=True
+            shell=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
         )
         log.debug("Started subprocess for Frontend")
         server = Server()
