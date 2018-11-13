@@ -1,5 +1,6 @@
 import asyncio
 import random
+import subprocess
 import sys
 from typing import List, Optional
 
@@ -84,6 +85,15 @@ class TrainApp:
         # TODO make sure that every neccessary task is running:
         # (barrier_etf, barrier_ltr instantiated, etc)
         log.debug("Track loop started")
+        # Starting frontend
+        subprocess.run(
+            "DISPLAY=:0.0 "
+            "/home/train/processing-3.4/processing-java "
+            "--sketch=/home/train/demo-train/processing/sketchbook/railTrack --force --run",
+            shell=True,
+            check=True
+        )
+        log.debug("Started subprocess for Frontend")
         server = Server()
         server.start()
         self.track_control.power_on()
