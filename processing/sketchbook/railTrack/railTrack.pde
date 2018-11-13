@@ -7,11 +7,8 @@ int numberOfSegments = 42; // resolution of track
 int realNumberOfSegments;
 int loopCounter = 0;
 int oldLoopCounter = 1;
-//float railRadius = 630; // this is 
-//float railLength = 1300; // for the big screen
-
-float railRadius = 330; // this is
-float railLength = 500; // for the laptop screen
+float railRadius; 
+float railLength;
 
 PVector[] railSegmentsLookUp;
 
@@ -35,6 +32,13 @@ NetTopo topo = new NetTopo();
 
 void setup(){
    fullScreen(P3D);
+   railRadius = 330; // this is
+   railLength = 500; // for the laptop screen
+   if(displayWidth>1440){
+     railRadius = 630; // this is 
+     railLength = 1300; // for the big screen
+     
+   }
    //translate(0,0,5000);
    //size(1000,600,P3D);
    //rs[4] = width;
@@ -365,7 +369,7 @@ void readClient(){
     if(n < 7){
      //println("receiver " + n + " will get paid"); 
      text("receiver " + n + "\nwill get paid", width/4., height/2);
-     drawTopologie(n);
+     drawTopologie(n%7);
 
      break;
     }
