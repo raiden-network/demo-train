@@ -86,12 +86,11 @@ class TrainApp:
         # (barrier_etf, barrier_ltr instantiated, etc)
         log.debug("Track loop started")
         # Starting frontend
-        subprocess.run(
+        subprocess.Popen(
             "DISPLAY=:0.0 "
             "/home/train/processing-3.4/processing-java "
             "--sketch=/home/train/demo-train/processing/sketchbook/railTrack --force --run",
-            shell=True,
-            check=True
+            shell=True
         )
         log.debug("Started subprocess for Frontend")
         server = Server()
