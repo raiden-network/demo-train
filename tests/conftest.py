@@ -6,7 +6,7 @@ from aioresponses import aioresponses
 
 from raiden import RaidenNodeMock, RaidenNode
 from tests.utils.fake_raiden import FakeRaiden
-from track_control import TrackControl, MockSerial
+from track_control import TrackControl, MockArduinoTrackControl
 from network import NetworkTopology
 from utils import random_address
 
@@ -49,8 +49,13 @@ def raiden(address, api_endpoint, default_raiden_config_file):
 
 
 @pytest.fixture
-def track_control():
-    return TrackControl(track_power_serial=MockSerial())
+def arduino_track_control():
+    return MockArduinoTrackControl()
+
+
+@pytest.fixture
+def track_control(arduino_track_control):
+    return TrackControl(arduino_track_control)
 
 
 @pytest.fixture

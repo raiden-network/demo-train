@@ -47,7 +47,6 @@ class FakeRaiden:
         token_address = request.match_info['token_address']
         partner_address = request.match_info['partner_address']
         payments = self.payments.get((token_address, partner_address))
-        print(payments, "payments")
         events = []
         if payments is not None:
             for nonce, amount in payments.items():
