@@ -20,7 +20,7 @@ class Server:
 
     def barrier_triggered(self):
         try:
-            self.conn.send("t")
+            self.conn.send(b"t")
         except BrokenPipeError as e:
             log.error("Connection to Socket died with error %s" % e)
             self.conn, self.addr = self.socket.accept()
@@ -28,7 +28,7 @@ class Server:
 
     def new_receiver(self, address_id):
         try:
-            self.conn.send(address_id)
+            self.conn.send(str(address_id).encode())
         except BrokenPipeError as e:
             log.error("Connection to Socket died with error %s" % e)
             self.conn, self.addr = self.socket.accept()
@@ -36,7 +36,7 @@ class Server:
 
     def start(self):
         try:
-            self.conn.send("s")
+            self.conn.send(b"s")
         except BrokenPipeError as e:
             log.error("Connection to Socket died with error %s" % e)
             self.conn, self.addr = self.socket.accept()
@@ -44,7 +44,7 @@ class Server:
 
     def payment_received(self):
         try:
-            self.conn.send("p")
+            self.conn.send(b"p")
         except BrokenPipeError as e:
             log.error("Connection to Socket died with error %s" % e)
             self.conn, self.addr = self.socket.accept()
@@ -52,7 +52,7 @@ class Server:
 
     def payment_missing(self):
         try:
-            self.conn.send("m")
+            self.conn.send(b"m")
         except BrokenPipeError as e:
             log.error("Connection to Socket died with error %s" % e)
             self.conn, self.addr = self.socket.accept()
