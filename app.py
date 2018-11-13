@@ -91,7 +91,7 @@ class TrainApp:
             # Pick a random receiver
             self._set_next_provider()
             provider = self._current_provider
-            server.new_receiver(provider)
+            server.new_receiver(ADDRESS_MAP[self.current_provider_address])
             current_nonce = self.current_nonce
 
             payment_received_task = asyncio.create_task(
