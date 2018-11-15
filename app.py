@@ -2,6 +2,7 @@ import asyncio
 import random
 import subprocess
 import sys
+import time
 from typing import List, Optional
 
 import code128
@@ -93,8 +94,11 @@ class TrainApp:
             stderr=subprocess.DEVNULL
         )
         log.info("Started subprocess for Frontend")
+        time.sleep(5)
         server = Server()
+        time.sleep(5)
         server.start()
+        time.sleep(5)
         self.track_control.power_on()
         while True:
             # Pick a random receiver
