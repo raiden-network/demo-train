@@ -236,8 +236,8 @@ void setTrainSpeed(){
 
 void drawBarcode(int x, int y){
   //1320x400
-  //PImage img = loadImage("/home/train/demo-train/current_barcode.jpg");
-  PImage img = loadImage("../../../current_barcode.jpg");
+  PImage img = loadImage("/home/train/demo-train/current_barcode.jpg");
+  //PImage img = loadImage("../../../current_barcode.jpg");
 
   pushMatrix();
   translate(x,y,1);
