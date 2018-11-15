@@ -19,7 +19,7 @@ from network import NetworkTopology
 LOGGER_FORMAT = '%(asctime)s %(message)s'
 logging.basicConfig(format=LOGGER_FORMAT, datefmt='[%H:%M:%S]')
 log = logging.getLogger()
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 
 app = Quart(__name__)
 app = cors(app)

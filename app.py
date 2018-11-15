@@ -82,7 +82,7 @@ class TrainApp:
     async def run(self):
         # TODO make sure that every neccessary task is running:
         # (barrier_etf, barrier_ltr instantiated, etc)
-        log.debug("Track loop started")
+        log.info("Track loop started")
         # Starting frontend
         subprocess.Popen(
             "DISPLAY=:0.0 "
@@ -92,7 +92,7 @@ class TrainApp:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL
         )
-        log.debug("Started subprocess for Frontend")
+        log.info("Started subprocess for Frontend")
         server = Server()
         server.start()
         self.track_control.power_on()
