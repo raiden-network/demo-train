@@ -34,7 +34,7 @@ async def start_raiden_nodes(raiden_cls, receivers, delete_keystore=False, timeo
         raiden_node.start()
         # Added a little sleep to avoid a race for debug files
         # This throws an error which is handled by raiden but it's still better to avoid it
-        sleep(15)
+        sleep(1)
 
     done, pending = await asyncio.wait([asyncio.create_task(raiden_node.ensure_is_started())
                                         for raiden_node in raiden_nodes.values()], timeout=timeout)
