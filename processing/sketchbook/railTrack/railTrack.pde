@@ -1,5 +1,8 @@
 import processing.net.*;
 
+// press d while train is rollin to enable debug features
+boolean debug = false;
+
 Client pyClient = new Client(this, "127.0.0.1", 5204);
 
 int numberOfSegments = 42; // resolution of track
@@ -13,9 +16,9 @@ float railLength;
 PVector[] railSegmentsLookUp;
 
 float trainPosition; // in units of segments
-float trainSpeed = 1.05; // in units of segments
+float trainSpeed = .01; // in units of segments
 
-int offsetStart = 60;
+int offsetStart = 160;
 
 int xBarcode = 545;
 int yBarcode = 1450;
@@ -42,7 +45,7 @@ void setup(){
    frameRate(15);
 
   railSegmentsLookUp = generateRailLookUp(numberOfSegments);
-  trainPosition = railSegmentsLookUp.length;
+  //trainPosition = railSegmentsLookUp.length;
   
   topo.dsetup();
   land.tsetup();
@@ -51,23 +54,16 @@ void setup(){
 }
 
 void draw(){
-  if(!pyClient.active()){
+  if(!pyClient.active()&&debug){
     textSize(100);
     stroke(200,100,250);
     text("Client not active",width/2,height/2);
     pyClient = new Client(this, "127.0.0.1", 5204);
   }
-  trainPosition += trainSpeed;
+  
   readClient();
   clearRails();
   drawRails();
-  
-  // draw stuff once per circle
-  if(trainPosition >= railSegmentsLookUp.length){
-      trainPosition = 0;
-      //drawLandscape();
-      //really nothing happening here
-  }
 }
 
 
@@ -119,17 +115,18 @@ PVector[] generateRailLookUp(int numberOfSegs){
 
 //
 void drawRails(){
+  float trainP = (int((millis()-oldLoopCounter)*trainSpeed)%realNumberOfSegments);
     beginShape(QUAD_STRIP);
   //vertex(width/2.,height/2.);
   for(int segId = 0; segId < railSegmentsLookUp.length*1; segId++){
     
     // begin new shape on train position
-    if(int(trainPosition) == segId){
+    if( trainP == segId){
       endShape(); 
       //beginShape(QUAD_STRIP);
       beginShape(QUADS);
     }   
-    int c = getSegColor(trainPosition, segId);
+    int c = getSegColor(trainP, segId);
     printSeg(railSegmentsLookUp[segId].x, railSegmentsLookUp[segId].y, c, segId);   
   }
   endShape();
@@ -200,7 +197,7 @@ void clearRails(){
 
 
 void keyPressed(){
-  float tmpTS = 0;
+  
   if(keyCode == 139){
    trainSpeed += 0.01;
    println("speed me up: " + trainSpeed);
@@ -209,27 +206,41 @@ void keyPressed(){
    trainSpeed -= 0.01;
    println("slow me down: " + trainSpeed);
   }
-   else if(keyCode == 32){
-   tmpTS = (((loopCounter - oldLoopCounter) / realNumberOfSegments) + trainSpeed);
-  println(tmpTS);
-     if(tmpTS > (trainSpeed - 0.3) && tmpTS < (trainSpeed + 0.3)){
-     println("new train speed: " + trainSpeed);
-     trainSpeed = tmpTS;
-   }
-   oldLoopCounter = loopCounter;
+  else if(keyCode == 68){
+    debug = !debug;
   }
+   else if(keyCode == 32){
+     setTrainSpeed();
+     
+   }
   else{
    println(keyCode);
   }
 }
 
+void setTrainSpeed(){
+  float tmpTS = 0;
+  loopCounter=millis();
+  //tmpTS = (((loopCounter - oldLoopCounter) / realNumberOfSegments /frameRate/2.) + trainSpeed)/2.;
+  tmpTS = ((1. * realNumberOfSegments / (loopCounter - oldLoopCounter)));
+  println(tmpTS);
+     if(tmpTS > (trainSpeed - 10.3) && tmpTS < (trainSpeed + 10.3)){
+     println("new train speed: " + trainSpeed);
+     trainSpeed = tmpTS;
+     
+   }
+   println(oldLoopCounter);
+   println(loopCounter);
+   oldLoopCounter = loopCounter;
+  }
 
 void drawBarcode(int x, int y){
   //1320x400
-  PImage img = loadImage("/home/train/demo-train/current_barcode.jpg");
+  //PImage img = loadImage("/home/train/demo-train/current_barcode.jpg");
+  PImage img = loadImage("../../../current_barcode.jpg");
 
   pushMatrix();
-  translate(x,y);
+  translate(x,y,1);
   rotate(HALF_PI);
 
   noStroke();
@@ -321,6 +332,7 @@ void readClient(){
   case 't': 
     //println("train passed by");
     text("tell me why\nthe train passed by", width/4., height/2);
+    setTrainSpeed();
     break;
   case 's': 
     println("let the show begin");
@@ -335,7 +347,7 @@ void readClient(){
     drawBarcode(xBarcode,yBarcode); 
     break;
    case 'm': 
-    println("a apyment is missing");
+    println("a payment is missing");
     break;
   default:
     int n = int(c) - 48;
