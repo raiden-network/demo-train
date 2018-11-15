@@ -64,6 +64,7 @@ void draw(){
   readClient();
   clearRails();
   drawRails();
+  drawBarcode(xBarcode,yBarcode);
 }
 
 
