@@ -1,20 +1,6 @@
-
-//  NetTopo nt = new NetTopo();
-//  void setup(){
-//   size(600,600,P2D);
-//   background(0);
-//   nt.dsetup();
-    
-   
-//  }
-  
-//    void draw(){
-//    background(0);
-    
-//    nt.ddraw();
-
-//    }
-
+/////////////////////////////////////////////
+//this class generates the inner topologie//
+///////////////////////////////////////////
 class NetTopo{
 
   int noKnots = 7;
@@ -37,9 +23,9 @@ class NetTopo{
   }
   
   void dsetup(){
-   //size(600,600,P2D);
-   //background(0);
   
+   // this is fixed to 7 hardcoded channels
+   // if more channels should be added this has be be redone
    channels[0] = ch0; 
    channels[1] = ch1;
    channels[2] = ch2;
@@ -48,6 +34,8 @@ class NetTopo{
    channels[5] = ch5;
    channels[6] = ch6;
   
+   // the position of the blobs is also hardcoded below
+   // but with respect to the overall size of the diagram
    items[6] = new PVector(topoSizex/5,topoSizey*2/7);
    items[5] = new PVector(topoSizex/4,topoSizey*41/55);
    items[4] = new PVector(topoSizex/3,topoSizey/2.);
@@ -64,7 +52,6 @@ class NetTopo{
   void ddraw(int payCh){
     noFill();
     strokeWeight(2);
-    //stroke(230,223,254,70);
     stroke(245,221,225,80);
     for (int[] ch : channels){
       beginShape();
@@ -74,8 +61,7 @@ class NetTopo{
       }
       endShape();
     }
-   
-  //highlightChannel(second()%noKnots);
+    
   highlightChannel(payCh%noKnots);
     for (Wiggler w : wiggls){
        w.display();

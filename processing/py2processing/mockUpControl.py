@@ -31,6 +31,7 @@ while True:
     sleep(5)
     conn.send(b"3")
     sleep(5)
-    conn.send(b",")
-    sleep(5)
+    # wenn zeit bleibt kann das abgefangen werden
+    # conn.send(b",")
+    # sleep(5)
 conn.close()
