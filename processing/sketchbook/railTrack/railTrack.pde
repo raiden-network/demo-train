@@ -359,7 +359,7 @@ void readClient(){
      //println("receiver " + n + " will get paid"); 
      text("receiver " + n + "\nwill get paid", width/4., height/2);
      background(0);
-     land.drawMountain(0.08,0.82,0.001,1,.1,24,37,n);
+     land.drawMountain(0.08,0.82,0.001,1,1,24,37,n);
      clearInnerRegion();
      drawTopologie(n%7);
      break;
