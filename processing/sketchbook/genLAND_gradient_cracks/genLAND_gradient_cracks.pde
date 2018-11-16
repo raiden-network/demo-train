@@ -1,3 +1,4 @@
+                    
 // Constantss
 int Y_AXIS = 1;
 int X_AXIS = 2;
@@ -55,7 +56,6 @@ void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, int stroke
         
         //two circles in the middle
         line(rad_rand*t*cos(r*random(0.99,1.05)),rad_rand*t*sin(r*random(0.99,1.05)),rad_rand*t*cos(random(0.99,1.05)*r+r_stepsize+r_rand),rad_rand*t*sin(r*random(0.99,1.05)+r_stepsize+r_rand));
-                    
         //line(rad_rand*t*vs[rr].x,rad_rand*t*vs[rr].y,rad_rand*t*vs[rr+1].x,rad_rand*t*vs[rr+1].y);
                     
       } 

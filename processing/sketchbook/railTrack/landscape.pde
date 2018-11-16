@@ -6,48 +6,51 @@ class TunnelLandscape{
   color0;
   color[] colors;
   PShape s;
+  PVector[] vs;
   
   void tsetup() {
     //size(640, 360,P2D);
     background(0);
-  
+
+    vs = generateRailLookUp(20);
+    
     // Define colors
     b1 = color(255);
     b2 = color(0);
     c1 = color(204, 102, 0);
     c2 = color(0, 102, 153);
     colors = new color[8];
-    colors[0] = color(204,0,215);
-    colors[1] = color(#3bfa96);
-    colors[2] = color(#f5ff3d);
-    colors[3] = color(#02d9ff);
-    
-    colors[4] = color(#3bfa96);
-    colors[5] = color(#f5ff3d);
-    colors[6] = color(#02d9ff);
-    colors[7] = color(random(255),random(255),random(255),random(200,255));
+    colors[0] = color(#ffffff); //white
+    colors[1] = color(#808000); //olive
+    colors[2] = color(#ffe119); //gelb
+    colors[3] = color(#bfef45); //lime
+    colors[4] = color(#42d4f4); //cyan
+    colors[5] = color(#f032e6); //magenta
+    colors[6] = color(#911eb4); //purple
+    colors[7] = color(#f58231); //orange
     r1=colors[int(random(7))];
   
     //noLoop();
   }
   
-  //void tdraw() {
-  //  // Background
-  //  //setGradient(0, 0, width/2, height, b1, b2, X_AXIS);
-  //  //setGradient(width/2, 0, width/2, height, b2, b1, X_AXIS);
-  //  // Foreground
-  //  //setGradient(50, 90, 540, 80, c1, c2, Y_AXIS);
-  //  //setGradient(50, 190, 540, 80, c2, c1, X_AXIS);
-  //  drawMountain(0.08,0.82,0.001,1,0.3,5.3,5.9);
-  //  vertexInterpolation();
-    
-  //}
   
-  void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, int strokew,float t_min, float rad_min, float rad_max, int colorId) { 
+  void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min,float t_max, float rad_min, float rad_max, int colorId) { 
+     rectMode(CENTER);
+     noFill();
+     stroke(colors[colorId]);
+     strokeWeight(10);
+     rect(width/2,height/2,width,height);
+    
+    // strange shit. but this fixed the alignment
+    pushMatrix();
+      translate(width/2., height/2.);
+    popMatrix();
+    
     pushMatrix();
       translate(width/2., height/2.);
       float r_rand = random(r_jitter);
-      PVector[] vs = generateRailLookUp(20);
+      t_stepsize/=100000;
+      
       
       //outer loop creates radial virtual lines
       for (float r=0; r<TWO_PI;r+= r_stepsize + r_rand) {
@@ -62,7 +65,7 @@ class TunnelLandscape{
         
         //inner circle connects to radial lines
         for (float t=t_min; t<1; t+=t_rand) {
-          float tt = map(t, t_min, 1, 0, 1);
+          float tt = map(t, t_min, 1, 0, t_max);
           stroke(lerpColor(b2,colors[colorId%7],tt));
           strokeWeight(strokew);
           // check if map(t,0,rad_rand,0,1) is faster
