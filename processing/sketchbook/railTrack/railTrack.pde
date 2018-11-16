@@ -21,7 +21,7 @@ import processing.net.*;
   float trainPosition; // in units of segments
   float trainSpeed = .01; // in units of segments
 
-  int offsetStart = 160;
+  float railOffset = .88; //starting point in percent of racetrack
 
   int xBarcode = 545;
   int yBarcode = 1450;
@@ -113,7 +113,17 @@ PVector[] generateRailLookUp(int numberOfSegs){
     rvectors[i] = vectors[vectors.length-i-1];
   }
 
-  return rvectors;
+
+  //rearrange array with offset
+  int tmp_len = rvectors.length;
+  PVector[] tmp_vecs = new PVector[tmp_len];
+  int tmp_offset = int(railOffset*tmp_len);
+
+  for(int i = 0; i<tmp_len; i++){
+    tmp_vecs[i] = rvectors[(i+tmp_offset)%tmp_len];
+  }
+
+  return tmp_vecs;
 }
 
 void drawRails(){
