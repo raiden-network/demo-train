@@ -46,9 +46,9 @@ class TunnelLandscape{
     //   translate(width/2, height/2);
     // popMatrix();
     
-    pushMatrix();
+    // pushMatrix();
       //translate(displayWidth/2, displayHeight/2);
-      translate(1080, displayHeight/2);
+      // translate(1080, displayHeight/2);
       float r_rand = random(r_jitter);
       t_stepsize/=100000;
       println("w "+width+" "+displayWidth);
@@ -80,7 +80,10 @@ class TunnelLandscape{
           // racetrack shape
           if(rr<vs.length){
             //line(rad_rand*t*(vs[rr].x-width/2.),rad_rand*t*(vs[rr].y-height/2.),rad_rand*t*(vs[rr+1].x-width/2.),rad_rand*t*(vs[rr].x-width/2.));
+            pushMatrix();
+            translate(displayWidth/2, displayHeight/2);
             line(rad_rand*t*(vs[rr].x-width/2.),rad_rand*t*(vs[rr%vs.length].y-height/2.),rad_rand*t*(vs[rrr%vs.length].x-width/2.),rad_rand*t*(vs[rrr%vs.length].y-height/2.));
+            popMatrix();
           }          
         } 
           //draw radial lines...looks shitty
@@ -88,7 +91,7 @@ class TunnelLandscape{
           //strokeWeight(0.1);
           //line(rad_rand*cos(r),rad_rand*sin(r),0,0); 
       }  
-    popMatrix();
+    // popMatrix();
   }
   
   void vertexInterpolation()  {
