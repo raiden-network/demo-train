@@ -31,7 +31,7 @@ void setup() {
   colors[4] = color(#3bfa96);
   colors[5] = color(#f5ff3d);
   colors[6] = color(#02d9ff);
-  colors[7] = color(random(255),random(255),random(255),random(200,255));
+  colors[7] = color(#ffff03);
   r1=colors[int(random(7))];
 
   //noLoop();
