@@ -50,8 +50,8 @@ class TunnelLandscape{
       translate(displayWidth/2, displayHeight/2);
       float r_rand = random(r_jitter);
       t_stepsize/=100000;
-      println("w "+width);
-      println("h "+height);
+      println("w "+width+" "+displayWidth);
+      println("h "+height+" "+displayHeight);
 
       
       
