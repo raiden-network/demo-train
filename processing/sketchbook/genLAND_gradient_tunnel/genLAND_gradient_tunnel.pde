@@ -13,7 +13,8 @@ color[] colors;
 PShape s;
 
 void setup() {
-  size(640, 360,P2D);
+  //size(640, 360,P2D);
+  fullScreen(P3D);
   background(0);
 
   // Define colors
@@ -50,7 +51,7 @@ void draw() {
   
 }
 
-void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min, float rad_min, float rad_max) { 
+void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min, float t_max, float rad_min, float rad_max) { 
   pushMatrix();
     translate(width/2., height/2.);
     float r_rand = random(r_jitter);
@@ -69,7 +70,7 @@ void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, float stro
       
       //inner circle connects to radial lines
       for (float t=t_min; t<1; t+=t_rand) {
-        float tt = map(t, t_min, 1, 0, 1);
+        float tt = map(t, t_min, 1, 0, t_max);
         stroke(lerpColor(b2,r1,tt));
         strokeWeight(strokew);
         // check if map(t,0,rad_rand,0,1) is faster
@@ -221,29 +222,37 @@ void gui() {
   cp5.addSlider("t_min")
      .setPosition(60,140)
      .setSize(100,20)
-     .setRange(0.1,10)
+     .setRange(0.01,1)
      .setValue(0.3)
+     .moveTo(g1)
+     ;
+
+  cp5.addSlider("t_max")
+     .setPosition(60,170)
+     .setSize(100,20)
+     .setRange(0.01,5)
+     .setValue(1)
      .moveTo(g1)
      ; 
                        
   cp5.addSlider("rad_min")
-     .setPosition(60,190)
+     .setPosition(60,200)
      .setSize(100,20)
-     .setRange(1,100)
+     .setRange(1,20)
      .setValue(5.3)
      .moveTo(g1)
      ; 
                             
   cp5.addSlider("rad_max")
-     .setPosition(60,220)
+     .setPosition(60,230)
      .setSize(100,20)
-     .setRange(1,100)
+     .setRange(1,20)
      .setValue(5.9)
      .moveTo(g1)
      ; 
      
   cp5.addBang("redraw")
-     .setPosition(60,250)
+     .setPosition(60,260)
      .setSize(100,20)
      .moveTo(g1)
      .plugTo(this,"drawM");
@@ -254,6 +263,8 @@ void gui() {
                  .setWidth(200)
                  .addItem(g1)
                  ;
+                 
+  accordion.setCollapseMode(Accordion.MULTI);
 }
 
 void drawM(){  float s1 = cp5.getController("r_stepsize").getValue();
@@ -261,11 +272,12 @@ void drawM(){  float s1 = cp5.getController("r_stepsize").getValue();
   float s3 = cp5.getController("t_stepsize").getValue();
   float s4 = cp5.getController("strokew").getValue();
   float s5 = cp5.getController("t_min").getValue();
+  float s8 = cp5.getController("t_min").getValue();
   float s6 = cp5.getController("rad_min").getValue();
   float s7 = cp5.getController("rad_max").getValue();
   background(0);
   //drawMountain(0.08,0.82,0.001,1,0.3,5.3,5.9);
-  drawMountain(s1,s2,s3,s4,s5,s6,s7); 
+  drawMountain(s1,s2,s3,s4,s5,s8,s6,s7); 
   vertexInterpolation();
 }
 
