@@ -21,7 +21,7 @@ import processing.net.*;
   float trainPosition; // in units of segments
   float trainSpeed = .01; // in units of segments
 
-  float railOffset = .88; //starting point in percent of racetrack
+  float railOffset = .84; //starting point in percent of racetrack
 
   int xBarcode = 545;
   int yBarcode = 1450;
