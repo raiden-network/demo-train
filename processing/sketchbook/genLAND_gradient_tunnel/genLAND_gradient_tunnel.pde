@@ -1,3 +1,9 @@
+import controlP5.*;
+
+ControlP5 cp5;
+
+Accordion accordion;
+
 // Constantss
 int Y_AXIS = 1;
 int X_AXIS = 2;
@@ -27,7 +33,9 @@ void setup() {
   colors[7] = color(random(255),random(255),random(255),random(200,255));
   r1=colors[int(random(7))];
 
-  noLoop();
+  //noLoop();
+  smooth();
+  gui();
 }
 
 void draw() {
@@ -37,12 +45,12 @@ void draw() {
   // Foreground
   //setGradient(50, 90, 540, 80, c1, c2, Y_AXIS);
   //setGradient(50, 190, 540, 80, c2, c1, X_AXIS);
-  drawMountain(0.08,0.82,0.001,1,0.3,5.3,5.9);
-  vertexInterpolation();
+
+
   
 }
 
-void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, int strokew,float t_min, float rad_min, float rad_max) { 
+void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min, float rad_min, float rad_max) { 
   pushMatrix();
     translate(width/2., height/2.);
     float r_rand = random(r_jitter);
@@ -166,3 +174,100 @@ PVector[] generateRailLookUp(int numberOfSegs){
 
   return rvectors;
 }
+
+
+void gui() {
+  
+  cp5 = new ControlP5(this);
+  
+  
+    Group g1 = cp5.addGroup("landscape params")
+                .setBackgroundColor(color(0, 255))
+                .setBackgroundHeight(150)
+                ;
+                
+      cp5.addSlider("r_stepsize")
+     .setPosition(60,20)
+     .setSize(100,20)
+     .setRange(0.01,1)
+     .setValue(0.08)
+     .moveTo(g1)
+     ;
+     
+  cp5.addSlider("r_jitter")
+     .setPosition(60,50)
+     .setSize(100,20)
+     .setRange(0.01,5)
+     .setValue(0.1)
+     .moveTo(g1)
+     ; 
+     
+  cp5.addSlider("t_stepsize")
+     .setPosition(60,80)
+     .setSize(100,20)
+     .setRange(0.00001,0.001)
+     .setValue(0.001)
+     .moveTo(g1)
+     ; 
+          
+  cp5.addSlider("strokew")
+     .setPosition(60,110)
+     .setSize(100,20)
+     .setRange(0.5,10)
+     .setValue(1)
+     .moveTo(g1)
+     ; 
+               
+  cp5.addSlider("t_min")
+     .setPosition(60,140)
+     .setSize(100,20)
+     .setRange(0.1,10)
+     .setValue(0.3)
+     .moveTo(g1)
+     ; 
+                       
+  cp5.addSlider("rad_min")
+     .setPosition(60,190)
+     .setSize(100,20)
+     .setRange(1,100)
+     .setValue(5.3)
+     .moveTo(g1)
+     ; 
+                            
+  cp5.addSlider("rad_max")
+     .setPosition(60,220)
+     .setSize(100,20)
+     .setRange(1,100)
+     .setValue(5.9)
+     .moveTo(g1)
+     ; 
+     
+  cp5.addBang("redraw")
+     .setPosition(60,250)
+     .setSize(100,20)
+     .moveTo(g1)
+     .plugTo(this,"drawM");
+     ;
+     
+  accordion = cp5.addAccordion("acc")
+                 .setPosition(40,40)
+                 .setWidth(200)
+                 .addItem(g1)
+                 ;
+}
+
+void drawM(){  float s1 = cp5.getController("r_stepsize").getValue();
+  float s2 = cp5.getController("r_jitter").getValue();
+  float s3 = cp5.getController("t_stepsize").getValue();
+  float s4 = cp5.getController("strokew").getValue();
+  float s5 = cp5.getController("t_min").getValue();
+  float s6 = cp5.getController("rad_min").getValue();
+  float s7 = cp5.getController("rad_max").getValue();
+  background(0);
+  //drawMountain(0.08,0.82,0.001,1,0.3,5.3,5.9);
+  drawMountain(s1,s2,s3,s4,s5,s6,s7); 
+  vertexInterpolation();
+}
+
+  //drawMountain(0.08,0.82,0.001,1,0.3,5.3,5.9);
+  //void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min, float rad_min, float rad_max) { 
