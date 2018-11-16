@@ -56,6 +56,7 @@ void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, float stro
     translate(width/2., height/2.);
     float r_rand = random(r_jitter);
     PVector[] vs = generateRailLookUp(20);
+    t_stepsize/=100000;
     
     //outer loop creates radial virtual lines
     for (float r=0; r<TWO_PI;r+= r_stepsize + r_rand) {
@@ -206,7 +207,7 @@ void gui() {
   cp5.addSlider("t_stepsize")
      .setPosition(60,80)
      .setSize(100,20)
-     .setRange(0.00001,0.001)
+     .setRange(1,100)
      .setValue(0.001)
      .moveTo(g1)
      ; 
