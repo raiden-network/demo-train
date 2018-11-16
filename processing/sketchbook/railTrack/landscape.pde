@@ -43,6 +43,9 @@ class TunnelLandscape{
     
     pushMatrix();
       translate(width/2., height/2.);
+    popMatrix();
+    pushMatrix();
+      translate(width/2., height/2.);
       float r_rand = random(r_jitter);
       t_stepsize/=100000;
       
