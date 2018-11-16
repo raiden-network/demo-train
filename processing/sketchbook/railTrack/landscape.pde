@@ -81,7 +81,7 @@ class TunnelLandscape{
           if(rr<vs.length){
             //line(rad_rand*t*(vs[rr].x-width/2.),rad_rand*t*(vs[rr].y-height/2.),rad_rand*t*(vs[rr+1].x-width/2.),rad_rand*t*(vs[rr].x-width/2.));
 
-            line(rad_rand*t*(vs[rr].x-width/2.+width/2.),
+            line(rad_rand*t*(vs[rr].x-width/2.)+width/2.,
               rad_rand*t*(vs[rr%vs.length].y-height/2.)+height/2.,
               rad_rand*t*(vs[rrr%vs.length].x-width/2.)+width/2.,
               rad_rand*t*(vs[rrr%vs.length].y-height/2.)+height/2.);
