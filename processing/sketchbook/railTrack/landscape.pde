@@ -35,6 +35,12 @@ class TunnelLandscape{
   
   
   void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min,float t_max, float rad_min, float rad_max, int colorId) { 
+     rectMode(CENTER);
+     noFill();
+     stroke(colors[colorId]);
+     strokeWeight(10);
+     rect(width/2,height/2,width,height);
+    
     pushMatrix();
       translate(width/2., height/2.);
       float r_rand = random(r_jitter);

@@ -196,32 +196,6 @@ void clearRails(){
   endShape();
 }
 
-
-void keyPressed(){
-  
-  if(keyCode == 139){
-   trainSpeed += 0.01;
-   println("speed me up: " + trainSpeed);
-  }
-  else if(keyCode == 140){
-   trainSpeed -= 0.01;
-   println("slow me down: " + trainSpeed);
-  }
-  else if(keyCode == 68){
-    debug = !debug;
-  }
-   else if(keyCode == 32){
-    background(0);
-    setTrainSpeed();
-    land.drawMountain(0.29,0.15,9.4,6.88,0.48,1.,26.73,29.07,2);
-    drawBarcode(xBarcode,yBarcode);
-     
-   }
-  else{
-   println(keyCode);
-  }
-}
-
 void setTrainSpeed(){
   float tmpTS = 0;
   loopCounter=millis();
@@ -259,16 +233,6 @@ void drawBarcode(int x, int y){
   endShape();
 
   popMatrix();
-}
-
-void mouseClicked(){
-  stroke(128);
-  fill(128);
-  textSize(30);
-  String posi = "x: " + mouseX + "\ny: " + mouseY;
-  println("x: " + mouseX + "\ny: " + mouseY);
-  text(posi,mouseX,mouseY);
-
 }
 
 void drawTextBox(int x, int y){
@@ -366,7 +330,39 @@ void readClient(){
      break;
     }
   
+  } 
+}
+
+void mouseClicked(){
+  stroke(128);
+  fill(128);
+  textSize(30);
+  String posi = "x: " + mouseX + "\ny: " + mouseY;
+  println("x: " + mouseX + "\ny: " + mouseY);
+  text(posi,mouseX,mouseY);
+}
+
+void keyPressed(){
+  
+  if(keyCode == 139){
+   trainSpeed += 0.01;
+   println("speed me up: " + trainSpeed);
   }
-  
-  
+  else if(keyCode == 140){
+   trainSpeed -= 0.01;
+   println("slow me down: " + trainSpeed);
+  }
+  else if(keyCode == 68){
+    debug = !debug;
+  }
+   else if(keyCode == 32){
+    background(0);
+    setTrainSpeed();
+    land.drawMountain(0.29,0.15,9.4,6.88,0.48,1.,26.73,29.07,int(random(7))+1);
+    drawBarcode(xBarcode,yBarcode);
+     
+   }
+  else{
+   println(keyCode);
+  }
 }
