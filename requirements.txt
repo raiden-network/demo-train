@@ -1,6 +1,6 @@
 quart
 aiohttp
-hypercorn
+hypercorn==0.3.2
 Quart-CORS
 eth-utils
 eth-hash[pycryptodome]
