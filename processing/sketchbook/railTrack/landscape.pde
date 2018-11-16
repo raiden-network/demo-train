@@ -41,9 +41,11 @@ class TunnelLandscape{
      strokeWeight(10);
      rect(width/2,height/2,width,height);
     
+    // strange shit. but this fixed the alignment
     pushMatrix();
       translate(width/2., height/2.);
     popMatrix();
+    
     pushMatrix();
       translate(width/2., height/2.);
       float r_rand = random(r_jitter);

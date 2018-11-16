@@ -1,39 +1,42 @@
 import processing.net.*;
 
+// main program for demo-train visualisation
+
 // press d while train is rollin to enable debug features
-boolean debug = false;
+// global vars
+  boolean debug = false;
 
-Client pyClient = new Client(this, "127.0.0.1", 5204);
+  Client pyClient = new Client(this, "127.0.0.1", 5204);
 
-int numberOfSegments = 42; // resolution of track
+  int numberOfSegments = 42; // resolution of track
 
-int realNumberOfSegments;
-int loopCounter = 0;
-int oldLoopCounter = 1;
-float railRadius; 
-float railLength;
+  int realNumberOfSegments;
+  int loopCounter = 0;
+  int oldLoopCounter = 1;
+  float railRadius; 
+  float railLength;
 
-PVector[] railSegmentsLookUp;
+  PVector[] railSegmentsLookUp;
 
-float trainPosition; // in units of segments
-float trainSpeed = .01; // in units of segments
+  float trainPosition; // in units of segments
+  float trainSpeed = .01; // in units of segments
 
-int offsetStart = 160;
+  int offsetStart = 160;
 
-int xBarcode = 545;
-int yBarcode = 1450;
+  int xBarcode = 545;
+  int yBarcode = 1450;
 
-final color redColor = color(255, 0, 0);
-final color greenColor = color(0, 255, 0);
+  final color redColor = color(255, 0, 0);
+  final color greenColor = color(0, 255, 0);
 
-final int railJitter = 2;
+  final int railJitter = 2;
 
-NetTopo topo = new NetTopo();
-TunnelLandscape land = new TunnelLandscape();
+  NetTopo topo = new NetTopo();
+  TunnelLandscape land = new TunnelLandscape();
 
 void setup(){
    fullScreen(P3D);
-   println(displayWidth);
+   if(debug)println(displayWidth);
    if(displayWidth>1440){
      railRadius = 630; // this is 
      railLength = 1300; // for the big screen
@@ -67,13 +70,12 @@ void draw(){
   drawBarcode(xBarcode,yBarcode);
 }
 
-
+// generate lookup-table for racetrack shaped rail-coordinates
+PVector[] generateRailLookUp(int numberOfSegs){
   // function to generate array of vectors along the track
   // specialized to racetrack-shape
   // coordinates are just generated for half the track and
   // the rest is obtained by point reflection
-PVector[] generateRailLookUp(int numberOfSegs){
-
   //calculate ratios in length between different segments
   float stepsRatio = railLength / railRadius / PI ;
   int stepsRad = int(numberOfSegs);
@@ -114,7 +116,6 @@ PVector[] generateRailLookUp(int numberOfSegs){
   return rvectors;
 }
 
-//
 void drawRails(){
   float trainP = (int((millis()-oldLoopCounter)*trainSpeed)%realNumberOfSegments);
     beginShape(QUAD_STRIP);
@@ -143,6 +144,7 @@ color getSegColor(float tp, float si){
     } 
 }
 
+// print rail segments
 void printSeg(float x, float y, color c, int id){
    
     color alphaColor = 5 << 030;  
@@ -168,6 +170,7 @@ void clearInnerRegion(){
   endShape();
 }
 
+// old landscape generator
 void drawLandscape(){
   noStroke();
   //strokeWeight(random(6));
@@ -181,9 +184,9 @@ void drawLandscape(){
    rect(random(width),random(height),siz + random(20),siz + random(20));
    ellipse(random(width),random(height),siz + random(20),siz + random(20));
   }
-
 }
 
+// clear region below the rails
 void clearRails(){
   noFill();
   stroke(0);
@@ -196,21 +199,22 @@ void clearRails(){
   endShape();
 }
 
+// calculate speed from trigger and set it
 void setTrainSpeed(){
   float tmpTS = 0;
   loopCounter=millis();
   //tmpTS = (((loopCounter - oldLoopCounter) / realNumberOfSegments /frameRate/2.) + trainSpeed)/2.;
   tmpTS = ((1. * realNumberOfSegments / (loopCounter - oldLoopCounter)));
-  println(tmpTS);
+  if(debug)println(tmpTS);
      if(tmpTS > (trainSpeed - 10.3) && tmpTS < (trainSpeed + 10.3)){
-     println("new train speed: " + trainSpeed);
+     if(debug)println("new train speed: " + trainSpeed);
      trainSpeed = tmpTS;
      
    }
-   println(oldLoopCounter);
-   println(loopCounter);
+   if(debug)println(oldLoopCounter);
+   if(debug)println(loopCounter);
    oldLoopCounter = loopCounter;
-  }
+}
 
 void drawBarcode(int x, int y){
   //1320x400
@@ -235,6 +239,7 @@ void drawBarcode(int x, int y){
   popMatrix();
 }
 
+// draw textbox that is following the train
 void drawTextBox(int x, int y){
   stroke(128);
   fill(128,12,43);
@@ -242,6 +247,7 @@ void drawTextBox(int x, int y){
   text("TRAIN IS\nCOMING!",x,y);
 }
 
+// draw something below the train
 void drawTrain(float scale, float tp, float range){
   PVector v;
   noFill();
@@ -251,7 +257,6 @@ void drawTrain(float scale, float tp, float range){
   
   beginShape();
     for(int i = int(sqrt((tp - range)*(tp - range)));  i < int(sqrt((tp + range)*(tp + range))); i++){
-      //println(i);
       v = railSegmentsLookUp[i % railSegmentsLookUp.length];
       vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));  
     }
@@ -264,7 +269,7 @@ void drawTrain(float scale, float tp, float range){
    ellipse(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),70,50);
 }
 
-
+// draw text that follows the train
 void drawTrainText(float scale, float tp){
   PVector v;
   textMode(SHAPE);
@@ -277,33 +282,33 @@ void drawTrainText(float scale, float tp){
   text(int(trainPosition), v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.)); 
 }
 
+// draw network topologie in inner region
 void drawTopologie(int pch){
   pushMatrix();
     translate(width/2-topo.topoSizex/2,height/2-topo.topoSizey/2);
     topo.ddraw(pch);
   popMatrix();
   //text()
-  
 }
 
-
+// receive stuff from backend and call functions
 void readClient(){
   textSize(30);
   fill(200,100);
   
   char c = pyClient.readChar();
   if(int(c)!=65535){
-    println("received something from backend: "+c);
+    if(debug)println("received something from backend: "+c);
     //text("backend says: "+c, width/5., height*2/5.);
   }
   switch(c){
   case 't': 
     //println("train passed by");
-    text("tell me why\nthe train passed by", width/4., height/2);
+    if(debug)text("tell me why\nthe train passed by", width/4., height/2);
     setTrainSpeed();
     break;
   case 's': 
-    println("let the show begin");
+    if(debug)println("let the show begin");
     background(246,102,205);
     textSize(30);
     stroke(0);
@@ -312,16 +317,16 @@ void readClient(){
     drawBarcode(xBarcode,yBarcode);
     break;
    case 'p': 
-    println("received payment");
+    if(debug)println("received payment");
     drawBarcode(xBarcode,yBarcode); 
     break;
    case 'm': 
-    println("a payment is missing");
+    if(debug)println("a payment is missing");
     break;
   default:
     int n = int(c) - 48;
     if(n < 7){
-     //println("receiver " + n + " will get paid"); 
+     if(debug)println("receiver " + n + " will get paid"); 
      text("receiver " + n + "\nwill get paid", width/4., height/2);
      background(0);
      land.drawMountain(0.29,0.15,0.0094,6.88,0.48,1.,26.73,29.07,n);
@@ -333,24 +338,26 @@ void readClient(){
   } 
 }
 
+// some debug mouse functionality
 void mouseClicked(){
   stroke(128);
   fill(128);
   textSize(30);
   String posi = "x: " + mouseX + "\ny: " + mouseY;
-  println("x: " + mouseX + "\ny: " + mouseY);
-  text(posi,mouseX,mouseY);
+  if(debug)println("x: " + mouseX + "\ny: " + mouseY);
+  if(debug)text(posi,mouseX,mouseY);
 }
 
+// some debug mouise functionality
 void keyPressed(){
   
   if(keyCode == 139){
    trainSpeed += 0.01;
-   println("speed me up: " + trainSpeed);
+   if(debug)println("speed me up: " + trainSpeed);
   }
   else if(keyCode == 140){
    trainSpeed -= 0.01;
-   println("slow me down: " + trainSpeed);
+   if(debug)println("slow me down: " + trainSpeed);
   }
   else if(keyCode == 68){
     debug = !debug;
@@ -363,6 +370,6 @@ void keyPressed(){
      
    }
   else{
-   println(keyCode);
+   if(debug)println(keyCode);
   }
 }
