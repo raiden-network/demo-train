@@ -26,6 +26,8 @@ import processing.net.*;
   int xBarcode = 545;
   int yBarcode = 1450;
 
+
+
   final color redColor = color(255, 0, 0);
   final color greenColor = color(0, 255, 0);
 
@@ -240,13 +242,15 @@ void drawBarcode(int x, int y){
   noStroke();
   noFill();
 
-  beginShape();
-  texture(img);
-  vertex(0, 0, 0, 0);
-  vertex(465, 0, 1320, 0);
-  vertex(465, 83, 1320, 400);
-  vertex(0, 83, 0, 400);
-  endShape();
+  image(img,0,0,465,83);
+
+  // beginShape();
+  // texture(img);
+  // vertex(0, 0, 0, 0);
+  // vertex(465, 0, 1320, 0);
+  // vertex(465, 83, 1320, 400);
+  // vertex(0, 83, 0, 400);
+  // endShape();
 
   popMatrix();
 }
