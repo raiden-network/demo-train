@@ -37,26 +37,25 @@ import processing.net.*;
   TunnelLandscape land = new TunnelLandscape();
 
 void setup(){
-   fullScreen(FX2D);
-      println("w "+width+" "+displayWidth);
-      println("h "+height+" "+displayHeight);
-   if(debug)println(displayWidth);
-   if(displayWidth>1440){
-     railRadius = 630; // this is 
-     railLength = 1300; // for the big screen
-   }
-   else{
-     railRadius = 330; // this is
-     railLength = 500; // for the laptop screen
-   }
-   frameRate(15);
-
+  fullScreen(FX2D);
+    println("w "+width+" "+displayWidth);
+    println("h "+height+" "+displayHeight);
+  if(debug)println(displayWidth);
+  if(displayWidth>1440){
+   railRadius = 630; // this is 
+   railLength = 1300; // for the big screen
+  }
+  else{
+   railRadius = 330; // this is
+   railLength = 500; // for the laptop screen
+  }
+  frameRate(15);
   railSegmentsLookUp = generateRailLookUp(numberOfSegments);
   //trainPosition = railSegmentsLookUp.length;
-  
+
   topo.dsetup();
   land.tsetup();
-  
+
   background(0);
 }
 
@@ -381,12 +380,14 @@ void keyPressed(){
    else if(keyCode == 32){
     background(0);
     setTrainSpeed();
+    int tmp_ch = int(random(7))+1;
     if(displayWidth>1440){
-      land.drawMountain(0.29,0.15,9.4,6.88,0.48,1.,26.73,29.07,int(random(7))+1);
+      land.drawMountain(0.29,0.15,9.4,6.88,0.48,1.,26.73,29.07,tmp_ch);
     }else{
-      land.drawMountain(0.29,0.15,11,6.88,0.48,1.,9,11,int(random(7))+1);      
+      land.drawMountain(0.29,0.15,11,6.88,0.48,1.,9,11,tmp_ch);      
     }
     drawBarcode(xBarcode,yBarcode);
+    drawTopologie(tmp_ch);
      
    }
   else{
