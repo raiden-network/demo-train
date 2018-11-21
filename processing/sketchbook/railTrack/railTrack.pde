@@ -35,7 +35,7 @@ import processing.net.*;
   TunnelLandscape land = new TunnelLandscape();
 
 void setup(){
-   fullScreen(P3D);
+   fullScreen(FX2D);
       println("w "+width+" "+displayWidth);
       println("h "+height+" "+displayHeight);
    if(debug)println(displayWidth);
