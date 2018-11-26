@@ -107,6 +107,9 @@ class TrainApp:
             server.new_receiver(ADDRESS_MAP[self.current_provider_address])
             current_nonce = self.current_nonce
 
+            # Sleeping 4 s to make sure that the train completely passed the light barrier
+            time.sleep(4)
+
             payment_received_task = asyncio.create_task(
                 provider.ensure_payment_received(
                     sender_address=self.network_topology.sender_address,
