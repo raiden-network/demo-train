@@ -25,6 +25,18 @@ All accounts hold a certain balance of "Raiden Demo Tokens". The Raiden Demo Tok
 
 
 ## Processing Setup
+We exploit processing for the frontend visualisation part. All processing files are located in ./processing/sketchbook/
+The main file is called railTrack.pde
+
+### start processing without IDE
+
+./processing-3.4/processing-java --sketch=/home/train/sketchbook/testLights --force --run
+
+Be aware that just the folder is passed and not the actual pde-file.
+
+### start on big screen via ssh
+
+DISPLAY=:0.0 _cmdfromabove_
 
 Right now we work with a separate server mock, that provides an endpoint with random addresses. The endpoint will be modelled exactly
 like in a later production version (same endpoints, same JSON-data).

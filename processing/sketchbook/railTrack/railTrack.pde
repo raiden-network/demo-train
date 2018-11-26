@@ -21,10 +21,12 @@ import processing.net.*;
   float trainPosition; // in units of segments
   float trainSpeed = .01; // in units of segments
 
-  int offsetStart = 160;
+  float railOffset = .84; //starting point in percent of racetrack
 
   int xBarcode = 545;
   int yBarcode = 1450;
+
+
 
   final color redColor = color(255, 0, 0);
   final color greenColor = color(0, 255, 0);
@@ -35,24 +37,25 @@ import processing.net.*;
   TunnelLandscape land = new TunnelLandscape();
 
 void setup(){
-   fullScreen(P3D);
-   if(debug)println(displayWidth);
-   if(displayWidth>1440){
-     railRadius = 630; // this is 
-     railLength = 1300; // for the big screen
-   }
-   else{
-     railRadius = 330; // this is
-     railLength = 500; // for the laptop screen
-   }
-   frameRate(15);
-
+  fullScreen(FX2D);
+    println("w "+width+" "+displayWidth);
+    println("h "+height+" "+displayHeight);
+  if(debug)println(displayWidth);
+  if(displayWidth>1440){
+   railRadius = 630; // this is 
+   railLength = 1300; // for the big screen
+  }
+  else{
+   railRadius = 330; // this is
+   railLength = 500; // for the laptop screen
+  }
+  frameRate(15);
   railSegmentsLookUp = generateRailLookUp(numberOfSegments);
   //trainPosition = railSegmentsLookUp.length;
-  
+
   topo.dsetup();
   land.tsetup();
-  
+
   background(0);
 }
 
@@ -113,7 +116,17 @@ PVector[] generateRailLookUp(int numberOfSegs){
     rvectors[i] = vectors[vectors.length-i-1];
   }
 
-  return rvectors;
+
+  //rearrange array with offset
+  int tmp_len = rvectors.length;
+  PVector[] tmp_vecs = new PVector[tmp_len];
+  int tmp_offset = int(railOffset*tmp_len);
+
+  for(int i = 0; i<tmp_len; i++){
+    tmp_vecs[i] = rvectors[(i+tmp_offset)%tmp_len];
+  }
+
+  return tmp_vecs;
 }
 
 void drawRails(){
@@ -218,8 +231,8 @@ void setTrainSpeed(){
 
 void drawBarcode(int x, int y){
   //1320x400
-  PImage img = loadImage("/home/train/demo-train/current_barcode.jpg");
-  //PImage img = loadImage("../../../current_barcode.jpg");
+  // PImage img = loadImage("/home/train/demo-train/current_barcode.jpg");
+  PImage img = loadImage("../../../current_barcode.jpg");
 
   pushMatrix();
   translate(x,y);
@@ -228,13 +241,15 @@ void drawBarcode(int x, int y){
   noStroke();
   noFill();
 
-  beginShape();
-  texture(img);
-  vertex(0, 0, 0, 0);
-  vertex(465, 0, 1320, 0);
-  vertex(465, 83, 1320, 400);
-  vertex(0, 83, 0, 400);
-  endShape();
+  image(img,0,0,465,83);
+
+  // beginShape();
+  // texture(img);
+  // vertex(0, 0, 0, 0);
+  // vertex(465, 0, 1320, 0);
+  // vertex(465, 83, 1320, 400);
+  // vertex(0, 83, 0, 400);
+  // endShape();
 
   popMatrix();
 }
@@ -365,8 +380,14 @@ void keyPressed(){
    else if(keyCode == 32){
     background(0);
     setTrainSpeed();
-    land.drawMountain(0.29,0.15,9.4,6.88,0.48,1.,26.73,29.07,int(random(7))+1);
+    int tmp_ch = int(random(7))+1;
+    if(displayWidth>1440){
+      land.drawMountain(0.29,0.15,9.4,6.88,0.48,1.,26.73,29.07,tmp_ch);
+    }else{
+      land.drawMountain(0.29,0.15,11,6.88,0.48,1.,9,11,tmp_ch);      
+    }
     drawBarcode(xBarcode,yBarcode);
+    drawTopologie(tmp_ch);
      
    }
   else{
