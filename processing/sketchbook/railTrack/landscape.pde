@@ -35,21 +35,28 @@ class TunnelLandscape{
   
   
   void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min,float t_max, float rad_min, float rad_max, int colorId) { 
-     rectMode(CENTER);
-     noFill();
-     stroke(colors[colorId]);
-     strokeWeight(10);
-     rect(width/2,height/2,width,height);
+    //  rectMode(CENTER);
+    //  noFill();
+    //  stroke(colors[colorId]);
+    //  strokeWeight(10);
+    //  rect(width/2,height/2,width,height);
     
-    // strange shit. but this fixed the alignment
-    pushMatrix();
-      translate(width/2., height/2.);
-    popMatrix();
+    // // strange shit. but this fixed the alignment
+    // pushMatrix();
+    //   translate(width/2, height/2);
+    // popMatrix();
     
     pushMatrix();
-      translate(width/2., height/2.);
+    pushMatrix();
+      translate(displayWidth/2, displayHeight/2);
+      //translate(0,height/2+130);
+      //translate(width/2, 0);
+
       float r_rand = random(r_jitter);
       t_stepsize/=100000;
+      println("w "+width+" "+displayWidth);
+      println("h "+height+" "+displayHeight);
+
       
       
       //outer loop creates radial virtual lines
@@ -65,7 +72,7 @@ class TunnelLandscape{
         
         //inner circle connects to radial lines
         for (float t=t_min; t<1; t+=t_rand) {
-          float tt = map(t, t_min, 1, 0, t_max);
+          float tt = map(t, t_min, 1, 0, 1);
           stroke(lerpColor(b2,colors[colorId%7],tt));
           strokeWeight(strokew);
           // check if map(t,0,rad_rand,0,1) is faster
@@ -76,7 +83,12 @@ class TunnelLandscape{
           // racetrack shape
           if(rr<vs.length){
             //line(rad_rand*t*(vs[rr].x-width/2.),rad_rand*t*(vs[rr].y-height/2.),rad_rand*t*(vs[rr+1].x-width/2.),rad_rand*t*(vs[rr].x-width/2.));
-            line(rad_rand*t*(vs[rr].x-width/2.),rad_rand*t*(vs[rr%vs.length].y-height/2.),rad_rand*t*(vs[rrr%vs.length].x-width/2.),rad_rand*t*(vs[rrr%vs.length].y-height/2.));
+
+            line(rad_rand*t*(vs[rr].x-width/2.),
+              rad_rand*t*(vs[rr%vs.length].y-height/2.),
+              rad_rand*t*(vs[rrr%vs.length].x-width/2.),
+              rad_rand*t*(vs[rrr%vs.length].y-height/2.));
+
           }          
         } 
           //draw radial lines...looks shitty
@@ -84,6 +96,7 @@ class TunnelLandscape{
           //strokeWeight(0.1);
           //line(rad_rand*cos(r),rad_rand*sin(r),0,0); 
       }  
+    popMatrix();
     popMatrix();
   }
   
