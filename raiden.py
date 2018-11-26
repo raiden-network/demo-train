@@ -35,7 +35,7 @@ class RaidenNode:
                 raiden,
                 shell=True,
                 stdout=logfile,
-                stderr=subprocess.DEVNULL
+                stderr=logfile
             )
 
     def stop(self):
