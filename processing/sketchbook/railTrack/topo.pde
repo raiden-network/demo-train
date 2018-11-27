@@ -4,8 +4,9 @@
 class NetTopo{
 
   int noKnots = 7;
-  PVector[] items = new PVector[noKnots];
-  Wiggler[] wiggls = new Wiggler[noKnots];
+  PVector[] vecs = new PVector[noKnots];
+  // Wiggler[] wiggls = new Wiggler[noKnots];
+  TunnelLandscape[] tunnels = new TunnelLandscape[noKnots];
   int topoSizex = 600;
   int topoSizey = 600;
   int blobSize = topoSizex/18;
@@ -36,17 +37,17 @@ class NetTopo{
   
    // the position of the blobs is also hardcoded below
    // but with respect to the overall size of the diagram
-   items[6] = new PVector(topoSizex/5,topoSizey*2/7);
-   items[5] = new PVector(topoSizex/4,topoSizey*41/55);
-   items[4] = new PVector(topoSizex/3,topoSizey/2.);
-   items[3] = new PVector(topoSizex*22./33.,topoSizey*25./34.);
-   items[2] = new PVector(topoSizex*2./3.,topoSizey/2.);
-   items[1] = new PVector(topoSizex/2.,topoSizey*35./90.);
-   items[0] = new PVector(topoSizex/2.,topoSizey/7.);
+   vecs[6] = new PVector(topoSizex/5,topoSizey*2/7);
+   vecs[5] = new PVector(topoSizex/4,topoSizey*41/55);
+   vecs[4] = new PVector(topoSizex/3,topoSizey/2.);
+   vecs[3] = new PVector(topoSizex*22./33.,topoSizey*25./34.);
+   vecs[2] = new PVector(topoSizex*2./3.,topoSizey/2.);
+   vecs[1] = new PVector(topoSizex/2.,topoSizey*35./90.);
+   vecs[0] = new PVector(topoSizex/2.,topoSizey/7.);
    
-   for(int i = 0; i < items.length; i++){
-     wiggls[i] = new Wiggler(int(items[i].x), int(items[i].y),blobSize,str(i));
-   }
+  //  for(int i = 0; i < vecs.length; i++){
+  //    wiggls[i] = new Wiggler(int(vecs[i].x), int(vecs[i].y),blobSize,str(i));
+  //  }
   }
   
   void ddraw(int payCh){
@@ -56,18 +57,29 @@ class NetTopo{
     for (int[] ch : channels){
       beginShape();
       for(int c : ch){
-        vertex(items[c].x, items[c].y);
-        wiggls[c].setColor(color(200,40));
+        vertex(vecs[c].x, vecs[c].y);
+        // wiggls[c].setColor(color(200,40));
       }
       endShape();
     }
+    int _ch = 0;
+    for (PVector pv : vecs){
+      pushMatrix();
+        translate(pv.x-width/2,pv.y-height/2);
+          // void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min,float t_max, float rad_min, float rad_max, int colorId) 
+        landTopo.drawMountain(.1,.15,.1,9.04,0.28,1.,0.3,1.9,_ch%noKnots);
+        translate(width/2,height/2);
+        texto(_ch);
+        _ch++;
+      popMatrix();
+    }
     
   highlightChannel(payCh%noKnots);
-    for (Wiggler w : wiggls){
-       w.display();
-       w.wiggle();
-       w.texto();
-    }
+    // for (Wiggler w : wiggls){
+    //    // w.display();
+    //    // w.wiggle();
+    //    //w.texto();
+    // }
  }
   
   void highlightChannel(int ch){
@@ -76,8 +88,8 @@ class NetTopo{
       stroke(30,223,54,90);
       beginShape();
         for(int c : channels[ch]){
-          vertex(items[c].x, items[c].y);
-          wiggls[c].setColor(color(6,250,10,40));
+          vertex(vecs[c].x, vecs[c].y);
+          // wiggls[c].setColor(color(6,250,10,40));
         }
       endShape();
     
@@ -90,4 +102,14 @@ class NetTopo{
     //textMode(CENTER);
     text(name,x+150,y);
   }
+
+    void texto(int name){
+    fill(255,201);
+    textSize(49);
+    text(name,14,23);
+    fill(0,255);
+    textSize(45);
+
+    text(name,14,23);
+}
 }

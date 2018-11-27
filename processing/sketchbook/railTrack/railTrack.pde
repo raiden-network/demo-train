@@ -19,7 +19,7 @@ import processing.net.*;
   PVector[] railSegmentsLookUp;
 
   float trainPosition; // in units of segments
-  float trainSpeed = .01; // in units of segments
+  float trainSpeed = .01;
 
   float railOffset = .84; //starting point in percent of racetrack
 
@@ -35,6 +35,7 @@ import processing.net.*;
 
   NetTopo topo = new NetTopo();
   TunnelLandscape land = new TunnelLandscape();
+  TunnelLandscape landTopo = new TunnelLandscape();
 
 void setup(){
   fullScreen(FX2D);
@@ -51,10 +52,10 @@ void setup(){
   }
   frameRate(15);
   railSegmentsLookUp = generateRailLookUp(numberOfSegments);
-  //trainPosition = railSegmentsLookUp.length;
 
   topo.dsetup();
   land.tsetup();
+  landTopo.tsetup();
 
   background(0);
 }
@@ -71,6 +72,8 @@ void draw(){
   clearRails();
   drawRails();
   drawBarcode(xBarcode,yBarcode);
+
+
 }
 
 // generate lookup-table for racetrack shaped rail-coordinates
@@ -384,7 +387,15 @@ void keyPressed(){
     if(displayWidth>1440){
       land.drawMountain(0.29,0.15,9.4,6.88,0.48,1.,26.73,29.07,tmp_ch);
     }else{
-      land.drawMountain(0.29,0.15,11,6.88,0.48,1.,9,11,tmp_ch);      
+      land.drawMountain(0.29,0.15,11,.6,0.48,1.,10,12,tmp_ch);      
+      // pushMatrix();
+      //   translate(100,0);
+      //   landTopo.drawMountain(.29,.15,.1,.4,0.48,1.,0.5,0.55,1);      
+      // popMatrix();
+      // pushMatrix();
+      //   translate(100,130);
+      //   landTopo.drawMountain(.29,.15,.1,.4,0.48,1.,0.5,0.55,3);      
+      // popMatrix();
     }
     drawBarcode(xBarcode,yBarcode);
     drawTopologie(tmp_ch);
