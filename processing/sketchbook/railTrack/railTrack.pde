@@ -19,13 +19,15 @@ import processing.net.*;
   PVector[] railSegmentsLookUp;
 
   float trainPosition; // in units of segments
-  float trainSpeed = .01; // in units of segments
+  float trainSpeed = .01;
 
   float railOffset = .84; //starting point in percent of racetrack
 
   int xBarcode = 545;
   int yBarcode = 1450;
 
+  int current_channel=0;
+  int last_channel=0;
 
 
   final color redColor = color(255, 0, 0);
@@ -35,9 +37,11 @@ import processing.net.*;
 
   NetTopo topo = new NetTopo();
   TunnelLandscape land = new TunnelLandscape();
+  TunnelLandscape landTopo = new TunnelLandscape();
 
 void setup(){
   fullScreen(FX2D);
+  smooth(8);
     println("w "+width+" "+displayWidth);
     println("h "+height+" "+displayHeight);
   if(debug)println(displayWidth);
@@ -51,10 +55,10 @@ void setup(){
   }
   frameRate(15);
   railSegmentsLookUp = generateRailLookUp(numberOfSegments);
-  //trainPosition = railSegmentsLookUp.length;
 
   topo.dsetup();
   land.tsetup();
+  landTopo.tsetup();
 
   background(0);
 }
@@ -71,6 +75,9 @@ void draw(){
   clearRails();
   drawRails();
   drawBarcode(xBarcode,yBarcode);
+  drawTopologie(current_channel);
+
+
 }
 
 // generate lookup-table for racetrack shaped rail-coordinates
@@ -341,12 +348,13 @@ void readClient(){
   default:
     int n = int(c) - 48;
     if(n < 7){
+    current_channel = n;
      if(debug)println("receiver " + n + " will get paid"); 
-     text("receiver " + n + "\nwill get paid", width/4., height/2);
+     text("receiver " + current_channel + "\nwill get paid", width/4., height/2);
      background(0);
-     land.drawMountain(0.29,0.15,0.0094,6.88,0.48,1.,26.73,29.07,n);
+     land.drawMountain(0.29,0.15,0.0094,6.88,0.48,1.,26.73,29.07,current_channel);
      clearInnerRegion();
-     drawTopologie(n%7);
+     drawTopologie(current_channel%7);
      break;
     }
   
@@ -380,14 +388,22 @@ void keyPressed(){
    else if(keyCode == 32){
     background(0);
     setTrainSpeed();
-    int tmp_ch = int(random(7))+1;
+    current_channel = int(random(7))+1;
     if(displayWidth>1440){
-      land.drawMountain(0.29,0.15,9.4,6.88,0.48,1.,26.73,29.07,tmp_ch);
+      land.drawMountain(0.29,0.15,9.4,6.88,0.48,1.,26.73,29.07,current_channel);
     }else{
-      land.drawMountain(0.29,0.15,11,6.88,0.48,1.,9,11,tmp_ch);      
+      land.drawMountain(0.29,0.15,11,.6,0.48,1.,10,12,current_channel);      
+      // pushMatrix();
+      //   translate(100,0);
+      //   landTopo.drawMountain(.29,.15,.1,.4,0.48,1.,0.5,0.55,1);      
+      // popMatrix();
+      // pushMatrix();
+      //   translate(100,130);
+      //   landTopo.drawMountain(.29,.15,.1,.4,0.48,1.,0.5,0.55,3);      
+      // popMatrix();
     }
     drawBarcode(xBarcode,yBarcode);
-    drawTopologie(tmp_ch);
+    drawTopologie(current_channel);
      
    }
   else{
