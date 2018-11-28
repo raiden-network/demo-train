@@ -20,15 +20,31 @@ class TunnelLandscape{
     c1 = color(204, 102, 0);
     c2 = color(0, 102, 153);
     colors = new color[8];
-    colors[0] = color(#ffffff); //white
-    colors[1] = color(#808000); //olive
-    colors[2] = color(#ffe119); //gelb
-    colors[3] = color(#bfef45); //lime
-    colors[4] = color(#42d4f4); //cyan
-    colors[5] = color(#f032e6); //magenta
-    colors[6] = color(#911eb4); //purple
-    colors[7] = color(#f58231); //orange
-    r1=colors[int(random(7))];
+    // colors[0] = color(#ffffff); //white
+    // colors[1] = color(#808000); //olive
+    // colors[2] = color(#ffe119); //gelb
+    // colors[3] = color(#bfef45); //lime
+    // colors[4] = color(#42d4f4); //cyan
+    // colors[5] = color(#f032e6); //magenta
+    // colors[6] = color(#911eb4); //purple
+    // colors[7] = color(#f58231); //orange
+    r1=colors[int(random(7))]; //what is this shit?
+
+    // Blau=#0066DD
+    // Türkis = #00DDCC
+    // Grün = #BBDD00
+    // Orange = #DDBB00
+    // Rot = #DD1100
+    // Pink = #DD00AA
+
+    colors[0] = color(#BBBBBB); 
+    colors[1] = color(#0066DD); 
+    colors[2] = color(#00DDCC); 
+    colors[3] = color(#BBDD00); 
+    colors[4] = color(#DDBB00); 
+    colors[5] = color(#DD1100); 
+    colors[6] = color(#DD00AA); 
+    colors[7] = color(#DD00AA); 
   
     //noLoop();
   }
