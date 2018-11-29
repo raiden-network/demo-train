@@ -74,9 +74,9 @@ void draw(){
   clearRails();
   drawRails();
   drawBarcode(xBarcode,yBarcode);
-  if(frameCount%50==0){
-    drawTopologie(current_channel);
-  }
+  //if(frameCount%50==0){
+  //  drawTopologie(current_channel);
+  //}
 
 }
 
