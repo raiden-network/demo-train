@@ -41,7 +41,8 @@ import processing.net.*;
 
 void setup(){
   fullScreen(FX2D);
-  smooth(8);
+  noSmooth();
+  //smooth(8);
     println("w "+width+" "+displayWidth);
     println("h "+height+" "+displayHeight);
   if(debug)println(displayWidth);
@@ -75,8 +76,9 @@ void draw(){
   clearRails();
   drawRails();
   drawBarcode(xBarcode,yBarcode);
-  drawTopologie(current_channel);
-
+  if(frameCount%50==0){
+    drawTopologie(current_channel);
+  }
 
 }
 
