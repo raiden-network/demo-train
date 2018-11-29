@@ -70,10 +70,6 @@ class TunnelLandscape{
 
       float r_rand = random(r_jitter);
       t_stepsize/=100000;
-      println("w "+width+" "+displayWidth);
-      println("h "+height+" "+displayHeight);
-
-      
       
       //outer loop creates radial virtual lines
       for (float r=0; r<TWO_PI;r+= r_stepsize + r_rand) {

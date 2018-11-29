@@ -43,8 +43,6 @@ void setup(){
   fullScreen(FX2D);
   noSmooth();
   //smooth(8);
-    println("w "+width+" "+displayWidth);
-    println("h "+height+" "+displayHeight);
   if(debug)println(displayWidth);
   if(displayWidth>1440){
    railRadius = 630; // this is 
@@ -308,8 +306,12 @@ void drawTrainText(float scale, float tp){
 
 // draw network topologie in inner region
 void drawTopologie(int pch){
+  int xoff = 300;
+  int yoff = 0;
+  topo.topoSizex = 600;
+  topo.topoSizey = 900;
   pushMatrix();
-    translate(width/2-topo.topoSizex/2,height/2-topo.topoSizey/2);
+    translate(width/2-topo.topoSizex/2 + xoff,height/2-topo.topoSizey/2 + yoff);
     topo.ddraw(pch);
   popMatrix();
   //text()
@@ -395,18 +397,9 @@ void keyPressed(){
       land.drawMountain(0.29,0.15,9.4,6.88,0.48,1.,26.73,29.07,current_channel);
     }else{
       land.drawMountain(0.29,0.15,11,.6,0.48,1.,10,12,current_channel);      
-      // pushMatrix();
-      //   translate(100,0);
-      //   landTopo.drawMountain(.29,.15,.1,.4,0.48,1.,0.5,0.55,1);      
-      // popMatrix();
-      // pushMatrix();
-      //   translate(100,130);
-      //   landTopo.drawMountain(.29,.15,.1,.4,0.48,1.,0.5,0.55,3);      
-      // popMatrix();
     }
     drawBarcode(xBarcode,yBarcode);
     drawTopologie(current_channel);
-     
    }
   else{
    if(debug)println(keyCode);
