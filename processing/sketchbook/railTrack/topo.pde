@@ -8,7 +8,7 @@ class NetTopo{
   // Wiggler[] wiggls = new Wiggler[noKnots];
   TunnelLandscape[] tunnels = new TunnelLandscape[noKnots];
   int topoSizex = 600;
-  int topoSizey = 600;
+  int topoSizey = 900;
   int blobSize = topoSizex/18;
   int[][] channels = new int [noKnots][6];
   int[] ch0 = {0};

@@ -308,8 +308,8 @@ void drawTrainText(float scale, float tp){
 void drawTopologie(int pch){
   int xoff = 300;
   int yoff = 0;
-  topo.topoSizex = 600;
-  topo.topoSizey = 900;
+  //topo.topoSizex = 600;
+  //topo.topoSizey = 900;
   pushMatrix();
     translate(width/2-topo.topoSizex/2 + xoff,height/2-topo.topoSizey/2 + yoff);
     topo.ddraw(pch);
