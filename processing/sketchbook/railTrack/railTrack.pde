@@ -8,7 +8,7 @@ import processing.net.*;
 
   Client pyClient = new Client(this, "127.0.0.1", 5204);
 
-  int numberOfSegments = 42; // resolution of track
+  int numberOfSegments = 142; // resolution of track
 
   int realNumberOfSegments;
   int loopCounter = 0;
@@ -70,10 +70,14 @@ void draw(){
     pyClient = new Client(this, "127.0.0.1", 5204);
   }
   
+  float trainP = (int((millis()-oldLoopCounter)*trainSpeed)%realNumberOfSegments);
+  
   readClient();
   clearRails();
-  drawRails();
+  drawTrain(2, trainP, 12,50);
+  drawRails(trainP);
   drawBarcode(xBarcode,yBarcode);
+
   //if(frameCount%50==0){
   //  drawTopologie(current_channel);
   //}
@@ -136,19 +140,19 @@ PVector[] generateRailLookUp(int numberOfSegs){
   return tmp_vecs;
 }
 
-void drawRails(){
-  float trainP = (int((millis()-oldLoopCounter)*trainSpeed)%realNumberOfSegments);
+void drawRails(float tp){
+  //float tp = (int((millis()-oldLoopCounter)*trainSpeed)%realNumberOfSegments);
     beginShape(QUAD_STRIP);
   //vertex(width/2.,height/2.);
   for(int segId = 0; segId < railSegmentsLookUp.length*1; segId++){
     
     // begin new shape on train position
-    if( trainP == segId){
+    if( tp == segId){
       endShape(); 
       //beginShape(QUAD_STRIP);
       beginShape(QUADS);
     }   
-    int c = getSegColor(trainP, segId);
+    int c = getSegColor(tp, segId);
     printSeg(railSegmentsLookUp[segId].x, railSegmentsLookUp[segId].y, c, segId);   
   }
   endShape();
@@ -210,7 +214,7 @@ void drawLandscape(){
 void clearRails(){
   noFill();
   stroke(0);
-  strokeWeight(65);
+  strokeWeight(71);
   beginShape();
   for (PVector v : railSegmentsLookUp) {
     vertex(v.x, v.y);
@@ -270,25 +274,28 @@ void drawTextBox(int x, int y){
 }
 
 // draw something below the train
-void drawTrain(float scale, float tp, float range){
-  PVector v;
-  noFill();
-  stroke(255,234,98,70);
-  strokeWeight(4);
-  float scale2 = scale - 0.4;
-  
-  beginShape();
-    for(int i = int(sqrt((tp - range)*(tp - range)));  i < int(sqrt((tp + range)*(tp + range))); i++){
-      v = railSegmentsLookUp[i % railSegmentsLookUp.length];
-      vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));  
-    }
-   endShape();
-   
-   v = railSegmentsLookUp[int(tp) % railSegmentsLookUp.length];
-   line(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
-   
-   fill(0);
-   ellipse(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),70,50);
+void drawTrain(float scale, float tp, float range, float sw){
+    
+
+	PVector v;
+	noFill();
+	stroke(255,234,240,210);
+	strokeWeight(sw);
+	float scale2 = scale - 0.4;
+
+	beginShape();
+	for(int i = int(sqrt((tp - range)*(tp - range)));  i < int(sqrt((tp + range)*(tp + range))); i+=6){
+	  v = railSegmentsLookUp[(i+railSegmentsLookUp.length/2) % railSegmentsLookUp.length];
+	  strokeWeight(sw+random(10));
+	  vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));  
+	}
+	endShape();
+
+	// v = railSegmentsLookUp[int(tp) % railSegmentsLookUp.length];
+	// line(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
+
+	// fill(0);
+	// ellipse(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),70,50);
 }
 
 // draw text that follows the train
