@@ -56,7 +56,7 @@ void setup(){
    railRadius = 330; // this is
    railLength = 500; // for the laptop screen
   }
-  frameRate(15);
+  frameRate(25);
   railSegmentsLookUp = generateRailLookUp(numberOfSegments);
 
   topo.dsetup();
