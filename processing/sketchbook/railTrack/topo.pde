@@ -7,8 +7,8 @@ class NetTopo{
   PVector[] vecs = new PVector[noKnots];
   // Wiggler[] wiggls = new Wiggler[noKnots];
   TunnelLandscape[] tunnels = new TunnelLandscape[noKnots];
-  int topoSizex = 900*2/3.;
-  int topoSizey = 900*2/3.;
+  int topoSizex = int(900*2/3.);
+  int topoSizey = int(900*2/3.);
   int blobSize = topoSizex/18;
   int[][] channels = new int [noKnots][6];
   int[] ch0 = {0};
