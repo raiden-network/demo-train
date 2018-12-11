@@ -7,7 +7,7 @@ class NetTopo{
   PVector[] vecs = new PVector[noKnots];
   // Wiggler[] wiggls = new Wiggler[noKnots];
   TunnelLandscape[] tunnels = new TunnelLandscape[noKnots];
-  int topoSizex = 600;
+  int topoSizex = 900;
   int topoSizey = 900;
   int blobSize = topoSizex/18;
   int[][] channels = new int [noKnots][6];
@@ -40,6 +40,24 @@ class NetTopo{
   
    // the position of the blobs is also hardcoded below
    // but with respect to the overall size of the diagram
+   // vertical positioning
+   // vecs[6] = new PVector(topoSizex/5,topoSizey*2/7);
+   // vecs[5] = new PVector(topoSizex/4,topoSizey*41/55);
+   // vecs[4] = new PVector(topoSizex/3,topoSizey*8/15.);
+   // vecs[3] = new PVector(topoSizex*22./33.,topoSizey*25./34.);
+   // vecs[2] = new PVector(topoSizex*2./3.,topoSizey*8/15.);
+   // vecs[1] = new PVector(topoSizex/2.,topoSizey*35./90.);
+   // vecs[0] = new PVector(topoSizex/2.,topoSizey/7.);
+   
+   /*
+
+        4 - 5
+       /
+  0 - 1 - 6
+       \
+        2 - 3   
+
+
    vecs[6] = new PVector(topoSizex/5,topoSizey*2/7);
    vecs[5] = new PVector(topoSizex/4,topoSizey*41/55);
    vecs[4] = new PVector(topoSizex/3,topoSizey*8/15.);
@@ -47,7 +65,20 @@ class NetTopo{
    vecs[2] = new PVector(topoSizex*2./3.,topoSizey*8/15.);
    vecs[1] = new PVector(topoSizex/2.,topoSizey*35./90.);
    vecs[0] = new PVector(topoSizex/2.,topoSizey/7.);
-   
+
+   */
+
+
+  //hotizontal positioning
+  vecs[6] = new PVector(topoSizex*0.7,topoSizey*0.5);
+  vecs[5] = new PVector(topoSizex*0.9,topoSizey*0.33);
+  vecs[4] = new PVector(topoSizex*0.6,topoSizey*0.33);
+  vecs[3] = new PVector(topoSizex*0.9,topoSizey*0.66);
+  vecs[2] = new PVector(topoSizex*0.6,topoSizey*0.66);
+  vecs[1] = new PVector(topoSizex*0.4,topoSizey*0.5);
+  vecs[0] = new PVector(topoSizex*0.1,topoSizey*0.5);
+
+
   //  for(int i = 0; i < vecs.length; i++){
   //    wiggls[i] = new Wiggler(int(vecs[i].x), int(vecs[i].y),blobSize,str(i));
   //  }

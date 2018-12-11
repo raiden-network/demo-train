@@ -313,7 +313,7 @@ void drawTrainText(float scale, float tp){
 
 // draw network topologie in inner region
 void drawTopologie(int pch){
-  int xoff = 300;
+  int xoff = -100;
   int yoff = 0;
   //topo.topoSizex = 600;
   //topo.topoSizey = 900;
