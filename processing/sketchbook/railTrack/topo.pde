@@ -7,8 +7,8 @@ class NetTopo{
   PVector[] vecs = new PVector[noKnots];
   // Wiggler[] wiggls = new Wiggler[noKnots];
   TunnelLandscape[] tunnels = new TunnelLandscape[noKnots];
-  int topoSizex = 900;
-  int topoSizey = 900;
+  int topoSizex = 1800;
+  int topoSizey = 1800;
   int blobSize = topoSizex/18;
   int[][] channels = new int [noKnots][6];
   int[] ch0 = {0};
@@ -20,7 +20,7 @@ class NetTopo{
   int[] ch6 = {0,1,6};
 
 
-  color col_higlight = color(30,123,34,130);
+  color col_higlight = color(30,123,34,230);
 
   NetTopo(){
     // no con =D
@@ -123,8 +123,8 @@ class NetTopo{
   void highlightChannel(int ch){
       strokeWeight(14);
       stroke(col_higlight);
-      //noFill();
-      fill(3,73,4,30);
+      noFill();
+      //fill(3,73,4,30);
       beginShape();
         for(int c : channels[ch]){
           vertex(vecs[c].x, vecs[c].y);
@@ -133,7 +133,7 @@ class NetTopo{
       endShape();
 
       noStroke();
-      fill(3,25,4,30);
+      //fill(3,25,4,30);
       beginShape();
         for(int c : channels[ch]){
           ellipse(vecs[c].x, vecs[c].y,50,40);
