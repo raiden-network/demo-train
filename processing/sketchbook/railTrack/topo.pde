@@ -106,7 +106,7 @@ class NetTopo{
           // void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min,float t_max, float rad_min, float rad_max, int colorId) 
         //landTopo.drawMountain(.1,.15,.1,9.04,0.28,1.,0.3,1.9,_ch%noKnots);
         //landTopo.drawMountain(.7,.55,.6,1,.98,1.,0.4,0.7,_ch%noKnots);
-        landTopo.drawMountain(.1,.15,.1,.04,.48,2.,0.4,0.9,_ch%noKnots);
+        landTopo.drawMountain(.1,.15,.1,.04,.48,2.,1.7,1.95,_ch%noKnots);
         translate(width/2,height/2);
         texto(_ch,current_channel);
         _ch++;
