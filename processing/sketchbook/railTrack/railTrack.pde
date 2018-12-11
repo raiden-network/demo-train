@@ -44,9 +44,13 @@ void setup(){
   noSmooth();
   //smooth(8);
   if(debug)println(displayWidth);
-  if(displayWidth>1440){
-   railRadius = 630; // this is 
-   railLength = 1300; // for the big screen
+  // if(displayWidth>1440){
+  //  railRadius = 630; // this is 
+  //  railLength = 1300; // for the big screen
+  // }
+  if(displayWidth>1000){
+   railRadius = 315; // this is 
+   railLength = 650; // for the big screen
   }
   else{
    railRadius = 330; // this is
