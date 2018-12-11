@@ -41,8 +41,8 @@ import processing.net.*;
 
 void setup(){
   fullScreen(FX2D);
-  noSmooth();
-  //smooth(8);
+  //noSmooth();
+  smooth(8);
   if(debug)println(displayWidth);
   // if(displayWidth>1440){
   //  railRadius = 630; // this is 
