@@ -48,9 +48,13 @@ void setup(){
   //  railRadius = 630; // this is 
   //  railLength = 1300; // for the big screen
   // }
-  if(displayWidth>1000){
-   railRadius = 315; // this is 
-   railLength = 650; // for the big screen
+  // if(displayWidth>1000){
+  //  railRadius = 315; // this is 
+  //  railLength = 650; // for the big screen
+  // }
+  if(displayWidth>700){
+   railRadius = 315*2/3.; // this is 
+   railLength = 650*2/3.; // for the big screen
   }
   else{
    railRadius = 330; // this is
