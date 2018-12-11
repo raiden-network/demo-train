@@ -8,7 +8,7 @@ import processing.net.*;
 
   Client pyClient = new Client(this, "127.0.0.1", 5204);
 
-  int numberOfSegments = 142; // resolution of track
+  int numberOfSegments = 242; // resolution of track
 
   int realNumberOfSegments;
   int loopCounter = 0;
