@@ -121,7 +121,7 @@ class NetTopo{
  }
   
   void highlightChannel(int ch){
-      strokeWeight(7);
+      strokeWeight(14);
       stroke(col_higlight);
       //noFill();
       fill(3,73,4,30);
