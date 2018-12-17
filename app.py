@@ -96,9 +96,9 @@ class TrainApp:
         log.info("Started subprocess for Frontend")
         time.sleep(5)
         server = Server()
-        time.sleep(5)
+        time.sleep(2)
         server.start()
-        time.sleep(5)
+        time.sleep(2)
         self.track_control.power_on()
         while True:
             # Pick a random receiver
