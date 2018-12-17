@@ -3,6 +3,7 @@ import io
 
 import requests
 from PIL import Image
+
 try:
     import picamera
 except ModuleNotFoundError:
@@ -18,12 +19,12 @@ def start_scanning():
     camera.resolution = (640, 240)
     # camera.resolution = (1280, 480)
     camera.framerate = 10
-    camera.color_effects = (128,128)
-    camera.contrast = 100 
+    camera.color_effects = (128, 128)
+    camera.contrast = 100
     camera.ISO = 30
-    #camera.zoom = (0.41, 0.40, 0.22, 0.30) 
+    # camera.zoom = (0.41, 0.40, 0.22, 0.30)
     camera.zoom = (0.35, 0.35, 0.28, 0.20)
-    #camera.exposure_mode = "backlight"
+    # camera.exposure_mode = "backlight"
     camera.start_preview()
     time.sleep(2)
     while True:
@@ -32,14 +33,15 @@ def start_scanning():
         stream.seek(0)
         image = Image.open(stream)
         width, heigh = image.size
-        image = image.crop(((width - 0.8*width), (heigh - 0.7* heigh), width*0.85, heigh*0.9))
+        image = image.crop(
+            ((width - 0.8 * width), (heigh - 0.7 * heigh), width * 0.85, heigh * 0.9))
         # image.save("/home/pi/Images/" + str(time.monotonic()) + ".jpg")
         try:
             data = decode(image)[0].data
             camera.close()
             return eval(data.decode('utf8'))
         except IndexError:
-             print("Couldn't find any QR codes")
+            print("Couldn't find any QR codes")
         print("Stream reading and QR detection took us %s s" % (time.monotonic() - start))
         stream = io.BytesIO()
 
@@ -67,10 +69,14 @@ def get_channels():
 
 def run():
     # We assume that Raiden is already started
+    previous_receiver_info = (0, 0)
     while True:
         address_id, nonce = start_scanning()
+        if (address_id, nonce) == previous_receiver_info:
+            continue
         address = RECEIVER_LIST[address_id]
         send_payment(address, nonce)
+        previous_receiver_info = (address_id, nonce)
 
 
 if __name__ == "__main__":
