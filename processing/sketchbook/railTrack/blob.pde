@@ -65,6 +65,7 @@ class Wiggler {
 
   void display() {
     pushMatrix();
+    pushMatrix();
     translate(x+random(2), y+random(2));
     shape(s);
     popMatrix();
