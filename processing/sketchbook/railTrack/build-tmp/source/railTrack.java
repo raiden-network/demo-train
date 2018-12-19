@@ -41,8 +41,8 @@ public class railTrack extends PApplet {
 
   float railOffset = .84f; //starting point in percent of racetrack
 
-  int xBarcode = 545;
-  int yBarcode = 1450;
+  int xBarcode = PApplet.parseInt(545*2.f/3.f/4.f);
+  int yBarcode = PApplet.parseInt(1450*2/3.f/4.f);
 
   int current_channel=0;
   int last_channel=0;
@@ -100,7 +100,7 @@ public void draw(){
   
   readClient();
   clearRails();
-  drawTrain(2, trainP, 12,50);
+  drawTrain(2, trainP, 12,40);
   drawRails(trainP);
   drawBarcode(xBarcode,yBarcode);
 

@@ -10,6 +10,8 @@ import processing.net.*;
 
   int numberOfSegments = 42; // resolution of track
 
+  float screenScale = 2./3./4.;
+
   int realNumberOfSegments;
   int loopCounter = 0;
   int oldLoopCounter = 1;
@@ -23,8 +25,8 @@ import processing.net.*;
 
   float railOffset = .84; //starting point in percent of racetrack
 
-  int xBarcode = 545*2./3./4.;
-  int yBarcode = 1450*2/3./4.;
+  int xBarcode = int(545*screenScale);
+  int yBarcode = int(1450*screenScale);
 
   int current_channel=0;
   int last_channel=0;
@@ -53,8 +55,8 @@ void setup(){
   //  railLength = 650; // for the big screen
   // }
   if(displayWidth>700){
-   railRadius = 315*2/3.; // this is 
-   railLength = 650*2/3.; // for the big screen
+   railRadius = 630*screenScale; // this is 
+   railLength = 1300*screenScale; // for the big screen
   }
   else{
    railRadius = 330; // this is
@@ -266,7 +268,7 @@ void drawBarcode(int x, int y){
   noStroke();
   noFill();
 
-  image(img,0,0,465,83);
+  image(img,0,0,465*screenScale,83*screenScale);
 
   // beginShape();
   // texture(img);
