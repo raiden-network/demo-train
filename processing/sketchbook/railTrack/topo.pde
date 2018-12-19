@@ -44,7 +44,7 @@ class NetTopo{
   int[] ch6 = {0,1,6};  
 
 
-  color col_higlight = color(30,123,34,230);
+  // color col_higlight = color(30,123,34,230);
 
 
   color col_higlight = color(30,123,34,130);

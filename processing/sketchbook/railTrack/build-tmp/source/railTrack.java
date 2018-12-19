@@ -42,6 +42,7 @@ public class railTrack extends PApplet {
   float trainSpeed = .0229f;
   float[] trainSpeeds = {trainSpeed,trainSpeed,trainSpeed};
 
+
   float railOffset = .75f; //starting point in percent of racetrack
 
   int xBarcode = PApplet.parseInt(545*screenScale);
@@ -64,6 +65,7 @@ public void setup(){
   
   //noSmooth();
   
+
   if(debug)println(displayWidth);
   // if(displayWidth>1440){
   //  railRadius = 630; // this is 
@@ -327,7 +329,7 @@ public void drawTrain(float scale, float tp, float range, float sw){
 	noFill();
 	float scale2 = scale - 0.4f;
 
-	stroke(255,234,240,40);
+	stroke(255,234,240,50);
 	strokeWeight(sw);
 
 	beginShape();
@@ -456,6 +458,7 @@ public void keyPressed(){
     }
     drawBarcode(xBarcode,yBarcode);
     drawTopologie(current_channel);
+
    }
   else{
    if(debug)println(keyCode);
@@ -589,6 +592,7 @@ class TunnelLandscape{
     b2 = color(0);
     c1 = color(204, 102, 0);
     c2 = color(0, 102, 153);
+
     colors = new int[7];
     // colors[0] = color(#ffffff); //white
     // colors[1] = color(#808000); //olive
@@ -599,6 +603,7 @@ class TunnelLandscape{
     // colors[6] = color(#911eb4); //purple
     // colors[7] = color(#f58231); //orange
     //r1=colors[int(random(7))]; //what is this shit?
+
 
     // Blau=#0066DD
     // Türkis = #00DDCC
@@ -812,7 +817,10 @@ class NetTopo{
   int[] ch6 = {0,1,6};  
 
 
-  int col_higlight = color(30,123,34,230);
+  // color col_higlight = color(30,123,34,230);
+
+
+  int col_higlight = color(30,123,34,130);
 
   NetTopo(){
     // no con =D
@@ -879,6 +887,7 @@ class NetTopo{
   vecs[2] = new PVector(topoSizex*0.6f,topoSizey*0.66f);
   vecs[1] = new PVector(topoSizex*0.4f,topoSizey*0.5f);
   vecs[0] = new PVector(topoSizex*0.1f,topoSizey*0.5f);
+
   }
   
   public void ddraw(int current_channel){
@@ -908,6 +917,12 @@ class NetTopo{
         _ch++;
       popMatrix();
     }
+    
+    // for (Wiggler w : wiggls){
+    //    // w.display();
+    //    // w.wiggle();
+    //    //w.texto();
+    // }
  }
   
   public void highlightChannel(int ch){
@@ -1019,9 +1034,6 @@ public void drawCircularNodeText(int name, int current_channel, float r) {
   int col_ring = 0xffCCCCCC;
   int col_text = 0xffEEEEEE;
   PFont f = createFont("Georgia",15,true);
-  
-
-
     textFont(f);
     // The text must be centered!
     textAlign(CENTER);
@@ -1068,6 +1080,7 @@ public void drawCircularNodeText(int name, int current_channel, float r) {
     popMatrix();
     // Move halfway again
     arclength += w/2;
+
   }
 }
 }
