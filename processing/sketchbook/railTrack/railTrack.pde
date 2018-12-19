@@ -259,6 +259,7 @@ void setTrainSpeed(){
      
      if(debug){
      	fill(255);
+     	println("new train speed: " + trainSpeed);
      	text("new train speed: " + trainSpeed, 100, 100);
      }
      
