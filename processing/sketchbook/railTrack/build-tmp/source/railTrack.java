@@ -42,7 +42,7 @@ public class railTrack extends PApplet {
   float trainSpeed = .0229f;
   float[] trainSpeeds = {trainSpeed,trainSpeed,trainSpeed};
 
-  float railOffset = .84f; //starting point in percent of racetrack
+  float railOffset = .80f; //starting point in percent of racetrack
 
   int xBarcode = PApplet.parseInt(545*screenScale);
   int yBarcode = PApplet.parseInt(1450*screenScale);
@@ -103,9 +103,10 @@ public void draw(){
   
   readClient();
   clearRails();
-  drawTrain(2, trainP, 15,32);
-  drawTrain(2, trainP, 10,22);
-  drawTrain(2, trainP, 5,12);
+  drawTrain(2, trainP, 5,42);
+  drawTrain(2, trainP, 10,32);
+  drawTrain(2, trainP, 15,22);
+  drawTrain(2, trainP, 20,12);
   drawRails(trainP);
   drawBarcode(xBarcode,yBarcode);
 
@@ -113,9 +114,7 @@ public void draw(){
   //  drawTopologie(current_channel);
   //}
 
-  if(debug){
-  	println("frameRate: "+frameRate);
-  }
+  if(debug)println("frameRate: "+frameRate);
 
 }
 
@@ -328,7 +327,7 @@ public void drawTrain(float scale, float tp, float range, float sw){
 	noFill();
 	float scale2 = scale - 0.4f;
 
-	stroke(255,234,240,80);
+	stroke(255,234,240,40);
 	strokeWeight(sw);
 
 	beginShape();
