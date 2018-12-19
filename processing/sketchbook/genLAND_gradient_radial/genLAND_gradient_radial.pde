@@ -26,7 +26,7 @@ void draw() {
   //setGradient(50, 90, 540, 80, c1, c2, Y_AXIS);
   //setGradient(50, 190, 540, 80, c2, c1, X_AXIS);
   drawMountain(0.5,0.1,0.01,5,0.2,400,500);
-  vertexInterpolation();
+  //vertexInterpolation();
   
 }
 

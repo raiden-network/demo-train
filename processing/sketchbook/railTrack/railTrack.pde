@@ -8,7 +8,7 @@ import processing.net.*;
 
   Client pyClient = new Client(this, "127.0.0.1", 5204);
 
-  int numberOfSegments = 82; // resolution of track
+  int numberOfSegments = 42; // resolution of track
 
   int realNumberOfSegments;
   int loopCounter = 0;
@@ -78,7 +78,7 @@ void draw(){
     pyClient = new Client(this, "127.0.0.1", 5204);
   }
   
-  float trainP = (int((millis()-oldLoopCounter)*trainSpeed)%realNumberOfSegments);
+  float trainP = (int((millis()-oldLoopCounter)*trainSpeed)%railSegmentsLookUp.length);
   
   readClient();
   clearRails();
@@ -193,6 +193,19 @@ void printSeg(float x, float y, color c, int id){
     vertex(x+random(railJitter),y+random(railJitter));
 }
 
+
+void clearRails(){
+  noFill();
+  stroke(0);
+  strokeWeight(71);
+  beginShape();
+  for (PVector v : railSegmentsLookUp) {
+    vertex(v.x, v.y);
+  }
+  vertex(railSegmentsLookUp[0].x,railSegmentsLookUp[0].y);
+  endShape();
+}
+
 void clearInnerRegion(){
   fill(0);
   stroke(0);
@@ -223,17 +236,6 @@ void drawLandscape(){
 }
 
 // clear region below the rails
-void clearRails(){
-  noFill();
-  stroke(0);
-  strokeWeight(71);
-  beginShape();
-  for (PVector v : railSegmentsLookUp) {
-    vertex(v.x, v.y);
-  }
-  vertex(railSegmentsLookUp[0].x,railSegmentsLookUp[0].y);
-  endShape();
-}
 
 // calculate speed from trigger and set it
 void setTrainSpeed(){

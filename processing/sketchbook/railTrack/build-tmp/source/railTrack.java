@@ -26,7 +26,7 @@ public class railTrack extends PApplet {
 
   Client pyClient = new Client(this, "127.0.0.1", 5204);
 
-  int numberOfSegments = 142; // resolution of track
+  int numberOfSegments = 42; // resolution of track
 
   int realNumberOfSegments;
   int loopCounter = 0;
@@ -59,18 +59,26 @@ public class railTrack extends PApplet {
 
 public void setup(){
   
+  //noSmooth();
   
-  //smooth(8);
   if(debug)println(displayWidth);
-  if(displayWidth>1440){
-   railRadius = 630; // this is 
-   railLength = 1300; // for the big screen
+  // if(displayWidth>1440){
+  //  railRadius = 630; // this is 
+  //  railLength = 1300; // for the big screen
+  // }
+  // if(displayWidth>1000){
+  //  railRadius = 315; // this is 
+  //  railLength = 650; // for the big screen
+  // }
+  if(displayWidth>700){
+   railRadius = 315*2/3.f; // this is 
+   railLength = 650*2/3.f; // for the big screen
   }
   else{
    railRadius = 330; // this is
    railLength = 500; // for the laptop screen
   }
-  frameRate(15);
+  frameRate(25);
   railSegmentsLookUp = generateRailLookUp(numberOfSegments);
 
   topo.dsetup();
@@ -88,7 +96,7 @@ public void draw(){
     pyClient = new Client(this, "127.0.0.1", 5204);
   }
   
-  float trainP = (PApplet.parseInt((millis()-oldLoopCounter)*trainSpeed)%realNumberOfSegments);
+  float trainP = (PApplet.parseInt((millis()-oldLoopCounter)*trainSpeed)%railSegmentsLookUp.length);
   
   readClient();
   clearRails();
@@ -99,6 +107,10 @@ public void draw(){
   //if(frameCount%50==0){
   //  drawTopologie(current_channel);
   //}
+
+  if(debug){
+  	println("frameRate: "+frameRate);
+  }
 
 }
 
@@ -199,6 +211,19 @@ public void printSeg(float x, float y, int c, int id){
     vertex(x+random(railJitter),y+random(railJitter));
 }
 
+
+public void clearRails(){
+  noFill();
+  stroke(0);
+  strokeWeight(71);
+  beginShape();
+  for (PVector v : railSegmentsLookUp) {
+    vertex(v.x, v.y);
+  }
+  vertex(railSegmentsLookUp[0].x,railSegmentsLookUp[0].y);
+  endShape();
+}
+
 public void clearInnerRegion(){
   fill(0);
   stroke(0);
@@ -229,17 +254,6 @@ public void drawLandscape(){
 }
 
 // clear region below the rails
-public void clearRails(){
-  noFill();
-  stroke(0);
-  strokeWeight(71);
-  beginShape();
-  for (PVector v : railSegmentsLookUp) {
-    vertex(v.x, v.y);
-  }
-  vertex(railSegmentsLookUp[0].x,railSegmentsLookUp[0].y);
-  endShape();
-}
 
 // calculate speed from trigger and set it
 public void setTrainSpeed(){
@@ -331,7 +345,7 @@ public void drawTrainText(float scale, float tp){
 
 // draw network topologie in inner region
 public void drawTopologie(int pch){
-  int xoff = 300;
+  int xoff = -50;
   int yoff = 0;
   //topo.topoSizex = 600;
   //topo.topoSizey = 900;
@@ -740,12 +754,13 @@ class TunnelLandscape{
 ///////////////////////////////////////////
 class NetTopo{
 
+  int[] colors = new int[8];
   int noKnots = 7;
   PVector[] vecs = new PVector[noKnots];
   // Wiggler[] wiggls = new Wiggler[noKnots];
-  TunnelLandscape[] tunnels = new TunnelLandscape[noKnots];
-  int topoSizex = 600;
-  int topoSizey = 900;
+  //TunnelLandscape[] tunnels = new TunnelLandscape[noKnots];
+  int topoSizex = PApplet.parseInt(900*2/3.f);
+  int topoSizey = PApplet.parseInt(900*2/3.f);
   int blobSize = topoSizex/18;
   int[][] channels = new int [noKnots][6];
   int[] ch0 = {0};
@@ -754,10 +769,10 @@ class NetTopo{
   int[] ch3 = {0,1,2,3};
   int[] ch4 = {0,1,4};
   int[] ch5 = {0,1,4,5};
-  int[] ch6 = {0,1,6};
+  int[] ch6 = {0,1,6};  
 
 
-  int col_higlight = color(30,123,34,130);
+  int col_higlight = color(30,123,34,230);
 
   NetTopo(){
     // no con =D
@@ -765,26 +780,58 @@ class NetTopo{
   
   public void dsetup(){
   
-   // this is fixed to 7 hardcoded channels
-   // if more channels should be added this has be be redone
-   channels[0] = ch0; 
-   channels[1] = ch1;
-   channels[2] = ch2;
-   channels[3] = ch3;
-   channels[4] = ch4; 
-   channels[5] = ch5;
-   channels[6] = ch6;
+  // this is fixed to 7 hardcoded channels
+  // if more channels should be added this has be be redone
+  channels[0] = ch0; 
+  channels[1] = ch1;
+  channels[2] = ch2;
+  channels[3] = ch3;
+  channels[4] = ch4; 
+  channels[5] = ch5;
+  channels[6] = ch6;
+
+  colors[0]= color(0xffBBBBBB); 
+  colors[1] = color(0xff0066DD); 
+  colors[2] = color(0xff00DDCC); 
+  colors[3] = color(0xffBBDD00); 
+  colors[4] = color(0xffDDBB00); 
+  colors[5] = color(0xffDD1100); 
+  colors[6] = color(0xffDD00AA); 
+  colors[7] = color(0xffDD00AA); 
   
    // the position of the blobs is also hardcoded below
    // but with respect to the overall size of the diagram
-   vecs[6] = new PVector(topoSizex/5,topoSizey*2/7);
-   vecs[5] = new PVector(topoSizex/4,topoSizey*41/55);
-   vecs[4] = new PVector(topoSizex/3,topoSizey*8/15.f);
-   vecs[3] = new PVector(topoSizex*22.f/33.f,topoSizey*25.f/34.f);
-   vecs[2] = new PVector(topoSizex*2.f/3.f,topoSizey*8/15.f);
-   vecs[1] = new PVector(topoSizex/2.f,topoSizey*35.f/90.f);
-   vecs[0] = new PVector(topoSizex/2.f,topoSizey/7.f);
+   // vertical positioning
+   // vecs[6] = new PVector(topoSizex/5,topoSizey*2/7);
+   // vecs[5] = new PVector(topoSizex/4,topoSizey*41/55);
+   // vecs[4] = new PVector(topoSizex/3,topoSizey*8/15.);
+   // vecs[3] = new PVector(topoSizex*22./33.,topoSizey*25./34.);
+   // vecs[2] = new PVector(topoSizex*2./3.,topoSizey*8/15.);
+   // vecs[1] = new PVector(topoSizex/2.,topoSizey*35./90.);
+   // vecs[0] = new PVector(topoSizex/2.,topoSizey/7.);
    
+   /*
+
+
+        4 - 5
+       /
+  0 - 1 - 6
+       \
+        2 - 3   
+
+   */
+
+
+  //hotizontal positioning
+  vecs[6] = new PVector(topoSizex*0.7f,topoSizey*0.5f);
+  vecs[5] = new PVector(topoSizex*0.9f,topoSizey*0.33f);
+  vecs[4] = new PVector(topoSizex*0.6f,topoSizey*0.33f);
+  vecs[3] = new PVector(topoSizex*0.9f,topoSizey*0.66f);
+  vecs[2] = new PVector(topoSizex*0.6f,topoSizey*0.66f);
+  vecs[1] = new PVector(topoSizex*0.4f,topoSizey*0.5f);
+  vecs[0] = new PVector(topoSizex*0.1f,topoSizey*0.5f);
+
+
   //  for(int i = 0; i < vecs.length; i++){
   //    wiggls[i] = new Wiggler(int(vecs[i].x), int(vecs[i].y),blobSize,str(i));
   //  }
@@ -812,7 +859,11 @@ class NetTopo{
           // void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min,float t_max, float rad_min, float rad_max, int colorId) 
         //landTopo.drawMountain(.1,.15,.1,9.04,0.28,1.,0.3,1.9,_ch%noKnots);
         //landTopo.drawMountain(.7,.55,.6,1,.98,1.,0.4,0.7,_ch%noKnots);
-        landTopo.drawMountain(.1f,.15f,.1f,.04f,.48f,2.f,0.4f,0.9f,_ch%noKnots);
+        //landTopo.drawMountain(.1,.15,.1,.04,.48,2.,0.8,0.95,_ch%noKnots);
+        
+  // void drawNode(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min, float rad_min, float rad_max, int colorId) { 
+
+        drawNode(.1f,.15f,.1f,.04f,0.48f,45.f,48.f,_ch);
         translate(width/2,height/2);
         texto(_ch,current_channel);
         _ch++;
@@ -827,10 +878,10 @@ class NetTopo{
  }
   
   public void highlightChannel(int ch){
-      strokeWeight(7);
+      strokeWeight(14);
       stroke(col_higlight);
-      //noFill();
-      fill(3,73,4,30);
+      noFill();
+      //fill(3,73,4,30);
       beginShape();
         for(int c : channels[ch]){
           vertex(vecs[c].x, vecs[c].y);
@@ -839,7 +890,7 @@ class NetTopo{
       endShape();
 
       noStroke();
-      fill(3,25,4,30);
+      //fill(3,25,4,30);
       beginShape();
         for(int c : channels[ch]){
           ellipse(vecs[c].x, vecs[c].y,50,40);
@@ -891,8 +942,52 @@ class NetTopo{
       text("active",xoff, yoff + _line * ypitch);
     }
   }
+
+  public void drawNode(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min, float rad_min, float rad_max, int colorId) { 
+  pushMatrix();
+  int b1 = color(255);
+  int b2 = color(0);
+  int c1 = color(204, 102, 0);
+  int c2 = color(0, 102, 153);
+  int r1 = color(random(255),random(255),random(255),random(255));
+
+    translate(width/2.f, height/2.f);
+    float r_rand = random(r_jitter);
+    PVector[] vs = generateRailLookUp(100);
+    t_stepsize/=100000;
+    
+    //outer loop creates radial virtual lines
+    for (float r=0; r<TWO_PI;r+= r_stepsize + r_rand) {
+      r_rand = random(r_jitter); 
+      
+      int rr = PApplet.parseInt(map(r,0,TWO_PI,0,vs.length));
+      println(rr);
+      
+      float rad_rand = random(rad_min,rad_max);
+      float t_rand = random(0.001f, t_stepsize);
+      
+      //inner circle connects to radial lines
+      for (float t=t_min; t<1; t+=t_rand) {
+        float tt = map(t, t_min, 1, 0, 1);
+        stroke(lerpColor(b2,colors[colorId%7],tt));
+        strokeWeight(strokew);
+        // check if map(t,0,rad_rand,0,1) is faster
+        
+        //two circles in the middle
+        line(rad_rand*t*cos(r),rad_rand*t*sin(r),rad_rand*t*cos(r+r_stepsize+r_rand),rad_rand*t*sin(r+r_stepsize+r_rand));
+                    
+        //line(rad_rand*t*vs[rr].x,rad_rand*t*vs[rr].y,rad_rand*t*vs[rr+1].x,rad_rand*t*vs[rr+1].y);
+                    
+      } 
+        //draw radial lines...looks shitty
+        //stroke(0);
+        //strokeWeight(0.1);
+        //line(rad_rand*cos(r),rad_rand*sin(r),0,0); 
+    }  
+  popMatrix();
 }
-  public void settings() {  fullScreen(FX2D);  noSmooth(); }
+}
+  public void settings() {  fullScreen(FX2D);  smooth(8); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "railTrack" };
     if (passedArgs != null) {
