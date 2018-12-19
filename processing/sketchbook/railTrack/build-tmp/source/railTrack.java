@@ -39,8 +39,8 @@ public class railTrack extends PApplet {
   PVector[] railSegmentsLookUp;
 
   float trainPosition; // in units of segments
-  float trainSpeed = .01f;
-  float[] trainSpeeds = {.01f,.01f,.01f};
+  float trainSpeed = .0229f;
+  float[] trainSpeeds = {trainSpeed,trainSpeed,trainSpeed};
 
   float railOffset = .84f; //starting point in percent of racetrack
 
@@ -266,8 +266,9 @@ public void setTrainSpeed(){
   loopCounter=millis();
   //tmpTS = (((loopCounter - oldLoopCounter) / realNumberOfSegments /frameRate/2.) + trainSpeed)/2.;
   tmpTS = ((1.f * railSegmentsLookUp.length / (loopCounter - oldLoopCounter)));
+  if(debug)println("train speed current round: " + tmpTS);
   if(debug)println(tmpTS);
-     if(tmpTS > (trainSpeed - 10.3f) && tmpTS < (trainSpeed + 10.3f)){
+     if(tmpTS > (trainSpeed - 0.01f) && tmpTS < (trainSpeed + 0.01f)){
 
      trainSpeeds[2]=trainSpeeds[1];
      trainSpeeds[1]=trainSpeeds[0];
@@ -277,6 +278,7 @@ public void setTrainSpeed(){
      
      if(debug){
      	fill(255);
+     	println("new train speed accepted: " + trainSpeed);
      	text("new train speed: " + trainSpeed, 100, 100);
      }
      

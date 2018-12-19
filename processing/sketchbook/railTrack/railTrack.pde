@@ -21,8 +21,8 @@ import processing.net.*;
   PVector[] railSegmentsLookUp;
 
   float trainPosition; // in units of segments
-  float trainSpeed = .00229;
-  float[] trainSpeeds = {.00229,.00229,.00229};
+  float trainSpeed = .0229;
+  float[] trainSpeeds = {trainSpeed,trainSpeed,trainSpeed};
 
   float railOffset = .84; //starting point in percent of racetrack
 
@@ -95,9 +95,7 @@ void draw(){
   //  drawTopologie(current_channel);
   //}
 
-  if(debug){
-  	println("frameRate: "+frameRate);
-  }
+  if(debug)println("frameRate: "+frameRate);
 
 }
 
@@ -248,8 +246,9 @@ void setTrainSpeed(){
   loopCounter=millis();
   //tmpTS = (((loopCounter - oldLoopCounter) / realNumberOfSegments /frameRate/2.) + trainSpeed)/2.;
   tmpTS = ((1. * railSegmentsLookUp.length / (loopCounter - oldLoopCounter)));
+  if(debug)println("train speed current round: " + tmpTS);
   if(debug)println(tmpTS);
-     if(tmpTS > (trainSpeed - 0.001) && tmpTS < (trainSpeed + 0.001)){
+     if(tmpTS > (trainSpeed - 0.01) && tmpTS < (trainSpeed + 0.01)){
 
      trainSpeeds[2]=trainSpeeds[1];
      trainSpeeds[1]=trainSpeeds[0];
@@ -259,7 +258,7 @@ void setTrainSpeed(){
      
      if(debug){
      	fill(255);
-     	println("new train speed: " + trainSpeed);
+     	println("new train speed accepted: " + trainSpeed);
      	text("new train speed: " + trainSpeed, 100, 100);
      }
      
