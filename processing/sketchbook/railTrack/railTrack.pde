@@ -21,8 +21,8 @@ import processing.net.*;
   PVector[] railSegmentsLookUp;
 
   float trainPosition; // in units of segments
-  float trainSpeed = .01;
-  float[] trainSpeeds = {.01,.01,.01};
+  float trainSpeed = .00229;
+  float[] trainSpeeds = {.00229,.00229,.00229};
 
   float railOffset = .84; //starting point in percent of racetrack
 
@@ -249,7 +249,7 @@ void setTrainSpeed(){
   //tmpTS = (((loopCounter - oldLoopCounter) / realNumberOfSegments /frameRate/2.) + trainSpeed)/2.;
   tmpTS = ((1. * railSegmentsLookUp.length / (loopCounter - oldLoopCounter)));
   if(debug)println(tmpTS);
-     if(tmpTS > (trainSpeed - 10.3) && tmpTS < (trainSpeed + 10.3)){
+     if(tmpTS > (trainSpeed - 0.001) && tmpTS < (trainSpeed + 0.001)){
 
      trainSpeeds[2]=trainSpeeds[1];
      trainSpeeds[1]=trainSpeeds[0];
