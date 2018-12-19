@@ -4,6 +4,7 @@
 class NetTopo{
 
   color[] colors = new color[8];
+  String[] nodeNames = new String[8];
   int noKnots = 7;
   PVector[] vecs = new PVector[noKnots];
   // Wiggler[] wiggls = new Wiggler[noKnots];
@@ -39,14 +40,24 @@ class NetTopo{
   channels[5] = ch5;
   channels[6] = ch6;
 
-  colors[0]= color(#BBBBBB); 
-  colors[1] = color(#0066DD); 
-  colors[2] = color(#00DDCC); 
-  colors[3] = color(#BBDD00); 
-  colors[4] = color(#DDBB00); 
+  colors[0]= color(#BBBBBB);    // grey
+  colors[1] = color(#0066DD);   // blue
+  colors[2] = color(#00DDCC);   // tuerkis
+  colors[3] = color(#BBDD00);   // bluegreen
+  colors[4] = color(#DDBB00);   // safran
   colors[5] = color(#DD1100); 
-  colors[6] = color(#DD00AA); 
+  colors[6] = color(#DD00AA);   // pink
   colors[7] = color(#DD00AA); 
+
+  nodeNames[0] = "Demo Train";
+  nodeNames[1] = "Deep Blue";
+  nodeNames[2] = "Aquarius";
+  nodeNames[3] = "Greenhorn";
+  nodeNames[4] = "Safran";
+  nodeNames[5] = "Red Cat";
+  nodeNames[6] = "Mr. Pink";
+  nodeNames[7] = "Never Used";
+
   
    // the position of the blobs is also hardcoded below
    // but with respect to the overall size of the diagram
@@ -163,7 +174,8 @@ class NetTopo{
     int _line = 0; // is there a convention to indicate counter vars??
 
     // underlying textbox
-    fill(0,120);
+    //fill(0,150);
+    noFill();
     // stroke(#BBBBBB);
     // strokeWeight(.2);
     noStroke();
@@ -174,12 +186,12 @@ class NetTopo{
     rect(xoff-10,yoff-30,90,70);
 
     fill(255,201);
-    textSize(20);
-    text("nø:",xoff, yoff + _line * ypitch);
+    textSize(16);
+    text(nodeNames[name],xoff, yoff + _line * ypitch);
 
-    fill(255,201);
-    textSize(30);
-    text(name,xoff + 30, yoff + _line * ypitch);
+    // fill(255,201);
+    // textSize(30);
+    // text(name,xoff + 30, yoff + _line * ypitch);
     // fill(0,255);
     // textSize(tsize);
     // text(name,xoff, yoff + _line * ypitch);
