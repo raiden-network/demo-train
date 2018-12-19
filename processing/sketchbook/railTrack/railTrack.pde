@@ -10,7 +10,7 @@ import processing.net.*;
 
   int numberOfSegments = 42; // resolution of track
 
-  float screenScale = 2./3./4.;
+  float screenScale = 2./3./2.;
 
   int realNumberOfSegments;
   int loopCounter = 0;

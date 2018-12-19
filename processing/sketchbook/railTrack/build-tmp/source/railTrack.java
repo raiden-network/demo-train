@@ -28,6 +28,8 @@ public class railTrack extends PApplet {
 
   int numberOfSegments = 42; // resolution of track
 
+  float screenScale = 2.f/3.f/2.f;
+
   int realNumberOfSegments;
   int loopCounter = 0;
   int oldLoopCounter = 1;
@@ -41,8 +43,8 @@ public class railTrack extends PApplet {
 
   float railOffset = .84f; //starting point in percent of racetrack
 
-  int xBarcode = PApplet.parseInt(545*2.f/3.f/4.f);
-  int yBarcode = PApplet.parseInt(1450*2/3.f/4.f);
+  int xBarcode = PApplet.parseInt(545*screenScale);
+  int yBarcode = PApplet.parseInt(1450*screenScale);
 
   int current_channel=0;
   int last_channel=0;
@@ -71,8 +73,8 @@ public void setup(){
   //  railLength = 650; // for the big screen
   // }
   if(displayWidth>700){
-   railRadius = 315*2/3.f; // this is 
-   railLength = 650*2/3.f; // for the big screen
+   railRadius = 630*screenScale; // this is 
+   railLength = 1300*screenScale; // for the big screen
   }
   else{
    railRadius = 330; // this is
@@ -284,7 +286,7 @@ public void drawBarcode(int x, int y){
   noStroke();
   noFill();
 
-  image(img,0,0,465,83);
+  image(img,0,0,465*screenScale,83*screenScale);
 
   // beginShape();
   // texture(img);
