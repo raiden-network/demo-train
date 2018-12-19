@@ -42,7 +42,7 @@ public class railTrack extends PApplet {
   float trainSpeed = .0229f;
   float[] trainSpeeds = {trainSpeed,trainSpeed,trainSpeed};
 
-  float railOffset = .80f; //starting point in percent of racetrack
+  float railOffset = .75f; //starting point in percent of racetrack
 
   int xBarcode = PApplet.parseInt(545*screenScale);
   int yBarcode = PApplet.parseInt(1450*screenScale);

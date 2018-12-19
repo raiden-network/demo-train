@@ -24,7 +24,7 @@ import processing.net.*;
   float trainSpeed = .0229;
   float[] trainSpeeds = {trainSpeed,trainSpeed,trainSpeed};
 
-  float railOffset = .80; //starting point in percent of racetrack
+  float railOffset = .75; //starting point in percent of racetrack
 
   int xBarcode = int(545*screenScale);
   int yBarcode = int(1450*screenScale);
