@@ -24,7 +24,7 @@ class NetTopo{
   float[] radialOffsets = {
                             180,
                             180,
-                            235,
+                            225,
                             225,
                             225,
                             225,
@@ -74,12 +74,12 @@ class NetTopo{
   nodeNames[1] = "Deep Blue";
   nodeNames[2] = "Aquarius";
   nodeNames[3] = "Greenhorn";
-  nodeNames[4] = "Safran";
+  nodeNames[4] = "Cougar";
   nodeNames[5] = "Red Cat";
   nodeNames[6] = "Mr. Pink";
 
   
-   // the position of the blobs is also hardcoded below
+   // the position of thie blobs is also hardcoded below
    // but with respect to the overall size of the diagram
    // vertical positioning
    // vecs[6] = new PVector(topoSizex/5,topoSizey*2/7);

@@ -437,7 +437,7 @@ public void keyPressed(){
     if(displayWidth>1440){
       land.drawMountain(0.29f,0.15f,9.4f,6.88f,0.48f,1.f,26.73f,29.07f,current_channel);
     }else{
-      land.drawMountain(0.29f,0.15f,11,.6f,0.48f,1.f,10,12,current_channel);      
+      land.drawMountain(0.29f,0.15f,11,.6f,0.42f,1.f,10,12,current_channel);      
     }
     drawBarcode(xBarcode,yBarcode);
     drawTopologie(current_channel);
@@ -777,7 +777,7 @@ class NetTopo{
   float[] radialOffsets = {
                             180,
                             180,
-                            235,
+                            225,
                             225,
                             225,
                             225,
@@ -827,12 +827,12 @@ class NetTopo{
   nodeNames[1] = "Deep Blue";
   nodeNames[2] = "Aquarius";
   nodeNames[3] = "Greenhorn";
-  nodeNames[4] = "Safran";
+  nodeNames[4] = "Cougar";
   nodeNames[5] = "Red Cat";
   nodeNames[6] = "Mr. Pink";
 
   
-   // the position of the blobs is also hardcoded below
+   // the position of thie blobs is also hardcoded below
    // but with respect to the overall size of the diagram
    // vertical positioning
    // vecs[6] = new PVector(topoSizex/5,topoSizey*2/7);
@@ -895,7 +895,7 @@ class NetTopo{
  }
   
   public void highlightChannel(int ch){
-      strokeWeight(8);
+      strokeWeight(6);
       stroke(colors[ch]);
       noFill();
       beginShape();
