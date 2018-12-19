@@ -105,8 +105,8 @@ public void draw(){
   clearRails();
   drawTrain(2, trainP, 5,42);
   drawTrain(2, trainP, 10,32);
-  drawTrain(2, trainP, 15,22);
-  drawTrain(2, trainP, 20,12);
+  drawTrain(2, trainP, 25,22);
+  drawTrain(2, trainP, 35,12);
   drawRails(trainP);
   drawBarcode(xBarcode,yBarcode);
 
@@ -211,7 +211,7 @@ public void printSeg(float x, float y, int c, int id){
     stroke(c & ~0xff000000 | alphaColor);
     alphaColor = 25 << 030;
     
-    strokeWeight(10+random(12));
+    strokeWeight(10+random(4));
     vertex(x+random(railJitter),y+random(railJitter));
 }
 
