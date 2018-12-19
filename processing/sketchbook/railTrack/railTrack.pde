@@ -82,7 +82,7 @@ void draw(){
   
   readClient();
   clearRails();
-  drawTrain(2, trainP, 12,50);
+  drawTrain(2, trainP, 12,40);
   drawRails(trainP);
   drawBarcode(xBarcode,yBarcode);
 
