@@ -23,8 +23,8 @@ import processing.net.*;
 
   float railOffset = .84; //starting point in percent of racetrack
 
-  int xBarcode = 545;
-  int yBarcode = 1450;
+  int xBarcode = 545*2./3./4.;
+  int yBarcode = 1450*2/3./4.;
 
   int current_channel=0;
   int last_channel=0;
