@@ -244,7 +244,7 @@ void setTrainSpeed(){
   float tmpTS = 0;
   loopCounter=millis();
   //tmpTS = (((loopCounter - oldLoopCounter) / realNumberOfSegments /frameRate/2.) + trainSpeed)/2.;
-  tmpTS = ((1. * realNumberOfSegments / (loopCounter - oldLoopCounter)));
+  tmpTS = ((1. * railSegmentsLookUp.length / (loopCounter - oldLoopCounter)));
   if(debug)println(tmpTS);
      if(tmpTS > (trainSpeed - 10.3) && tmpTS < (trainSpeed + 10.3)){
      if(debug)println("new train speed: " + trainSpeed);

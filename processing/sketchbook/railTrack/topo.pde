@@ -112,7 +112,7 @@ class NetTopo{
         
   // void drawNode(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min, float rad_min, float rad_max, int colorId) { 
 
-        drawNode(.1,.15,.1,.04,0.48,45.,48.,_ch);
+        drawNode(.1,.15,.1,.04,0.48,26.,30.,_ch);
         translate(width/2,height/2);
         texto(_ch,current_channel);
         _ch++;

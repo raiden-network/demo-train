@@ -262,7 +262,7 @@ public void setTrainSpeed(){
   float tmpTS = 0;
   loopCounter=millis();
   //tmpTS = (((loopCounter - oldLoopCounter) / realNumberOfSegments /frameRate/2.) + trainSpeed)/2.;
-  tmpTS = ((1.f * realNumberOfSegments / (loopCounter - oldLoopCounter)));
+  tmpTS = ((1.f * railSegmentsLookUp.length / (loopCounter - oldLoopCounter)));
   if(debug)println(tmpTS);
      if(tmpTS > (trainSpeed - 10.3f) && tmpTS < (trainSpeed + 10.3f)){
      if(debug)println("new train speed: " + trainSpeed);
@@ -865,7 +865,7 @@ class NetTopo{
         
   // void drawNode(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min, float rad_min, float rad_max, int colorId) { 
 
-        drawNode(.1f,.15f,.1f,.04f,0.48f,45.f,48.f,_ch);
+        drawNode(.1f,.15f,.1f,.04f,0.48f,26.f,30.f,_ch);
         translate(width/2,height/2);
         texto(_ch,current_channel);
         _ch++;
