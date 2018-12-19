@@ -8,7 +8,7 @@ import processing.net.*;
 
   Client pyClient = new Client(this, "127.0.0.1", 5204);
 
-  int numberOfSegments = 42; // resolution of track
+  int numberOfSegments = 82; // resolution of track
 
   float screenScale = 2./3./2.;
 
@@ -22,6 +22,7 @@ import processing.net.*;
 
   float trainPosition; // in units of segments
   float trainSpeed = .01;
+  float[] trainSpeeds = {.01,.01,.01};
 
   float railOffset = .84; //starting point in percent of racetrack
 
@@ -84,7 +85,9 @@ void draw(){
   
   readClient();
   clearRails();
-  drawTrain(2, trainP, 12,30);
+  drawTrain(2, trainP, 15,32);
+  drawTrain(2, trainP, 10,22);
+  drawTrain(2, trainP, 5,12);
   drawRails(trainP);
   drawBarcode(xBarcode,yBarcode);
 
@@ -247,13 +250,23 @@ void setTrainSpeed(){
   tmpTS = ((1. * railSegmentsLookUp.length / (loopCounter - oldLoopCounter)));
   if(debug)println(tmpTS);
      if(tmpTS > (trainSpeed - 10.3) && tmpTS < (trainSpeed + 10.3)){
-     if(debug)println("new train speed: " + trainSpeed);
-     trainSpeed = tmpTS;
+
+     trainSpeeds[2]=trainSpeeds[1];
+     trainSpeeds[1]=trainSpeeds[0];
+     trainSpeeds[0]=tmpTS;
+
+     trainSpeed = (trainSpeeds[0] + trainSpeeds[0] + trainSpeeds[0])/3.;
+     
+     if(debug){
+     	fill(255);
+     	text("new train speed: " + trainSpeed, 100, 100);
+     }
      
    }
    if(debug)println(oldLoopCounter);
    if(debug)println(loopCounter);
    oldLoopCounter = loopCounter;
+
 }
 
 void drawBarcode(int x, int y){
@@ -291,21 +304,22 @@ void drawTextBox(int x, int y){
 
 // draw something below the train
 void drawTrain(float scale, float tp, float range, float sw){
-    
-
 	PVector v;
 	noFill();
-	stroke(255,234,240,210);
-	strokeWeight(sw);
 	float scale2 = scale - 0.4;
 
+	stroke(255,234,240,80);
+	strokeWeight(sw);
+
 	beginShape();
-	for(int i = int(sqrt((tp - range)*(tp - range)));  i < int(sqrt((tp + range)*(tp + range))); i+=6){
-	  v = railSegmentsLookUp[(i+railSegmentsLookUp.length/2) % railSegmentsLookUp.length];
-	  strokeWeight(sw+random(10));
-	  vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));  
-	}
+		for(int i = int(sqrt((tp - range)*(tp - range)));  i < int(sqrt((tp + range)*(tp + range))); i+=3)
+		{
+		  v = railSegmentsLookUp[(i+railSegmentsLookUp.length/2) % railSegmentsLookUp.length];
+		  strokeWeight(sw+random(1));
+		  vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));  
+		}
 	endShape();
+
 
 	// v = railSegmentsLookUp[int(tp) % railSegmentsLookUp.length];
 	// line(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));

@@ -26,7 +26,7 @@ public class railTrack extends PApplet {
 
   Client pyClient = new Client(this, "127.0.0.1", 5204);
 
-  int numberOfSegments = 42; // resolution of track
+  int numberOfSegments = 82; // resolution of track
 
   float screenScale = 2.f/3.f/2.f;
 
@@ -40,6 +40,7 @@ public class railTrack extends PApplet {
 
   float trainPosition; // in units of segments
   float trainSpeed = .01f;
+  float[] trainSpeeds = {.01f,.01f,.01f};
 
   float railOffset = .84f; //starting point in percent of racetrack
 
@@ -102,7 +103,9 @@ public void draw(){
   
   readClient();
   clearRails();
-  drawTrain(2, trainP, 12,30);
+  drawTrain(2, trainP, 15,32);
+  drawTrain(2, trainP, 10,22);
+  drawTrain(2, trainP, 5,12);
   drawRails(trainP);
   drawBarcode(xBarcode,yBarcode);
 
@@ -265,13 +268,23 @@ public void setTrainSpeed(){
   tmpTS = ((1.f * railSegmentsLookUp.length / (loopCounter - oldLoopCounter)));
   if(debug)println(tmpTS);
      if(tmpTS > (trainSpeed - 10.3f) && tmpTS < (trainSpeed + 10.3f)){
-     if(debug)println("new train speed: " + trainSpeed);
-     trainSpeed = tmpTS;
+
+     trainSpeeds[2]=trainSpeeds[1];
+     trainSpeeds[1]=trainSpeeds[0];
+     trainSpeeds[0]=tmpTS;
+
+     trainSpeed = (trainSpeeds[0] + trainSpeeds[0] + trainSpeeds[0])/3.f;
+     
+     if(debug){
+     	fill(255);
+     	text("new train speed: " + trainSpeed, 100, 100);
+     }
      
    }
    if(debug)println(oldLoopCounter);
    if(debug)println(loopCounter);
    oldLoopCounter = loopCounter;
+
 }
 
 public void drawBarcode(int x, int y){
@@ -309,21 +322,22 @@ public void drawTextBox(int x, int y){
 
 // draw something below the train
 public void drawTrain(float scale, float tp, float range, float sw){
-    
-
 	PVector v;
 	noFill();
-	stroke(255,234,240,210);
-	strokeWeight(sw);
 	float scale2 = scale - 0.4f;
 
+	stroke(255,234,240,80);
+	strokeWeight(sw);
+
 	beginShape();
-	for(int i = PApplet.parseInt(sqrt((tp - range)*(tp - range)));  i < PApplet.parseInt(sqrt((tp + range)*(tp + range))); i+=6){
-	  v = railSegmentsLookUp[(i+railSegmentsLookUp.length/2) % railSegmentsLookUp.length];
-	  strokeWeight(sw+random(10));
-	  vertex(v.x-scale*(v.x-width/2.f), v.y-scale*(v.y-height/2.f));  
-	}
+		for(int i = PApplet.parseInt(sqrt((tp - range)*(tp - range)));  i < PApplet.parseInt(sqrt((tp + range)*(tp + range))); i+=3)
+		{
+		  v = railSegmentsLookUp[(i+railSegmentsLookUp.length/2) % railSegmentsLookUp.length];
+		  strokeWeight(sw+random(1));
+		  vertex(v.x-scale*(v.x-width/2.f), v.y-scale*(v.y-height/2.f));  
+		}
 	endShape();
+
 
 	// v = railSegmentsLookUp[int(tp) % railSegmentsLookUp.length];
 	// line(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
@@ -592,7 +606,7 @@ class TunnelLandscape{
     // Rot = #DD1100
     // Pink = #DD00AA
 
-  // careful! colors also in landscape
+  // careful! colors also in topo
   colors[0]= color(0xff000000);    // black
   colors[1] = color(0xff0066DD);   // blue
   colors[2] = color(0xff00DDCC);   // tuerkis
@@ -970,7 +984,6 @@ class NetTopo{
       r_rand = random(r_jitter); 
       
       int rr = PApplet.parseInt(map(r,0,TWO_PI,0,vs.length));
-      println(rr);
       
       float rad_rand = random(rad_min,rad_max);
       float t_rand = random(0.001f, t_stepsize);

@@ -217,7 +217,6 @@ class NetTopo{
       r_rand = random(r_jitter); 
       
       int rr = int(map(r,0,TWO_PI,0,vs.length));
-      println(rr);
       
       float rad_rand = random(rad_min,rad_max);
       float t_rand = random(0.001, t_stepsize);
