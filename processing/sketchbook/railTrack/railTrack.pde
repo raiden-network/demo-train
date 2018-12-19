@@ -415,7 +415,7 @@ void keyPressed(){
    else if(keyCode == 32){
     background(0);
     setTrainSpeed();
-    current_channel = int(random(7))+1;
+    current_channel = int(random(6))+1;
     if(displayWidth>1440){
       land.drawMountain(0.29,0.15,9.4,6.88,0.48,1.,26.73,29.07,current_channel);
     }else{

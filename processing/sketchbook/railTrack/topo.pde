@@ -3,12 +3,34 @@
 ///////////////////////////////////////////
 class NetTopo{
 
+     /*
+
+
+        4 - 5
+       /
+  0 - 1 - 6
+       \
+        2 - 3   
+
+   */
+
   int noKnots = 7;
+  float nodeRadius = 30;
   color[] colors = new color[noKnots];
   String[] nodeNames = new String[noKnots];
   PVector[] vecs = new PVector[noKnots];
-  // Wiggler[] wiggls = new Wiggler[noKnots];
-  //TunnelLandscape[] tunnels = new TunnelLandscape[noKnots];
+  
+  //CW from 3 in degrees
+  float[] radialOffsets = {
+                            180,
+                            180,
+                            235,
+                            225,
+                            225,
+                            225,
+                            225
+                          };
+
   int topoSizex = int(900*2/3.);
   int topoSizey = int(900*2/3.);
   int blobSize = topoSizex/18;
@@ -40,12 +62,12 @@ class NetTopo{
   channels[5] = ch5;
   channels[6] = ch6;
 
-  colors[0]= color(#000000);    // grey
+  colors[0]= color(#000000);    // black
   colors[1] = color(#0066DD);   // blue
   colors[2] = color(#00DDCC);   // tuerkis
-  colors[3] = color(#BBDD00);   // bluegreen
-  colors[4] = color(#DDBB00);   // safran
-  colors[5] = color(#DD1100); 
+  colors[3] = color(#77DD00);   // bluegreen
+  colors[4] = color(#BBBBBB);   // grey
+  colors[5] = color(#DD1100);   // red
   colors[6] = color(#DD00AA);   // pink 
 
   nodeNames[0] = "Demo Train";
@@ -109,34 +131,30 @@ class NetTopo{
       pushMatrix();
         translate(pv.x-width/2,pv.y-height/2);
 
-        drawNode(.1,.15,.1,.04,0.48,26.,30.,_ch);
+        drawNode(.1,.15,.1,.04,0.61,nodeRadius-1,nodeRadius,_ch);
         translate(width/2,height/2);
         
         // drawNodeText(_ch,current_channel);
-        drawCircularNodeText(_ch,current_channel);
+        drawCircularNodeText(_ch,current_channel,nodeRadius);
         _ch++;
       popMatrix();
     }
  }
   
   void highlightChannel(int ch){
-      strokeWeight(14);
+      strokeWeight(6);
       stroke(colors[ch]);
       noFill();
-      //fill(3,73,4,30);
       beginShape();
         for(int c : channels[ch]){
           vertex(vecs[c].x, vecs[c].y);
-          // wiggls[c].setColor(color(6,250,10,40));
         }
       endShape();
 
       noStroke();
-      //fill(3,25,4,30);
       beginShape();
         for(int c : channels[ch]){
           ellipse(vecs[c].x, vecs[c].y,50,40);
-          // wiggls[c].setColor(color(6,250,10,40));
         }
       endShape();
 
@@ -225,14 +243,17 @@ class NetTopo{
 }
 
 
-void drawCircularNodeText(int name, int current_channel) {
+void drawCircularNodeText(int name, int current_channel, float r) {
   //taken from processing page
   String message = nodeNames[name];
+  float textOffset = 5;
+  float textRadialOffset = 225;
+  color col_ring = #CCCCCC;
+  color col_text = #EEEEEE;
+  PFont f = createFont("Georgia",15,true);
+  
 
-  float r = 40;
 
-
-    PFont f = createFont("Georgia",18,true);
     textFont(f);
     // The text must be centered!
     textAlign(CENTER);
@@ -241,13 +262,13 @@ void drawCircularNodeText(int name, int current_channel) {
   // Start in the center and draw the circle
   //translate(width / 2, height / 2);
   noFill();
-  stroke(222);
+  stroke(col_ring);
   strokeWeight(2);
   if(name==current_channel||name==0){
     stroke(colors[current_channel]);
     strokeWeight(4);
   }
-  ellipse(0, 0, (r-5)*2, (r-5)*2);
+  ellipse(0, 0, r*2, r*2);
 
   // We must keep track of our position along the curve
   float arclength = 0;
@@ -263,15 +284,15 @@ void drawCircularNodeText(int name, int current_channel) {
     arclength += w/2;
     // Angle in radians is the arclength divided by the radius
     // Starting on the left side of the circle by adding PI
-    float theta = PI + arclength / r;    
+    float theta = PI/180.*radialOffsets[name] + arclength / r;    
 
     pushMatrix();
     // Polar to cartesian coordinate conversion
-    translate(r*cos(theta), r*sin(theta));
+    translate((r+textOffset)*cos(theta), (r+textOffset)*sin(theta));
     // Rotate the box
-    rotate(theta+PI/2); // rotation is offset by 90 degrees
+    rotate(theta+PI/2.); // rotation plus offset
     // Display the character
-    fill(255);
+    fill(col_text);
     if(name==current_channel||name==0){
       fill(colors[current_channel]);
     }
