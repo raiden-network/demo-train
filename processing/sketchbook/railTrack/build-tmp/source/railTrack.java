@@ -397,7 +397,7 @@ public void readClient(){
      if(debug)println("receiver " + n + " will get paid"); 
      text("receiver " + current_channel + "\nwill get paid", width/4.f, height/2);
      background(0);
-     land.drawMountain(0.29f,0.15f,0.0094f,6.88f,0.48f,1.f,26.73f,29.07f,current_channel);
+     land.drawMountain(0.29f,0.15f,11,.6f,0.48f,1.f,10,12,current_channel);
      clearInnerRegion();
      drawTopologie(current_channel%7);
      break;
