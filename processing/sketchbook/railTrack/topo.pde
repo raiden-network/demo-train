@@ -3,9 +3,9 @@
 ///////////////////////////////////////////
 class NetTopo{
 
-  color[] colors = new color[8];
-  String[] nodeNames = new String[8];
   int noKnots = 7;
+  color[] colors = new color[noKnots];
+  String[] nodeNames = new String[noKnots];
   PVector[] vecs = new PVector[noKnots];
   // Wiggler[] wiggls = new Wiggler[noKnots];
   //TunnelLandscape[] tunnels = new TunnelLandscape[noKnots];
@@ -14,7 +14,7 @@ class NetTopo{
   int blobSize = topoSizex/18;
   int[][] channels = new int [noKnots][6];
   int[] ch0 = {0};
-  int[] ch1 = {0,1,0};
+  int[] ch1 = {0,1,1};
   int[] ch2 = {0,1,2};
   int[] ch3 = {0,1,2,3};
   int[] ch4 = {0,1,4};
@@ -40,14 +40,13 @@ class NetTopo{
   channels[5] = ch5;
   channels[6] = ch6;
 
-  colors[0]= color(#BBBBBB);    // grey
+  colors[0]= color(#000000);    // grey
   colors[1] = color(#0066DD);   // blue
   colors[2] = color(#00DDCC);   // tuerkis
   colors[3] = color(#BBDD00);   // bluegreen
   colors[4] = color(#DDBB00);   // safran
   colors[5] = color(#DD1100); 
-  colors[6] = color(#DD00AA);   // pink
-  colors[7] = color(#DD00AA); 
+  colors[6] = color(#DD00AA);   // pink 
 
   nodeNames[0] = "Demo Train";
   nodeNames[1] = "Deep Blue";
@@ -56,7 +55,6 @@ class NetTopo{
   nodeNames[4] = "Safran";
   nodeNames[5] = "Red Cat";
   nodeNames[6] = "Mr. Pink";
-  nodeNames[7] = "Never Used";
 
   
    // the position of the blobs is also hardcoded below
@@ -90,11 +88,6 @@ class NetTopo{
   vecs[2] = new PVector(topoSizex*0.6,topoSizey*0.66);
   vecs[1] = new PVector(topoSizex*0.4,topoSizey*0.5);
   vecs[0] = new PVector(topoSizex*0.1,topoSizey*0.5);
-
-
-  //  for(int i = 0; i < vecs.length; i++){
-  //    wiggls[i] = new Wiggler(int(vecs[i].x), int(vecs[i].y),blobSize,str(i));
-  //  }
   }
   
   void ddraw(int current_channel){
@@ -105,7 +98,6 @@ class NetTopo{
       beginShape();
       for(int c : ch){
         vertex(vecs[c].x, vecs[c].y);
-        // wiggls[c].setColor(color(200,40));
       }
       endShape();
     }
@@ -116,30 +108,20 @@ class NetTopo{
     for (PVector pv : vecs){
       pushMatrix();
         translate(pv.x-width/2,pv.y-height/2);
-          // void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min,float t_max, float rad_min, float rad_max, int colorId) 
-        //landTopo.drawMountain(.1,.15,.1,9.04,0.28,1.,0.3,1.9,_ch%noKnots);
-        //landTopo.drawMountain(.7,.55,.6,1,.98,1.,0.4,0.7,_ch%noKnots);
-        //landTopo.drawMountain(.1,.15,.1,.04,.48,2.,0.8,0.95,_ch%noKnots);
-        
-  // void drawNode(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min, float rad_min, float rad_max, int colorId) { 
 
         drawNode(.1,.15,.1,.04,0.48,26.,30.,_ch);
         translate(width/2,height/2);
-        texto(_ch,current_channel);
+        
+        // drawNodeText(_ch,current_channel);
+        drawCircularNodeText(_ch,current_channel);
         _ch++;
       popMatrix();
     }
-    
-    // for (Wiggler w : wiggls){
-    //    // w.display();
-    //    // w.wiggle();
-    //    //w.texto();
-    // }
  }
   
   void highlightChannel(int ch){
       strokeWeight(14);
-      stroke(col_higlight);
+      stroke(colors[ch]);
       noFill();
       //fill(3,73,4,30);
       beginShape();
@@ -160,14 +142,11 @@ class NetTopo{
 
     
   }
-  
-  // void drawKnot(int x, int y, String name){
-  // }
 
 // print text next to the knots
 // i see the irony in int name as well, but dgaf
-    void texto(int name, int current_channel){
-    int xoff = 35;
+    void drawNodeText(int name, int current_channel){
+    int xoff = 15;
     int yoff = -20;
     int xpitch = 0;
     int ypitch = 30;
@@ -183,25 +162,22 @@ class NetTopo{
       stroke(col_higlight);
       strokeWeight(2);
     }
-    rect(xoff-10,yoff-30,90,70);
+    // rect(xoff-3,yoff-20,nodeNames[name].length()*10,26);
+    rect(xoff-3,yoff-20,textWidth(nodeNames[name])+10,26);
 
     fill(255,201);
     textSize(16);
     text(nodeNames[name],xoff, yoff + _line * ypitch);
 
-    // fill(255,201);
-    // textSize(30);
-    // text(name,xoff + 30, yoff + _line * ypitch);
-    // fill(0,255);
-    // textSize(tsize);
-    // text(name,xoff, yoff + _line * ypitch);
-
     if(name==current_channel){
       _line++;
       fill(col_higlight);
+      stroke(col_higlight);
       textSize(20);
-      text("active",xoff, yoff + _line * ypitch);
+      text("active",xoff, yoff-50 + _line * ypitch);
     }
+
+    
   }
 
   void drawNode(float r_stepsize, float r_jitter, float t_stepsize, float strokew,float t_min, float rad_min, float rad_max, int colorId) { 
@@ -246,5 +222,63 @@ class NetTopo{
         //line(rad_rand*cos(r),rad_rand*sin(r),0,0); 
     }  
   popMatrix();
+}
+
+
+void drawCircularNodeText(int name, int current_channel) {
+  //taken from processing page
+  String message = nodeNames[name];
+
+  float r = 40;
+
+
+    PFont f = createFont("Georgia",18,true);
+    textFont(f);
+    // The text must be centered!
+    textAlign(CENTER);
+
+
+  // Start in the center and draw the circle
+  //translate(width / 2, height / 2);
+  noFill();
+  stroke(222);
+  strokeWeight(2);
+  if(name==current_channel||name==0){
+    stroke(colors[current_channel]);
+    strokeWeight(4);
+  }
+  ellipse(0, 0, (r-5)*2, (r-5)*2);
+
+  // We must keep track of our position along the curve
+  float arclength = 0;
+
+  // For every box
+  for (int i = 0; i < message.length(); i++)
+  {
+    // Instead of a constant width, we check the width of each character.
+    char currentChar = message.charAt(i);
+    float w = textWidth(currentChar);
+
+    // Each box is centered so we move half the width
+    arclength += w/2;
+    // Angle in radians is the arclength divided by the radius
+    // Starting on the left side of the circle by adding PI
+    float theta = PI + arclength / r;    
+
+    pushMatrix();
+    // Polar to cartesian coordinate conversion
+    translate(r*cos(theta), r*sin(theta));
+    // Rotate the box
+    rotate(theta+PI/2); // rotation is offset by 90 degrees
+    // Display the character
+    fill(255);
+    if(name==current_channel||name==0){
+      fill(colors[current_channel]);
+    }
+    text(currentChar,0,0);
+    popMatrix();
+    // Move halfway again
+    arclength += w/2;
+  }
 }
 }
