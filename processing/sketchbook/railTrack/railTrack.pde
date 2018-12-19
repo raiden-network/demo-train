@@ -8,7 +8,9 @@ import processing.net.*;
 
   Client pyClient = new Client(this, "127.0.0.1", 5204);
 
-  int numberOfSegments = 42; // resolution of track
+  int numberOfSegments = 82; // resolution of track
+
+  float screenScale = 2./3./2.;
 
   int realNumberOfSegments;
   int loopCounter = 0;
@@ -19,12 +21,14 @@ import processing.net.*;
   PVector[] railSegmentsLookUp;
 
   float trainPosition; // in units of segments
-  float trainSpeed = .01;
+  float trainSpeed = .0229;
+  float[] trainSpeeds = {trainSpeed,trainSpeed,trainSpeed};
 
-  float railOffset = .84; //starting point in percent of racetrack
 
-  int xBarcode = 545;
-  int yBarcode = 1450;
+  float railOffset = .75; //starting point in percent of racetrack
+
+  int xBarcode = int(545*screenScale);
+  int yBarcode = int(1450*screenScale);
 
   int current_channel=0;
   int last_channel=0;
@@ -41,19 +45,27 @@ import processing.net.*;
 
 void setup(){
   fullScreen(FX2D);
+  //noSmooth();
   smooth(8);
-    println("w "+width+" "+displayWidth);
-    println("h "+height+" "+displayHeight);
+
   if(debug)println(displayWidth);
-  if(displayWidth>1440){
-   railRadius = 630; // this is 
-   railLength = 1300; // for the big screen
+  // if(displayWidth>1440){
+  //  railRadius = 630; // this is 
+  //  railLength = 1300; // for the big screen
+  // }
+  // if(displayWidth>1000){
+  //  railRadius = 315; // this is 
+  //  railLength = 650; // for the big screen
+  // }
+  if(displayWidth>700){
+   railRadius = 630*screenScale; // this is 
+   railLength = 1300*screenScale; // for the big screen
   }
   else{
    railRadius = 330; // this is
    railLength = 500; // for the laptop screen
   }
-  frameRate(15);
+  frameRate(25);
   railSegmentsLookUp = generateRailLookUp(numberOfSegments);
 
   topo.dsetup();
@@ -71,12 +83,22 @@ void draw(){
     pyClient = new Client(this, "127.0.0.1", 5204);
   }
   
+  float trainP = (int((millis()-oldLoopCounter)*trainSpeed)%railSegmentsLookUp.length);
+  
   readClient();
   clearRails();
-  drawRails();
+  drawTrain(2, trainP, 5,42);
+  drawTrain(2, trainP, 10,32);
+  drawTrain(2, trainP, 25,22);
+  drawTrain(2, trainP, 35,12);
+  drawRails(trainP);
   drawBarcode(xBarcode,yBarcode);
-  drawTopologie(current_channel);
 
+  //if(frameCount%50==0){
+  //  drawTopologie(current_channel);
+  //}
+
+  if(debug)println("frameRate: "+frameRate);
 
 }
 
@@ -136,19 +158,19 @@ PVector[] generateRailLookUp(int numberOfSegs){
   return tmp_vecs;
 }
 
-void drawRails(){
-  float trainP = (int((millis()-oldLoopCounter)*trainSpeed)%realNumberOfSegments);
+void drawRails(float tp){
+  //float tp = (int((millis()-oldLoopCounter)*trainSpeed)%realNumberOfSegments);
     beginShape(QUAD_STRIP);
   //vertex(width/2.,height/2.);
   for(int segId = 0; segId < railSegmentsLookUp.length*1; segId++){
     
     // begin new shape on train position
-    if( trainP == segId){
+    if( tp == segId){
       endShape(); 
       //beginShape(QUAD_STRIP);
       beginShape(QUADS);
     }   
-    int c = getSegColor(trainP, segId);
+    int c = getSegColor(tp, segId);
     printSeg(railSegmentsLookUp[segId].x, railSegmentsLookUp[segId].y, c, segId);   
   }
   endShape();
@@ -173,8 +195,21 @@ void printSeg(float x, float y, color c, int id){
     stroke(c & ~#000000 | alphaColor);
     alphaColor = 25 << 030;
     
-    strokeWeight(10+random(12));
+    strokeWeight(10+random(4));
     vertex(x+random(railJitter),y+random(railJitter));
+}
+
+
+void clearRails(){
+  noFill();
+  stroke(0);
+  strokeWeight(71);
+  beginShape();
+  for (PVector v : railSegmentsLookUp) {
+    vertex(v.x, v.y);
+  }
+  vertex(railSegmentsLookUp[0].x,railSegmentsLookUp[0].y);
+  endShape();
 }
 
 void clearInnerRegion(){
@@ -207,33 +242,34 @@ void drawLandscape(){
 }
 
 // clear region below the rails
-void clearRails(){
-  noFill();
-  stroke(0);
-  strokeWeight(65);
-  beginShape();
-  for (PVector v : railSegmentsLookUp) {
-    vertex(v.x, v.y);
-  }
-  vertex(railSegmentsLookUp[0].x,railSegmentsLookUp[0].y);
-  endShape();
-}
 
 // calculate speed from trigger and set it
 void setTrainSpeed(){
   float tmpTS = 0;
   loopCounter=millis();
   //tmpTS = (((loopCounter - oldLoopCounter) / realNumberOfSegments /frameRate/2.) + trainSpeed)/2.;
-  tmpTS = ((1. * realNumberOfSegments / (loopCounter - oldLoopCounter)));
+  tmpTS = ((1. * railSegmentsLookUp.length / (loopCounter - oldLoopCounter)));
+  if(debug)println("train speed current round: " + tmpTS);
   if(debug)println(tmpTS);
-     if(tmpTS > (trainSpeed - 10.3) && tmpTS < (trainSpeed + 10.3)){
-     if(debug)println("new train speed: " + trainSpeed);
-     trainSpeed = tmpTS;
+     if(tmpTS > (trainSpeed - 0.01) && tmpTS < (trainSpeed + 0.01)){
+
+     trainSpeeds[2]=trainSpeeds[1];
+     trainSpeeds[1]=trainSpeeds[0];
+     trainSpeeds[0]=tmpTS;
+
+     trainSpeed = (trainSpeeds[0] + trainSpeeds[0] + trainSpeeds[0])/3.;
+     
+     if(debug){
+     	fill(255);
+     	println("new train speed accepted: " + trainSpeed);
+     	text("new train speed: " + trainSpeed, 100, 100);
+     }
      
    }
    if(debug)println(oldLoopCounter);
    if(debug)println(loopCounter);
    oldLoopCounter = loopCounter;
+
 }
 
 void drawBarcode(int x, int y){
@@ -248,7 +284,7 @@ void drawBarcode(int x, int y){
   noStroke();
   noFill();
 
-  image(img,0,0,465,83);
+  image(img,0,0,465*screenScale,83*screenScale);
 
   // beginShape();
   // texture(img);
@@ -270,25 +306,29 @@ void drawTextBox(int x, int y){
 }
 
 // draw something below the train
-void drawTrain(float scale, float tp, float range){
-  PVector v;
-  noFill();
-  stroke(255,234,98,70);
-  strokeWeight(4);
-  float scale2 = scale - 0.4;
-  
-  beginShape();
-    for(int i = int(sqrt((tp - range)*(tp - range)));  i < int(sqrt((tp + range)*(tp + range))); i++){
-      v = railSegmentsLookUp[i % railSegmentsLookUp.length];
-      vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));  
-    }
-   endShape();
-   
-   v = railSegmentsLookUp[int(tp) % railSegmentsLookUp.length];
-   line(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
-   
-   fill(0);
-   ellipse(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),70,50);
+void drawTrain(float scale, float tp, float range, float sw){
+	PVector v;
+	noFill();
+	float scale2 = scale - 0.4;
+
+	stroke(255,234,240,50);
+	strokeWeight(sw);
+
+	beginShape();
+		for(int i = int(sqrt((tp - range)*(tp - range)));  i < int(sqrt((tp + range)*(tp + range))); i+=3)
+		{
+		  v = railSegmentsLookUp[(i+railSegmentsLookUp.length/2) % railSegmentsLookUp.length];
+		  strokeWeight(sw+random(1));
+		  vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));  
+		}
+	endShape();
+
+
+	// v = railSegmentsLookUp[int(tp) % railSegmentsLookUp.length];
+	// line(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
+
+	// fill(0);
+	// ellipse(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),70,50);
 }
 
 // draw text that follows the train
@@ -306,8 +346,12 @@ void drawTrainText(float scale, float tp){
 
 // draw network topologie in inner region
 void drawTopologie(int pch){
+  int xoff = -50;
+  int yoff = 0;
+  //topo.topoSizex = 600;
+  //topo.topoSizey = 900;
   pushMatrix();
-    translate(width/2-topo.topoSizex/2,height/2-topo.topoSizey/2);
+    translate(width/2-topo.topoSizex/2 + xoff,height/2-topo.topoSizey/2 + yoff);
     topo.ddraw(pch);
   popMatrix();
   //text()
@@ -352,7 +396,7 @@ void readClient(){
      if(debug)println("receiver " + n + " will get paid"); 
      text("receiver " + current_channel + "\nwill get paid", width/4., height/2);
      background(0);
-     land.drawMountain(0.29,0.15,0.0094,6.88,0.48,1.,26.73,29.07,current_channel);
+     land.drawMountain(0.29,0.15,11,.6,0.42,1.,10,12,current_channel); 
      clearInnerRegion();
      drawTopologie(current_channel%7);
      break;
@@ -388,23 +432,15 @@ void keyPressed(){
    else if(keyCode == 32){
     background(0);
     setTrainSpeed();
-    current_channel = int(random(7))+1;
+    current_channel = int(random(6))+1;
     if(displayWidth>1440){
       land.drawMountain(0.29,0.15,9.4,6.88,0.48,1.,26.73,29.07,current_channel);
     }else{
-      land.drawMountain(0.29,0.15,11,.6,0.48,1.,10,12,current_channel);      
-      // pushMatrix();
-      //   translate(100,0);
-      //   landTopo.drawMountain(.29,.15,.1,.4,0.48,1.,0.5,0.55,1);      
-      // popMatrix();
-      // pushMatrix();
-      //   translate(100,130);
-      //   landTopo.drawMountain(.29,.15,.1,.4,0.48,1.,0.5,0.55,3);      
-      // popMatrix();
+      land.drawMountain(0.29,0.15,11,.6,0.42,1.,10,12,current_channel);      
     }
     drawBarcode(xBarcode,yBarcode);
     drawTopologie(current_channel);
-     
+
    }
   else{
    if(debug)println(keyCode);

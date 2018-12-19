@@ -1,11 +1,27 @@
+import processing.core.*; 
+import processing.data.*; 
+import processing.event.*; 
+import processing.opengl.*; 
+
+import java.util.HashMap; 
+import java.util.ArrayList; 
+import java.io.File; 
+import java.io.BufferedReader; 
+import java.io.PrintWriter; 
+import java.io.InputStream; 
+import java.io.OutputStream; 
+import java.io.IOException; 
+
+public class genLAND_gradient_radial extends PApplet {
+
 // Constantss
 int Y_AXIS = 1;
 int X_AXIS = 2;
-color b1, b2, c1, c2, r1;
+int b1, b2, c1, c2, r1;
 PShape s;
 
-void setup() {
-  size(640, 360,P2D);
+public void setup() {
+  
   background(0);
 
   // Define colors
@@ -18,21 +34,21 @@ void setup() {
   noLoop();
 }
 
-void draw() {
+public void draw() {
   // Background
   //setGradient(0, 0, width/2, height, b1, b2, X_AXIS);
   //setGradient(width/2, 0, width/2, height, b2, b1, X_AXIS);
   // Foreground
   //setGradient(50, 90, 540, 80, c1, c2, Y_AXIS);
   //setGradient(50, 190, 540, 80, c2, c1, X_AXIS);
-  drawMountain(0.5,0.1,0.01,5,0.2,400,500);
+  drawMountain(0.5f,0.1f,0.01f,5,0.2f,400,500);
   //vertexInterpolation();
   
 }
 
-void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, int strokew,float t_min, int rad_min, int rad_max) { 
+public void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, int strokew,float t_min, int rad_min, int rad_max) { 
   pushMatrix();
-    translate(width/2., height/2.);
+    translate(width/2.f, height/2.f);
     float r_rand = random(r_jitter);
     PVector[] vs = generateRailLookUp(100);
     
@@ -40,11 +56,11 @@ void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, int stroke
     for (float r=0; r<TWO_PI;r+= r_stepsize + r_rand) {
       r_rand = random(r_jitter); 
       
-      int rr = int(map(r,0,TWO_PI,0,vs.length));
+      int rr = PApplet.parseInt(map(r,0,TWO_PI,0,vs.length));
       println(rr);
       
       float rad_rand = random(rad_min,rad_max);
-      float t_rand = random(0.001, t_stepsize);
+      float t_rand = random(0.001f, t_stepsize);
       
       //inner circle connects to radial lines
       for (float t=t_min; t<1; t+=t_rand) {
@@ -67,7 +83,7 @@ void drawMountain(float r_stepsize, float r_jitter, float t_stepsize, int stroke
   popMatrix();
 }
 
-void vertexInterpolation()  {
+public void vertexInterpolation()  {
   
   stroke(255);
   strokeWeight(2);
@@ -94,7 +110,7 @@ void vertexInterpolation()  {
 
 }
 
-PVector[] generateRailLookUp(int numberOfSegs){
+public PVector[] generateRailLookUp(int numberOfSegs){
   // function to generate array of vectors along the track
   // specialized to racetrack-shape
   // coordinates are just generated for half the track and
@@ -104,8 +120,8 @@ PVector[] generateRailLookUp(int numberOfSegs){
   float railLength = 100;
   float railRadius = 50;
   float stepsRatio = railLength / railRadius / PI ;
-  int stepsRad = int(numberOfSegs);
-  int stepsStraight = int(numberOfSegs * stepsRatio);
+  int stepsRad = PApplet.parseInt(numberOfSegs);
+  int stepsStraight = PApplet.parseInt(numberOfSegs * stepsRatio);
   float temp_x = 0;
   float temp_y = 0;
 
@@ -121,8 +137,8 @@ PVector[] generateRailLookUp(int numberOfSegs){
   // fill straight parts
   for (int i = 0; i < stepsStraight; i++) {
 
-    temp_x = width/2. - railLength/2. + i * (railLength/stepsStraight);
-    temp_y = railRadius + height/2.;
+    temp_x = width/2.f - railLength/2.f + i * (railLength/stepsStraight);
+    temp_y = railRadius + height/2.f;
 
     vectors[i] = new PVector(temp_x,temp_y);
     vectors[i + vectors.length/2] = new PVector(width - temp_x, height - temp_y);
@@ -131,8 +147,8 @@ PVector[] generateRailLookUp(int numberOfSegs){
   // fill curved parts
   for (int i = 0; i < stepsRad; i++) {
 
-    temp_x = sin(PI/stepsRad * i) * railRadius + width/2. + railLength/2.;
-    temp_y = cos(PI/stepsRad * i) * railRadius + height/2.;
+    temp_x = sin(PI/stepsRad * i) * railRadius + width/2.f + railLength/2.f;
+    temp_y = cos(PI/stepsRad * i) * railRadius + height/2.f;
 
     vectors[i + stepsStraight] = new PVector(temp_x,temp_y);
     vectors[i + stepsStraight + vectors.length/2] = new PVector(width - temp_x, height - temp_y);
@@ -144,4 +160,14 @@ PVector[] generateRailLookUp(int numberOfSegs){
   }
 
   return rvectors;
+}
+  public void settings() {  size(640, 360,P2D); }
+  static public void main(String[] passedArgs) {
+    String[] appletArgs = new String[] { "genLAND_gradient_radial" };
+    if (passedArgs != null) {
+      PApplet.main(concat(appletArgs, passedArgs));
+    } else {
+      PApplet.main(appletArgs);
+    }
+  }
 }

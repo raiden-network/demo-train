@@ -1,3 +1,19 @@
+import processing.core.*; 
+import processing.data.*; 
+import processing.event.*; 
+import processing.opengl.*; 
+
+import java.util.HashMap; 
+import java.util.ArrayList; 
+import java.io.File; 
+import java.io.BufferedReader; 
+import java.io.PrintWriter; 
+import java.io.InputStream; 
+import java.io.OutputStream; 
+import java.io.IOException; 
+
+public class railTrack_clean extends PApplet {
+
 int numberOfSegments = 42; // resolution of track
 float railRadius = 200; // not global
 float railLength = 300; // no need to be global
@@ -5,12 +21,12 @@ float railLength = 300; // no need to be global
 PVector[] railSegmentsLookUp;
 
 float trainPosition = 0; // in units of segments
-float trainSpeed = 0.95; // in units of segments
+float trainSpeed = 0.95f; // in units of segments
 
 int offsetStart = 60;
 
-final color redColor = color(255, 0, 0);
-final color greenColor = color(0, 255, 0);
+final int redColor = color(255, 0, 0);
+final int greenColor = color(0, 255, 0);
 
 final int railJitter = 2;
 
@@ -18,8 +34,8 @@ int[] rs = {40,40,40,120, width, height,20,20,width,height,20,20};
 int[] rands;
 
 
-void setup(){
-   fullScreen(P3D);
+public void setup(){
+   
    //smooth(8);
    //size(1000,600);
    rs[4] = width;
@@ -41,7 +57,7 @@ void setup(){
   drawBarcode(300,300);
 }
 
-void draw(){
+public void draw(){
   trainPosition += trainSpeed;
   //println(frameRate);  
   //background(0);
@@ -60,12 +76,12 @@ void draw(){
   
   //drawGlow(trainPosition/railSegmentsLookUp.length);
   // printMiddleTree();
-  drawTrain(2, trainPosition + railSegmentsLookUp.length/2., 2);
+  drawTrain(2, trainPosition + railSegmentsLookUp.length/2.f, 2);
   //drawTrainText(1.6, trainPosition + railSegmentsLookUp.length/2.);
 
 }
 
-PVector[] generateRailLookUp(int numberOfSegs){
+public PVector[] generateRailLookUp(int numberOfSegs){
   // function to generate array of vectors along the track
   // specialized to racetrack-shape
   // coordinates are just generated for half the track and 
@@ -73,8 +89,8 @@ PVector[] generateRailLookUp(int numberOfSegs){
   
   //calculate ratios in length between different segments
   float stepsRatio = railLength / railRadius / PI ;
-  int stepsRad = int(numberOfSegs);
-  int stepsStraight = int(numberOfSegs * stepsRatio);
+  int stepsRad = PApplet.parseInt(numberOfSegs);
+  int stepsStraight = PApplet.parseInt(numberOfSegs * stepsRatio);
   float temp_x = 0;
   float temp_y = 0;
   
@@ -88,8 +104,8 @@ PVector[] generateRailLookUp(int numberOfSegs){
   // fill straight parts
   for (int i = 0; i < stepsStraight; i++) {
   
-    temp_x = width/2. - railLength/2. + i * (railLength/stepsStraight);
-    temp_y = railRadius + height/2.;
+    temp_x = width/2.f - railLength/2.f + i * (railLength/stepsStraight);
+    temp_y = railRadius + height/2.f;
   
     vectors[i] = new PVector(temp_x,temp_y);
     vectors[i + vectors.length/2] = new PVector(width - temp_x, height - temp_y);
@@ -98,8 +114,8 @@ PVector[] generateRailLookUp(int numberOfSegs){
   // fill curved parts
   for (int i = 0; i < stepsRad; i++) {  
     
-    temp_x = sin(PI/stepsRad * i) * railRadius + width/2. + railLength/2.;
-    temp_y = cos(PI/stepsRad * i) * railRadius + height/2.;
+    temp_x = sin(PI/stepsRad * i) * railRadius + width/2.f + railLength/2.f;
+    temp_y = cos(PI/stepsRad * i) * railRadius + height/2.f;
 
     vectors[i + stepsStraight] = new PVector(temp_x,temp_y);
     vectors[i + stepsStraight + vectors.length/2] = new PVector(width - temp_x, height - temp_y);
@@ -114,13 +130,13 @@ PVector[] generateRailLookUp(int numberOfSegs){
 }
 
 
-void drawRails(){
+public void drawRails(){
     beginShape(QUAD_STRIP);
   //vertex(width/2.,height/2.);
-  for(int segId = 0; segId < railSegmentsLookUp.length*0.83; segId++){
+  for(int segId = 0; segId < railSegmentsLookUp.length*0.83f; segId++){
     
     // begin new shape on train position
-    if(int(trainPosition) == segId){
+    if(PApplet.parseInt(trainPosition) == segId){
       endShape(); 
       //beginShape(QUAD_STRIP);
       beginShape(QUADS);
@@ -131,8 +147,8 @@ void drawRails(){
   endShape();
 }
 
-color getSegColor(float tp, float si){
-    if(int(tp) < si){
+public int getSegColor(float tp, float si){
+    if(PApplet.parseInt(tp) < si){
       return greenColor;
     }
     else{
@@ -141,12 +157,12 @@ color getSegColor(float tp, float si){
 }
 
 
-void printSeg(float x, float y, color c, int id){
+public void printSeg(float x, float y, int c, int id){
    
-    color alphaColor = 5 << 030;  
+    int alphaColor = 5 << 030;  
 
-    alphaColor = (75 + int(random(30))) << 030;
-    stroke(c & ~#000000 | alphaColor);
+    alphaColor = (75 + PApplet.parseInt(random(30))) << 030;
+    stroke(c & ~0xff000000 | alphaColor);
     alphaColor = 25 << 030;
     
     strokeWeight(10+random(12));
@@ -154,7 +170,7 @@ void printSeg(float x, float y, color c, int id){
 }
 
 
-void drawMiddleTree(){
+public void drawMiddleTree(){
   fill(0);
   stroke(0);
   //strokeWeight(30);
@@ -168,13 +184,13 @@ void drawMiddleTree(){
 
 }
 
-void drawLandscape(){
+public void drawLandscape(){
   noStroke();
   //strokeWeight(random(6));
-  int r = int(random(255));
-  int g = int(random(255));
-  int b = int(random(255));
-  int siz = int(random(800));
+  int r = PApplet.parseInt(random(255));
+  int g = PApplet.parseInt(random(255));
+  int b = PApplet.parseInt(random(255));
+  int siz = PApplet.parseInt(random(800));
   for(int i = 0; i < random(1000); i++){
    fill(r+ random(40),g + random(40),b + random(40),random(120));
    //stroke(r+ random(20),g + random(20),b + random(20));
@@ -183,22 +199,22 @@ void drawLandscape(){
   }
   
 }
-void drawMovingLandscape(boolean init){
+public void drawMovingLandscape(boolean init){
   noStroke();
   //strokeWeight(random(6));
-  int r = int(random(255));
-  int g = int(random(255));
-  int b = int(random(255));
+  int r = PApplet.parseInt(random(255));
+  int g = PApplet.parseInt(random(255));
+  int b = PApplet.parseInt(random(255));
   //color col = color(r,g,b);
   
   
   
   
   if(init){
-  rands = new int[int(random(1000))*rs.length];
+  rands = new int[PApplet.parseInt(random(1000))*rs.length];
     for(int i = 0; i < rands.length/rs.length; i+=rs.length){
       for(int j=0; j < rs.length; j++){
-        rands[i+j] = int(random(rs[j]));
+        rands[i+j] = PApplet.parseInt(random(rs[j]));
       }  
     }
   }
@@ -219,7 +235,7 @@ void drawMovingLandscape(boolean init){
 }
 
 
-void clearRails(){
+public void clearRails(){
   noFill();
   stroke(0);
   strokeWeight(65);
@@ -231,55 +247,55 @@ void clearRails(){
   endShape();
 }
 
-void drawGlow(float scale){
+public void drawGlow(float scale){
   noFill();
   stroke(255,234,98,120);
   strokeWeight(7);
   
   beginShape();
     for (PVector v : railSegmentsLookUp) {
-      vertex(v.x-scale*(v.x-width/2.)*random(0.9,1.1), v.y-scale*(v.y-height/2.)*random(0.9,1.1));
+      vertex(v.x-scale*(v.x-width/2.f)*random(0.9f,1.1f), v.y-scale*(v.y-height/2.f)*random(0.9f,1.1f));
     }
     PVector vv = railSegmentsLookUp[0];
-    vertex(vv.x-scale*(vv.x-width/2.)*random(0.9,1.1), vv.y-scale*(vv.y-height/2.)*random(0.9,1.1));
+    vertex(vv.x-scale*(vv.x-width/2.f)*random(0.9f,1.1f), vv.y-scale*(vv.y-height/2.f)*random(0.9f,1.1f));
   endShape();
   
   stroke(255,234,98,73);
   strokeWeight(33);
   beginShape();
-    scale *=random(0.9,1.1);
+    scale *=random(0.9f,1.1f);
       for (PVector v : railSegmentsLookUp) {
-      vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
+      vertex(v.x-scale*(v.x-width/2.f), v.y-scale*(v.y-height/2.f));
     }
-    vertex(vv.x-scale*(vv.x-width/2.), vv.y-scale*(vv.y-height/2.));
+    vertex(vv.x-scale*(vv.x-width/2.f), vv.y-scale*(vv.y-height/2.f));
   endShape();
   
   stroke(255,234,98,24);
   strokeWeight(17);
   beginShape();
-    scale *=2.6;
+    scale *=2.6f;
       for (PVector v : railSegmentsLookUp) {
-      vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
+      vertex(v.x-scale*(v.x-width/2.f), v.y-scale*(v.y-height/2.f));
     }
-    vertex(vv.x-scale*(vv.x-width/2.), vv.y-scale*(vv.y-height/2.));
+    vertex(vv.x-scale*(vv.x-width/2.f), vv.y-scale*(vv.y-height/2.f));
   endShape();
 }
 
-void drawGreen(){
+public void drawGreen(){
   PVector vv = railSegmentsLookUp[0];
   beginShape();
     stroke(55,random(200,234),98,random(40,124));
     strokeWeight(17);
-    float scale =6.6;
+    float scale =6.6f;
       for (PVector v : railSegmentsLookUp) {
       scale = random(30);
-      vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
+      vertex(v.x-scale*(v.x-width/2.f), v.y-scale*(v.y-height/2.f));
     }
-    vertex(vv.x-scale*(vv.x-width/2.), vv.y-scale*(vv.y-height/2.));
+    vertex(vv.x-scale*(vv.x-width/2.f), vv.y-scale*(vv.y-height/2.f));
   endShape();
 }
 
-void drawBarcode(int x, int y){
+public void drawBarcode(int x, int y){
   //1320x400 
   PImage img = loadImage("../../current_barcode.jpg");
   
@@ -302,30 +318,30 @@ void drawBarcode(int x, int y){
 }
 
 
-void drawTrain(float scale, float tp, float range){
+public void drawTrain(float scale, float tp, float range){
   PVector v;
   noFill();
   stroke(255,234,98,70);
   strokeWeight(4);
-  float scale2 = scale - 0.4;
+  float scale2 = scale - 0.4f;
   
   beginShape();
-    for(int i = int(sqrt((tp - range)*(tp - range)));  i < int(sqrt((tp + range)*(tp + range))); i++){
+    for(int i = PApplet.parseInt(sqrt((tp - range)*(tp - range)));  i < PApplet.parseInt(sqrt((tp + range)*(tp + range))); i++){
       //println(i);
       v = railSegmentsLookUp[i % railSegmentsLookUp.length];
-      vertex(v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));  
+      vertex(v.x-scale*(v.x-width/2.f), v.y-scale*(v.y-height/2.f));  
     }
    endShape();
    
-   v = railSegmentsLookUp[int(tp) % railSegmentsLookUp.length];
-   line(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.));
+   v = railSegmentsLookUp[PApplet.parseInt(tp) % railSegmentsLookUp.length];
+   line(v.x-scale2*(v.x-width/2.f), v.y-scale2*(v.y-height/2.f),v.x-scale*(v.x-width/2.f), v.y-scale*(v.y-height/2.f));
    
    fill(0);
-   ellipse(v.x-scale2*(v.x-width/2.), v.y-scale2*(v.y-height/2.),70,50);
+   ellipse(v.x-scale2*(v.x-width/2.f), v.y-scale2*(v.y-height/2.f),70,50);
 }
 
 
-void drawTrainText(float scale, float tp){
+public void drawTrainText(float scale, float tp){
   PVector v;
   textMode(SHAPE);
   textAlign(CENTER, CENTER);
@@ -333,6 +349,16 @@ void drawTrainText(float scale, float tp){
   fill(255,234,98,70);
   noStroke();
   
-  v = railSegmentsLookUp[int(tp) % railSegmentsLookUp.length];
-  text(int(trainPosition), v.x-scale*(v.x-width/2.), v.y-scale*(v.y-height/2.)); 
+  v = railSegmentsLookUp[PApplet.parseInt(tp) % railSegmentsLookUp.length];
+  text(PApplet.parseInt(trainPosition), v.x-scale*(v.x-width/2.f), v.y-scale*(v.y-height/2.f)); 
+}
+  public void settings() {  fullScreen(P3D); }
+  static public void main(String[] passedArgs) {
+    String[] appletArgs = new String[] { "railTrack_clean" };
+    if (passedArgs != null) {
+      PApplet.main(concat(appletArgs, passedArgs));
+    } else {
+      PApplet.main(appletArgs);
+    }
+  }
 }
