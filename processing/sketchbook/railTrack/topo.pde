@@ -46,6 +46,9 @@ class NetTopo{
 
   color col_higlight = color(30,123,34,230);
 
+
+  color col_higlight = color(30,123,34,130);
+
   NetTopo(){
     // no con =D
   }
@@ -111,6 +114,7 @@ class NetTopo{
   vecs[2] = new PVector(topoSizex*0.6,topoSizey*0.66);
   vecs[1] = new PVector(topoSizex*0.4,topoSizey*0.5);
   vecs[0] = new PVector(topoSizex*0.1,topoSizey*0.5);
+
   }
   
   void ddraw(int current_channel){
@@ -140,6 +144,12 @@ class NetTopo{
         _ch++;
       popMatrix();
     }
+    
+    // for (Wiggler w : wiggls){
+    //    // w.display();
+    //    // w.wiggle();
+    //    //w.texto();
+    // }
  }
   
   void highlightChannel(int ch){
@@ -251,9 +261,6 @@ void drawCircularNodeText(int name, int current_channel, float r) {
   color col_ring = #CCCCCC;
   color col_text = #EEEEEE;
   PFont f = createFont("Georgia",15,true);
-  
-
-
     textFont(f);
     // The text must be centered!
     textAlign(CENTER);
@@ -300,6 +307,7 @@ void drawCircularNodeText(int name, int current_channel, float r) {
     popMatrix();
     // Move halfway again
     arclength += w/2;
+
   }
 }
 }

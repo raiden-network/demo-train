@@ -24,6 +24,7 @@ import processing.net.*;
   float trainSpeed = .0229;
   float[] trainSpeeds = {trainSpeed,trainSpeed,trainSpeed};
 
+
   float railOffset = .75; //starting point in percent of racetrack
 
   int xBarcode = int(545*screenScale);
@@ -46,6 +47,7 @@ void setup(){
   fullScreen(FX2D);
   //noSmooth();
   smooth(8);
+
   if(debug)println(displayWidth);
   // if(displayWidth>1440){
   //  railRadius = 630; // this is 
@@ -438,6 +440,7 @@ void keyPressed(){
     }
     drawBarcode(xBarcode,yBarcode);
     drawTopologie(current_channel);
+
    }
   else{
    if(debug)println(keyCode);

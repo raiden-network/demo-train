@@ -19,6 +19,7 @@ class TunnelLandscape{
     b2 = color(0);
     c1 = color(204, 102, 0);
     c2 = color(0, 102, 153);
+
     colors = new color[7];
     // colors[0] = color(#ffffff); //white
     // colors[1] = color(#808000); //olive
@@ -29,6 +30,7 @@ class TunnelLandscape{
     // colors[6] = color(#911eb4); //purple
     // colors[7] = color(#f58231); //orange
     //r1=colors[int(random(7))]; //what is this shit?
+
 
     // Blau=#0066DD
     // Türkis = #00DDCC
