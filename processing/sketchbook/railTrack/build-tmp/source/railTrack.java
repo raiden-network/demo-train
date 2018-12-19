@@ -397,7 +397,7 @@ public void readClient(){
      if(debug)println("receiver " + n + " will get paid"); 
      text("receiver " + current_channel + "\nwill get paid", width/4.f, height/2);
      background(0);
-     land.drawMountain(0.29f,0.15f,11,.6f,0.48f,1.f,10,12,current_channel);
+     land.drawMountain(0.29f,0.15f,11,.6f,0.42f,1.f,10,12,current_channel); 
      clearInnerRegion();
      drawTopologie(current_channel%7);
      break;
@@ -574,7 +574,7 @@ class TunnelLandscape{
     b2 = color(0);
     c1 = color(204, 102, 0);
     c2 = color(0, 102, 153);
-    colors = new int[8];
+    colors = new int[7];
     // colors[0] = color(#ffffff); //white
     // colors[1] = color(#808000); //olive
     // colors[2] = color(#ffe119); //gelb
@@ -583,7 +583,7 @@ class TunnelLandscape{
     // colors[5] = color(#f032e6); //magenta
     // colors[6] = color(#911eb4); //purple
     // colors[7] = color(#f58231); //orange
-    r1=colors[PApplet.parseInt(random(7))]; //what is this shit?
+    //r1=colors[int(random(7))]; //what is this shit?
 
     // Blau=#0066DD
     // Türkis = #00DDCC
@@ -592,14 +592,14 @@ class TunnelLandscape{
     // Rot = #DD1100
     // Pink = #DD00AA
 
-    colors[0] = color(0xffBBBBBB); 
-    colors[1] = color(0xff0066DD); 
-    colors[2] = color(0xff00DDCC); 
-    colors[3] = color(0xffBBDD00); 
-    colors[4] = color(0xffDDBB00); 
-    colors[5] = color(0xffDD1100); 
-    colors[6] = color(0xffDD00AA); 
-    colors[7] = color(0xffDD00AA); 
+  // careful! colors also in landscape
+  colors[0]= color(0xff000000);    // black
+  colors[1] = color(0xff0066DD);   // blue
+  colors[2] = color(0xff00DDCC);   // tuerkis
+  colors[3] = color(0xff77DD00);   // bluegreen
+  colors[4] = color(0xffBBBBBB);   // grey
+  colors[5] = color(0xffDD1100);   // red
+  colors[6] = color(0xffDD00AA);   // pink  
   
     //noLoop();
   }
@@ -815,6 +815,7 @@ class NetTopo{
   channels[5] = ch5;
   channels[6] = ch6;
 
+  // careful! colors also in landscape
   colors[0]= color(0xff000000);    // black
   colors[1] = color(0xff0066DD);   // blue
   colors[2] = color(0xff00DDCC);   // tuerkis

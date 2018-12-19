@@ -62,6 +62,7 @@ class NetTopo{
   channels[5] = ch5;
   channels[6] = ch6;
 
+  // careful! colors also in landscape
   colors[0]= color(#000000);    // black
   colors[1] = color(#0066DD);   // blue
   colors[2] = color(#00DDCC);   // tuerkis
