@@ -59,7 +59,7 @@ Now run the `processing/processing.pde` in Processing 3
 ##Run the demo
 
 ###Udoo
-You can login to the udoo via ssh `train@demo`, the password is `raiden`. \
+You can login to the udoo via ssh `train@demo` if you're in the bbot wifi, the password is `raiden`. \
 The ~/.bash.rc is configure to autmoatically activate the required virtualenv and navigate to the demo repo\
 There are several options to run the demo.
 1) The first option is to mock raiden `hypercorn "webserver:build_app(mock='raiden')"`
@@ -68,6 +68,7 @@ There are several options to run the demo.
 NOTE: It is required to reboot the Udoo after stopping a demo run. In theory just a master reset of the arduinio is required, but as this is not physically possible the UDOO developers implemented a master reset of the arduino on every boot of the UDOO.
 
 ##RPi
+You can login to the RPi via ssh `pi@raspberrypi` if you're in the bbot wifi, the password is `raiden`. \
 To start the sender logic on the RPi activate the virtualenv `workon demo` and execute the sender_main.py `python ~/demo-train/sender_main.py`.
 
 
