@@ -16,8 +16,11 @@
    viewBox="0 0 210 297"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.3 (d244b95, 2018-08-02)"
-   sodipodi:docname="Network_topology.svg">
+   inkscape:version="0.92.3 (5aff6ba, 2018-11-25)"
+   sodipodi:docname="Network_topology.svg"
+   inkscape:export-filename="/home/oliver/Arbeit/github/demo-train/Images/Network_topology.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
   <defs
      id="defs2">
     <linearGradient
@@ -91,16 +94,6 @@
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient4764"
-       id="linearGradient6421"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(103.41796,104.46568)"
-       x1="20.032738"
-       y1="63.977673"
-       x2="52.160713"
-       y2="63.977673" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4764"
        id="linearGradient6438"
        gradientUnits="userSpaceOnUse"
        gradientTransform="translate(8.0027429,98.585753)"
@@ -128,16 +121,6 @@
        y1="63.977673"
        x2="52.160713"
        y2="63.977673" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4764"
-       id="linearGradient6489"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(8.127276,136.7201)"
-       x1="20.032738"
-       y1="63.977673"
-       x2="52.160713"
-       y2="63.977673" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -147,8 +130,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="231.47845"
-     inkscape:cy="669.78989"
+     inkscape:cx="111.07506"
+     inkscape:cy="828.69551"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -261,30 +244,14 @@
        style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
        x="17.105246"
        y="112.58405"
-       id="text6335-8"><tspan
+       id="text6335-8"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
          sodipodi:role="line"
          id="tspan6333-9"
          x="17.105246"
          y="112.58405"
-         style="font-size:4.93888903px;stroke-width:0.26458332">Receiver_8</tspan></text>
-    <rect
-       id="rect3713-7-3-22-6"
-       width="32.127975"
-       height="22.300594"
-       x="123.45071"
-       y="157.29306"
-       style="fill:#b20000;fill-opacity:1;stroke:url(#linearGradient6421);stroke-width:0.31750005;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="126.15121"
-       y="169.77971"
-       id="text6335-8-1"><tspan
-         sodipodi:role="line"
-         id="tspan6333-9-2"
-         x="126.15121"
-         y="169.77971"
-         style="font-size:4.93888903px;stroke-width:0.26458332">Receiver_4</tspan></text>
+         style="font-size:4.93888903px;stroke-width:0.26458332">Receiver_7</tspan></text>
     <rect
        id="rect3713-7-3-22-9"
        width="32.127975"
@@ -302,7 +269,12 @@
          id="tspan6333-9-7"
          x="30.735992"
          y="163.89978"
-         style="font-size:4.93888903px;stroke-width:0.26458332">Receiver_6</tspan></text>
+         style="font-size:4.93888903px;stroke-width:0.26458332">Receiver_5</tspan><tspan
+         sodipodi:role="line"
+         x="30.735992"
+         y="177.12895"
+         style="font-size:4.93888903px;stroke-width:0.26458332"
+         id="tspan4571" /></text>
     <rect
        id="rect3713-7-3-22-5"
        width="32.127975"
@@ -320,7 +292,7 @@
          id="tspan6333-9-3"
          x="59.86837"
          y="129.15475"
-         style="font-size:4.93888903px;stroke-width:0.26458332">Receiver_5</tspan></text>
+         style="font-size:4.93888903px;stroke-width:0.26458332">Receiver_4</tspan></text>
     <rect
        id="rect3713-7-3-22-0"
        width="32.127975"
@@ -339,24 +311,6 @@
          x="143.791"
          y="94.676979"
          style="font-size:4.93888903px;stroke-width:0.26458332">Receiver_3</tspan></text>
-    <rect
-       id="rect3713-7-3-22-1"
-       width="32.127975"
-       height="22.300594"
-       x="28.160023"
-       y="189.54747"
-       style="fill:#b20000;fill-opacity:1;stroke:url(#linearGradient6489);stroke-width:0.31750005;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="30.860531"
-       y="202.03412"
-       id="text6335-8-5"><tspan
-         sodipodi:role="line"
-         x="30.860531"
-         y="202.03412"
-         style="font-size:4.93888903px;stroke-width:0.26458332"
-         id="tspan6512">Receiver_7</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 94.021575,49.331099 0.0945,17.575895"
@@ -379,13 +333,8 @@
        inkscape:connector-curvature="0" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 135.40997,119.44568 21.92262,-14.83556 -16.81994,52.44419"
-       id="path6591"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 43.845239,173.68527 v 15.59151"
-       id="path6691"
+       d="m 135.31547,119.54018 23.71801,-15.02456"
+       id="path4569"
        inkscape:connector-curvature="0" />
   </g>
 </svg>
