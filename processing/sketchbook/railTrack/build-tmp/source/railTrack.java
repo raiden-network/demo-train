@@ -786,7 +786,7 @@ class NetTopo{
 
     int[][] channels = new int [noKnots][6];  // connections or statechannels
     int[] ch0 = {0};
-    int[] ch1 = {0,1,1};
+    int[] ch1 = {1,0,1};
     int[] ch2 = {0,1,2};
     int[] ch3 = {0,1,2,3};
     int[] ch4 = {0,1,4};
@@ -795,10 +795,21 @@ class NetTopo{
 
     int col_higlight = color(30,123,34,130);  // only used in drawNodeText <- deprecated
 
+
+    int[][] balances = {
+                      {1000,1000},                   // 0 - 1
+                      {1000,1000},                   // 1 - 2
+                      {1000,1000},                   // 2 - 3
+                      {1000,1000},                   // 1 - 4
+                      {1000,1000},                   // 4 - 5
+                      {1000,1000}                    // 1 - 6
+                    };
+
   NetTopo(){
     // no con =D
   }
   
+  // init all the arrays
   public void dsetup(){
     
     // this is fixed to 7 hardcoded channels
@@ -864,6 +875,7 @@ class NetTopo{
 
   }
   
+  // main draw function for this class
   public void ddraw(int current_channel){
     
     noFill();                                   // draw params for normal connection lines
@@ -878,39 +890,43 @@ class NetTopo{
       endShape();
     }
     
-    highlightChannel(current_channel%noKnots);  // higlight active connection line
+    highlightChannel(current_channel%noKnots);  // draw active connection line
 
     int _ch = 0;
-    for (PVector pv : vecs){
+    for (PVector pv : vecs){                    // iterate over all nodes
       pushMatrix();
         translate(pv.x-width/2,pv.y-height/2);
 
-        drawNode(.1f,.15f,.1f,.04f,0.61f,nodeRadius-1,nodeRadius,_ch);
+        drawNode(.1f,.15f,.1f,.04f,0.61f,nodeRadius-1,nodeRadius,_ch); // actually draw the node
         translate(width/2,height/2);
         
-        // drawNodeText(_ch,current_channel);   // straight text
-        drawCircularNodeText(_ch,current_channel,nodeRadius);
+        // drawNodeText(_ch,current_channel);                     // uncomment to draw straight text
+        drawCircularNodeText(_ch,current_channel,nodeRadius);     // draw the curved text
+
+        drawBalances(_ch);
         _ch++;
       popMatrix();
     }
  }
   
-  // higlight active connection line
+  // draw active connection line with special color
   public void highlightChannel(int ch){
-      strokeWeight(6);
+      strokeWeight(6);                  // draw-params for highlight line 
       stroke(colors[ch]);
       noFill();
-      beginShape();
+
+      beginShape();                     // draw the line
         for(int c : channels[ch]){
           vertex(vecs[c].x, vecs[c].y);
         }
       endShape();
 
-      noStroke();
-      fill(colors[ch]);
-      beginShape();
+      noStroke();                       // draw-params for circles on line
+      fill(colors[ch]);                 // all circles color of active node
+
+      beginShape();                     // draw circles
         for(int c : channels[ch]){
-          fill(colors[c]);
+          // fill(colors[c]);           // circles in own colors
           ellipse(vecs[c].x, vecs[c].y,20,20);
         }
       endShape();   
@@ -1052,6 +1068,30 @@ class NetTopo{
       arclength += w/2;
 
     }
+  }
+
+  // draw balances next to the connections
+  public void drawBalances(int name){
+    int xoff = 0;
+    int yoff = 45;
+
+
+    noFill();
+    // stroke(#BBBBBB);
+    // strokeWeight(.2);
+    noStroke();
+    // if(name==current_channel){
+    //   stroke(col_higlight);
+    //   strokeWeight(2);
+    // }
+
+    fill(255,201);
+    textSize(16);
+    int[] _bal = balances[(name)%balances.length];
+    text(_bal[0],xoff, yoff);
+    text(_bal[1],xoff, yoff+20);
+
+ 
   }
 }
   public void settings() {  fullScreen(FX2D);  smooth(8); }

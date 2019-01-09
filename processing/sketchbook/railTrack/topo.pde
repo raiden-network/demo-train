@@ -36,7 +36,7 @@ class NetTopo{
 
     int[][] channels = new int [noKnots][6];  // connections or statechannels
     int[] ch0 = {0};
-    int[] ch1 = {0,1,1};
+    int[] ch1 = {1,0,1};
     int[] ch2 = {0,1,2};
     int[] ch3 = {0,1,2,3};
     int[] ch4 = {0,1,4};
@@ -44,6 +44,16 @@ class NetTopo{
     int[] ch6 = {0,1,6};  
 
     color col_higlight = color(30,123,34,130);  // only used in drawNodeText <- deprecated
+
+
+    int[][] balances = {
+                      {1000,1000},                   // 0 - 1
+                      {1000,1000},                   // 1 - 2
+                      {1000,1000},                   // 2 - 3
+                      {1000,1000},                   // 1 - 4
+                      {1000,1000},                   // 4 - 5
+                      {1000,1000}                    // 1 - 6
+                    };
 
   NetTopo(){
     // no con =D
@@ -142,6 +152,8 @@ class NetTopo{
         
         // drawNodeText(_ch,current_channel);                     // uncomment to draw straight text
         drawCircularNodeText(_ch,current_channel,nodeRadius);     // draw the curved text
+
+        drawBalances(_ch);
         _ch++;
       popMatrix();
     }
@@ -306,5 +318,29 @@ class NetTopo{
       arclength += w/2;
 
     }
+  }
+
+  // draw balances next to the connections
+  void drawBalances(int name){
+    int xoff = 0;
+    int yoff = 45;
+
+
+    noFill();
+    // stroke(#BBBBBB);
+    // strokeWeight(.2);
+    noStroke();
+    // if(name==current_channel){
+    //   stroke(col_higlight);
+    //   strokeWeight(2);
+    // }
+
+    fill(255,201);
+    textSize(16);
+    int[] _bal = balances[(name)%balances.length];
+    text(_bal[0],xoff, yoff);
+    text(_bal[1],xoff, yoff+20);
+
+ 
   }
 }
