@@ -1,9 +1,9 @@
 ## Raiden Train Demo
 A model train  is traveling the world (in our case it's just a circle but hey we all have fanatasy ;) ).
-Durint it's travels it passes multiple tollgates asking it to pay for the next section.
+During its travels it passes multiple tollgates asking it to pay for the next section.
 The train however has a Raiden node on board and an open payment channel with it's home toll station.
 Since the tollgate mafia knows eachother they all have statechannels among them in such a ways as Displayed in Image 1 \
-[Image 1 - Network Topology](Images/Network_topology.png) \
+[Image 1 - Network Topology](./Images/Network_topology.png) \
 With the Raiden Network the train is now able to pay each and every tollage on it's travel in real time, without the need to stop at any point in time. 
 
 ## Setup on the "main" Computer
@@ -26,15 +26,17 @@ All accounts hold a certain balance of "Raiden Demo Tokens". The Raiden Demo Tok
 Processing is used for the frontend visualisation part. All processing files are located in ./processing/sketchbook/
 The main file is called railTrack.pde
 
-### start processing without IDE
+### Start processing without IDE
 
 ./processing-3.4/processing-java --sketch=/home/train/sketchbook/testLights --force --run
 
 Be aware that just the folder is passed and not the actual pde-file.
 
-### start on big screen via ssh
+### Start on big screen via ssh
 
-DISPLAY=:0.0 _cmdfromabove_
+DISPLAY=:0.0 ./processing-3.4/processing-java --sketch=/home/train/sketchbook/testLights --force --run
+
+There is a alias on the RPI for this which is called prorail.
 
 Right now we work with a separate server mock, that provides an endpoint with random addresses. The endpoint will be modelled exactly
 like in a later production version (same endpoints, same JSON-data).
@@ -56,9 +58,9 @@ Then the server has to be started:
 Now run the `processing/processing.pde` in Processing 3
 
 
-##Run the demo
+## Run the demo
 
-###Udoo
+### Udoo
 You can login to the udoo via ssh `train@demo` if you're in the bbot wifi, the password is `raiden`. \
 The ~/.bash.rc is configure to autmoatically activate the required virtualenv and navigate to the demo repo\
 There are several options to run the demo.
@@ -67,12 +69,12 @@ There are several options to run the demo.
 
 NOTE: It is required to reboot the Udoo after stopping a demo run. In theory just a master reset of the arduinio is required, but as this is not physically possible the UDOO developers implemented a master reset of the arduino on every boot of the UDOO.
 
-##RPi
+## RPi
 You can login to the RPi via ssh `pi@raspberrypi` if you're in the bbot wifi, the password is `raiden`. \
 To start the sender logic on the RPi activate the virtualenv `workon demo` and execute the sender_main.py `python ~/demo-train/sender_main.py`.
 
 
-##Debugging
+## Debugging
 - For the majority of Raiden related issues the deletion of the raiden datadir proved to be sufficient `rm -fr ~/.raiden`.
 - Sometimes the Raiden nodes on the Udoo crash during bootup. This can be checked by running `top` and see if there are 6 raiden instances active. If not reboot the UDOO and retry it
 - Sometimes the connection to the Arduino breaks. Either because of a missing restart or because of the arduino not responding to the serial port anymore. This can be fixed by shutting the UDOO down and turning off the power supply for ~10s.

@@ -1033,7 +1033,7 @@ public void drawCircularNodeText(int name, int current_channel, float r) {
   float textRadialOffset = 225;
   int col_ring = 0xffCCCCCC;
   int col_text = 0xffEEEEEE;
-  PFont f = createFont("Georgia",15,true);
+  PFont f = createFont("Roboto",15,true);
     textFont(f);
     // The text must be centered!
     textAlign(CENTER);
