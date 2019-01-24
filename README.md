@@ -28,13 +28,13 @@ The main file is called railTrack.pde
 
 ### Start processing without IDE
 
-./processing-3.4/processing-java --sketch=/home/train/sketchbook/testLights --force --run
+./processing-3.4/processing-java --sketch=/home/train/processing/sketchbook/railTrack --force --run
 
 Be aware that just the folder is passed and not the actual pde-file.
 
 ### Start on big screen via ssh
 
-DISPLAY=:0.0 ./processing-3.4/processing-java --sketch=/home/train/sketchbook/testLights --force --run
+DISPLAY=:0.0 ./processing-3.4/processing-java --sketch=/home/train/processing/sketchbook/railTrack --force --run
 
 There is a alias on the RPI for this which is called prorail.
 
