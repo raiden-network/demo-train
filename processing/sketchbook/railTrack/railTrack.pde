@@ -101,10 +101,12 @@ void steerFrontend(){
   case 's':                                   // initialisation
     if(debug)println("let the show begin");
     background(246,102,205);
-    textSize(30);
-    stroke(0);
-    fill(0);
-    text("INIT", width/2., height/2);
+    // textSize(30);
+    // stroke(0);
+    // fill(0);
+    //text("INIT", width/2., height/2);
+    PImage imgLogo = loadImage("../../../Horizontal_Black.png");
+    image(imgLogo, 0, 0, width, height);
     drawBarcode(xBarcode,yBarcode);
     break;
   case 't':                                   // distance-probe trigger
@@ -129,6 +131,8 @@ void steerFrontend(){
     current_channel = n;
      if(debug)println("receiver " + n + " will get paid"); 
      text("receiver " + current_channel + "\nwill get paid", width/4., height/2);
+     topo.balances[1][0]-=10;
+     topo.balances[current_channel][1]+=10;
      drawLandscape();  
      drawTopologie(current_channel%7);
      break;
