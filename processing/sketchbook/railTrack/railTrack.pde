@@ -114,6 +114,9 @@ void steerFrontend(){
    case 'p':                                  // payment received
     if(debug)println("received payment");
     drawBarcode(xBarcode,yBarcode); 
+    ////////////////////////
+    //TODO update balances//
+    ////////////////////////
     break;
    case 'm':                                  // payment failed
     if(debug)println("a payment is missing");
@@ -229,16 +232,31 @@ void drawLandscape(){
 
 void drawBarcode(int x, int y){
   //1320x400
+  noStroke();
+  noFill();
+
   PImage img = loadImage("../../../current_barcode.jpg");
 
   pushMatrix();
   translate(x,y);
-  rotate(HALF_PI);
+  pushMatrix();
+    rotate(HALF_PI);
+    image(img,0,0,465*screenScale,83*screenScale);
+  popMatrix();
+  
+  stroke(128);
+  fill(200,200,200);
+  textSize(20);
+  textAlign(LEFT);
+  text("INFO",-30,200);
+  text("ReceiverName: " + topo.nodeNames[current_channel],-30,230);
+  text("ReceiverAdress: " + topo.nodeAddis[current_channel],-30,260);
+  text("Hops: " + str(topo.channels[current_channel].length-2),-30,290);
+  text("Betrag: 10" ,-30,320);
+  ///////////////////
+  //TODO add nounce//
+  ///////////////////
 
-  noStroke();
-  noFill();
-
-  image(img,0,0,465*screenScale,83*screenScale);
   popMatrix();
 }
 
@@ -417,6 +435,8 @@ void keyPressed(){
     drawLandscape();
     drawBarcode(xBarcode,yBarcode);
     drawTopologie(current_channel);
+    topo.balances[0][0]-=10;
+    topo.balances[current_channel-1][0]+=10;
 
    }
   else{

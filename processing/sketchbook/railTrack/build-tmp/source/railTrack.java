@@ -247,16 +247,28 @@ public void drawLandscape(){
 
 public void drawBarcode(int x, int y){
   //1320x400
+  noStroke();
+  noFill();
+
   PImage img = loadImage("../../../current_barcode.jpg");
 
   pushMatrix();
   translate(x,y);
-  rotate(HALF_PI);
+  pushMatrix();
+    rotate(HALF_PI);
+    image(img,0,0,465*screenScale,83*screenScale);
+  popMatrix();
+  
+  stroke(128);
+  fill(255,255,255);
+  textSize(20);
+  textAlign(LEFT);
+  text("INFO",-30,200);
+  text("ReceiverName: " + topo.nodeNames[current_channel],-30,230);
+  text("ReceiverAdress: " + topo.nodeAddis[current_channel],-30,260);
+  text("Hops: " + str(topo.channels[current_channel].length-1),-30,290);
+  text("Betrag: 10" ,-30,320);
 
-  noStroke();
-  noFill();
-
-  image(img,0,0,465*screenScale,83*screenScale);
   popMatrix();
 }
 
@@ -435,6 +447,8 @@ public void keyPressed(){
     drawLandscape();
     drawBarcode(xBarcode,yBarcode);
     drawTopologie(current_channel);
+    topo.balances[0][0]-=10;
+    topo.balances[current_channel-1][0]+=10;
 
    }
   else{
@@ -771,6 +785,7 @@ class NetTopo{
     
     int[] colors = new int[noKnots];      // oo was yesterday
     String[] nodeNames = new String[noKnots]; // arrays are back
+    String[] nodeAddis = new String[noKnots]; // arrays are back
     PVector[] vecs = new PVector[noKnots];
      
     float[] radialOffsets = {                 // angular offsets for the curved text
@@ -795,7 +810,7 @@ class NetTopo{
 
     int col_higlight = color(30,123,34,130);  // only used in drawNodeText <- deprecated
 
-
+    // the beauty of oo
     int[][] balances = {
                       {1000,1000},                   // 0 - 1
                       {1000,1000},                   // 1 - 2
@@ -839,7 +854,15 @@ class NetTopo{
     nodeNames[5] = "Red Cat";
     nodeNames[6] = "Mr. Pink";
 
-    
+    nodeAddis[0] = "0x162432";
+    nodeAddis[1] = "0x123456";
+    nodeAddis[2] = "0x896745";
+    nodeAddis[3] = "0x736264";
+    nodeAddis[4] = "0x464464";
+    nodeAddis[5] = "0xaf1422";
+    nodeAddis[6] = "oxf6f6f6";
+
+
      // the position of the nodes is also hardcoded below
      // but with respect to the overall size of the diagram
      
@@ -897,7 +920,8 @@ class NetTopo{
       pushMatrix();
         translate(pv.x-width/2,pv.y-height/2);
 
-        drawNode(.1f,.15f,.1f,.04f,0.61f,nodeRadius-1,nodeRadius,_ch); // actually draw the node
+        // drawNode(.1,.15,.1,.04,0.61,nodeRadius-1,nodeRadius,_ch); // actually draw the node
+        drawNode(.1f,.15f,.1f,.04f,0.11f,nodeRadius-1,nodeRadius,_ch); // actually draw the node
         translate(width/2,height/2);
         
         // drawNodeText(_ch,current_channel);                     // uncomment to draw straight text
