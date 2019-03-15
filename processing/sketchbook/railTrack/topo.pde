@@ -48,13 +48,19 @@ class NetTopo{
 
     // the beauty of oo
     int[][] balances = {
-                      {1000,1000},                   // 0 - 1
-                      {1000,1000},                   // 1 - 2
-                      {1000,1000},                   // 2 - 3
-                      {1000,1000},                   // 1 - 4
-                      {1000,1000},                   // 4 - 5
-                      {1000,1000}                    // 1 - 6
+                      {0,0},
+                      {100,100},                   // 0 - 1
+                      {100,100},                   // 1 - 2
+                      {100,100},                   // 2 - 3
+                      {100,100},                   // 1 - 4
+                      {100,100},                   // 4 - 5
+                      {100,100}                    // 1 - 6
                     };
+
+    // next time there will be a node class
+    PVector[] balancePosis = new PVector[noKnots];
+
+
 
   NetTopo(){
     // no con =D
@@ -90,13 +96,13 @@ class NetTopo{
     nodeNames[5] = "Red Cat";
     nodeNames[6] = "Mr. Pink";
 
-    nodeAddis[0] = "0x162432";
-    nodeAddis[1] = "0x123456";
-    nodeAddis[2] = "0x896745";
-    nodeAddis[3] = "0x736264";
-    nodeAddis[4] = "0x464464";
-    nodeAddis[5] = "0xaf1422";
-    nodeAddis[6] = "oxf6f6f6";
+    nodeAddis[0] = "0x00D384EF";
+    nodeAddis[1] = "0x002857f3";
+    nodeAddis[2] = "0x0087b32F";
+    nodeAddis[3] = "0x00b349E9";
+    nodeAddis[4] = "0x006daf79";
+    nodeAddis[5] = "0x00a614cf";
+    nodeAddis[6] = "0x00673b55";
 
 
      // the position of the nodes is also hardcoded below
@@ -124,13 +130,22 @@ class NetTopo{
 
 
     //horizontal positioning
-    vecs[6] = new PVector(topoSizex*0.7,topoSizey*0.5);
-    vecs[5] = new PVector(topoSizex*0.9,topoSizey*0.33);
-    vecs[4] = new PVector(topoSizex*0.6,topoSizey*0.33);
-    vecs[3] = new PVector(topoSizex*0.9,topoSizey*0.66);
-    vecs[2] = new PVector(topoSizex*0.6,topoSizey*0.66);
-    vecs[1] = new PVector(topoSizex*0.4,topoSizey*0.5);
     vecs[0] = new PVector(topoSizex*0.1,topoSizey*0.5);
+    vecs[1] = new PVector(topoSizex*0.4,topoSizey*0.5);
+    vecs[2] = new PVector(topoSizex*0.6,topoSizey*0.66);
+    vecs[3] = new PVector(topoSizex*0.9,topoSizey*0.66);
+    vecs[4] = new PVector(topoSizex*0.6,topoSizey*0.33);
+    vecs[5] = new PVector(topoSizex*0.9,topoSizey*0.33);
+    vecs[6] = new PVector(topoSizex*0.7,topoSizey*0.5);
+
+
+    balancePosis[0] = new PVector(-1000,-1000); // nothing. shiat
+    balancePosis[1] = new PVector((vecs[0].x+vecs[1].x)/2,(vecs[0].y+vecs[1].y)/2); // 0 - 1
+    balancePosis[2] = new PVector((vecs[2].x+vecs[1].x)/2,(vecs[2].y+vecs[1].y)/2); // 1 - 2
+    balancePosis[3] = new PVector((vecs[2].x+vecs[3].x)/2,(vecs[2].y+vecs[3].y)/2); // 2 - 3
+    balancePosis[4] = new PVector((vecs[4].x+vecs[1].x)/2,(vecs[4].y+vecs[1].y)/2); // 1 - 4
+    balancePosis[5] = new PVector((vecs[4].x+vecs[5].x)/2,(vecs[4].y+vecs[5].y)/2); // 4 - 5
+    balancePosis[6] = new PVector((vecs[6].x+vecs[1].x)/2,(vecs[6].y+vecs[1].y)/2); // 1 - 6
 
   }
   
@@ -163,9 +178,9 @@ class NetTopo{
         // drawNodeText(_ch,current_channel);                     // uncomment to draw straight text
         drawCircularNodeText(_ch,current_channel,nodeRadius);     // draw the curved text
 
-        drawBalances(_ch);
-        _ch++;
       popMatrix();
+      drawBalances(_ch);
+      _ch++;
     }
  }
   
@@ -346,11 +361,21 @@ class NetTopo{
     // }
 
     fill(255,201);
-    textSize(16);
-    int[] _bal = balances[(name)%balances.length];
-    text(_bal[0],xoff, yoff);
-    text(_bal[1],xoff, yoff+20);
+    textSize(12);
 
+
+
+    // int[] _bal = balances[(name)%balances.length];
+    // text(_bal[0],xoff, yoff);
+    // text(_bal[1],xoff, yoff+20);
+    pushMatrix();
+      translate(balancePosis[name].x,balancePosis[name].y);
+      if(name==2)rotate(0.7); // ~PI/4
+      if(name==4)rotate(-0.7);
+      text(balances[name][0],-20,12);
+      text("<>",0,12);
+      text(balances[name][1], 20,12);
+    popMatrix();
  
   }
 }

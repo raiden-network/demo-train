@@ -435,8 +435,8 @@ void keyPressed(){
     drawLandscape();
     drawBarcode(xBarcode,yBarcode);
     drawTopologie(current_channel);
-    topo.balances[0][0]-=10;
-    topo.balances[current_channel-1][0]+=10;
+    topo.balances[1][0]-=10;
+    topo.balances[current_channel][1]+=10;
 
    }
   else{
