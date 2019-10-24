@@ -3,7 +3,7 @@ keystore-path = './receiver/key_storage/'
 password-file = './wallet_password.txt'
 
 # Networking
-matrix-server = "https://transport02.raiden.network"
+routing-mode = "local"
 eth-rpc-endpoint = "http://parity.kovan.ethnodes.brainbot.com:8545"
 network-id = 42 
 
