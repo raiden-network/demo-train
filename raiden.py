@@ -43,7 +43,7 @@ class RaidenNode:
         self._raiden_process.terminate()
 
     async def query_for_started(self):
-        url = self.api_endpoint + "/api/1/address"
+        url = self.api_endpoint + "/api/v1/address"
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(url) as response:
@@ -73,7 +73,7 @@ class RaidenNode:
 
     async def query_for_payment_received(self, sender_address, token_address, nonce):
 
-        url = self.api_endpoint + "/api/1/payments/{}/{}".format(token_address, sender_address)
+        url = self.api_endpoint + "/api/v1/payments/{}/{}".format(token_address, sender_address)
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 data = await response.json()

@@ -91,7 +91,7 @@ function draw(){
 	} 
 }
 
-var receiverEndpoint = "http://localhost:5000/api/1/provider/current";
+var receiverEndpoint = "http://localhost:5000/api/v1/provider/current";
 var currentReceiver;
 
 function queryReceiver () {

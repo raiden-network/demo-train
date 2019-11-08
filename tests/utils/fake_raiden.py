@@ -11,8 +11,8 @@ class FakeRaiden:
         self.port = port
         self.app = web.Application(loop=loop)
         self.app.router.add_routes(
-            [web.get('/api/1/address', self.on_address),
-             web.get('/api/1/payments/{token_address}/{partner_address}', self.on_payment_info)])
+            [web.get('/api/v1/address', self.on_address),
+             web.get('/api/v1/payments/{token_address}/{partner_address}', self.on_payment_info)])
         self.handler = None
         self.server = None
 

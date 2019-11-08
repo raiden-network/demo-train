@@ -70,12 +70,12 @@ async def end_services():
     train_app.stop()
 
 
-@app.route('/api/1/_debug')
+@app.route('/api/v1/_debug')
 async def get_debug_info():
     return train_app._track_loop
 
 
-@app.route('/api/1/provider/current')
+@app.route('/api/v1/provider/current')
 async def get_current_provider():
     data = {
         "address": train_app.current_provider_address,
@@ -84,12 +84,12 @@ async def get_current_provider():
     return jsonify(data)
 
 
-@app.route('/api/1/provider/qr/current')
+@app.route('/api/v1/provider/qr/current')
 def get_current_qr_code():
     return send_file(safe_join(SCRIPT_PATH, CODE_FILE_NAME))
 
 
-@app.route('/api/1/path/current')
+@app.route('/api/v1/path/current')
 async def get_current_path():
     return jsonify(network.shortest_path_from_sender(train_app.current_provider_address))
 

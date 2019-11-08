@@ -3,12 +3,15 @@ keystore-path = './receiver/key_storage/'
 password-file = './wallet_password.txt'
 
 # Networking
+eth-rpc-endpoint = "http://parity.goerli.ethnodes.brainbot.com:8545"
+network-id = "goerli"
 routing-mode = "local"
-eth-rpc-endpoint = "http://parity.kovan.ethnodes.brainbot.com:8545"
-network-id = 42 
+matrix-server = "https://transport04.raiden.network"
 
+# Misc
 environment-type = "development"
 accept-disclaimer = true
+web-ui = false
 
 [log-config]
 "raiden" = "ERROR"

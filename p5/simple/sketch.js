@@ -10,8 +10,8 @@ let graphPosY = 100
 let graphScale = 1.
 let qrSize = 300;
 
-let providerEndpoint = 'http://localhost:5000/api/1/provider/current'
-let pathEndpoint = 'http://localhost:5000/api/1/path/current'
+let providerEndpoint = 'http://localhost:5000/api/v1/provider/current'
+let pathEndpoint = 'http://localhost:5000/api/v1/path/current'
 let currentProvider;
 let currentPath = [];
 

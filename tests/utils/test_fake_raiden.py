@@ -19,7 +19,7 @@ async def test_make_payment(fake_raiden, token_address, sender_address, api_endp
 
     expected_result = [{"event": "EventPaymentReceivedSuccess", "amount": 2, "identifier": 123}]
 
-    url = api_endpoint + "/api/1/payments/{}/{}".format(token_address, sender_address)
+    url = api_endpoint + "/api/v1/payments/{}/{}".format(token_address, sender_address)
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             data = await response.json()

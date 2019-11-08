@@ -1,55 +1,67 @@
 import time
-import io
+import numpy
+import requests
+import pathlib
 
 import requests
 from PIL import Image
+from PyV4L2Camera.camera import Camera
+from PyV4L2Camera.controls import ControlIDs
 
-try:
-    import picamera
-except ModuleNotFoundError:
-    pass
 from pyzbar.pyzbar import decode
 
 from const import TOKEN_ADDRESS, RECEIVER_LIST
 
 
 def start_scanning():
-    stream = io.BytesIO()
-    camera = picamera.PiCamera()
-    camera.resolution = (640, 240)
-    # camera.resolution = (1280, 480)
-    camera.framerate = 10
-    camera.color_effects = (128, 128)
-    camera.contrast = 100
-    camera.ISO = 30
-    # camera.zoom = (0.41, 0.40, 0.22, 0.30)
-    camera.zoom = (0.35, 0.35, 0.28, 0.20)
-    # camera.exposure_mode = "backlight"
-    camera.start_preview()
-    time.sleep(2)
+    camera = Camera('/dev/video0', 640, 240)
+    controls = camera.get_controls()
+
+    for control in controls:
+        print(control.name)
+
+
+    # Video setting options are:
+    # options = [ControlIDs.AUTO_WHITE_BALANCE, ControlIDs.BACKLIGHT_COMPENSATION,
+    #           ControlIDs.BLACK_LEVEL, ControlIDs.BLUE_BALANCE, ControlIDs.BRIGHTNESS,
+    #           ControlIDs.CHROMA_AGC, ControlIDs.COLORFX, ControlIDs.COLOR_KILLER,
+    #           ControlIDs.CONTRAST, ControlIDs.DO_WHITE_BALANCE, ControlIDs.EXPOSURE,
+    #           ControlIDs.GAIN, ControlIDs.GAMMA, ControlIDs.HFLIP, ControlIDs.HUE,
+    #           ControlIDs.HUE_AUTO, ControlIDs.POWER_LINE_FREQUENCY, ControlIDs.RED_BALANCE,
+    #           ControlIDs.SATURATION, ControlIDs.SHARPNESS, ControlIDs.VFLIP,
+    #           ControlIDs.WHITENESS, ControlIDs.WHITE_BALANCE_TEMPERATURE]
+
+    camera.set_control_value(ControlIDs.BRIGHTNESS, 48)
+
+    pathlib.Path('images').mkdir(parents=True, exist_ok=True)
+
     while True:
         start = time.monotonic()
-        camera.capture(stream, format='jpeg')
-        stream.seek(0)
-        image = Image.open(stream)
-        width, heigh = image.size
-        image = image.crop(
-            ((width - 0.8 * width), (heigh - 0.7 * heigh), width * 0.85, heigh * 0.9))
-        # image.save("/home/pi/Images/" + str(time.monotonic()) + ".jpg")
-        try:
-            data = decode(image)[0].data
-            camera.close()
-            return eval(data.decode('utf8'))
-        except IndexError:
-            print("Couldn't find any QR codes")
-        print("Stream reading and QR detection took us %s s" % (time.monotonic() - start))
-        stream = io.BytesIO()
+        for _ in range(2):
+            frame = camera.get_frame()
+
+            # Decode the image
+            im = Image.frombytes('RGB', (camera.width, camera.height), frame, 'raw',
+                                 'RGB')
+
+            # Convert the image to a numpy array and back to the pillow image
+            arr = numpy.asarray(im)
+            im = Image.fromarray(numpy.uint8(arr))
+            # Display the image to show that everything works fine
+            im.save(f"images/test{time.monotonic()}.jpg")
+            try:
+                data = decode(im)[0].data
+                camera.close()
+                return eval(data.decode('utf8'))
+            except IndexError:
+                print("Couldn't find any QR codes")
+            print("Stream reading and QR detection took us %s s" % (time.monotonic() - start))
 
 
 def send_payment(address, nonce):
     print("Address = %s" % str(address))
     token_address = TOKEN_ADDRESS
-    payment_url = 'http://localhost:5001/api/1/payments/'
+    payment_url = 'http://localhost:5001/api/v1/payments/'
     print("Request URL is: %s" % (payment_url + token_address + "/" + str(address)))
     r = requests.post(payment_url + token_address + "/" + str(address),
                       json={"amount": 1, "identifier": nonce}
@@ -63,7 +75,7 @@ def send_payment(address, nonce):
 
 
 def get_channels():
-    r = requests.get("http://localhost:5001/api/1/channels")
+    r = requests.get("http://localhost:5001/api/v1/channels")
     print(r.json())
 
 
