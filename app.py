@@ -17,7 +17,8 @@ from track_control import (
     ArduinoTrackControl,
     MockArduinoTrackControl,
     BarrierEventTaskFactory,
-    BarrierLoopTaskRunner
+    BarrierLoopTaskRunner,
+    KeepAliveTaskRunner
 )
 from network import NetworkTopology
 import logging
@@ -29,6 +30,7 @@ ADDRESS_MAP = {address: index for index, address in enumerate(RECEIVER_LIST)}
 
 class BarcodeHandler():
     _address_map = ADDRESS_MAP
+    _barcode_file_path = str(BAR_CODE_FILE_PATH)
 
     def save_barcode(self, address, nonce):
         address, nonce = self._process_args(address, nonce)
@@ -42,7 +44,8 @@ class BarcodeHandler():
         barcode = code128.image("(" + str(address) + "," + str(nonce) + ")")
         factor = 4
         barcode = barcode.resize((int(barcode.width * factor), int(barcode.height * factor)))
-        barcode.save(str(BAR_CODE_FILE_PATH))
+        barcode.save(self._barcode_file_path)
+        log.debug(f'Written current barcode to disk: {self._barcode_file_path}')
 
 
 class TrainApp:
@@ -57,18 +60,17 @@ class TrainApp:
         self._track_loop = None
         self._current_provider = None
         self._provider_nonces = {provider.address: 0 for provider in self.raiden_nodes}
-        self._barrier_ltr = None
-        self._barrier_etf = None
+
+        self._task_runners = [
+            KeepAliveTaskRunner(self.track_control),
+            BarrierLoopTaskRunner(self.track_control)
+        ]
+        self._barrier_etf = BarrierEventTaskFactory(self.track_control)
 
     def start(self):
-        """
-        NOTE: it's necessary that the asyncio related instantiations are done at runtime,
-        because we need a running loop!
-        :return:
-        """
-        self._barrier_ltr = BarrierLoopTaskRunner(self.track_control)
-        self._barrier_etf = BarrierEventTaskFactory(self.track_control)
-        self._barrier_ltr.start()
+        self.track_control.connect()
+        for task in self._task_runners:
+            task.start()
         self._track_loop = asyncio.create_task(self.run())
 
     # FIXME make awaitable so that errors can raise
@@ -76,7 +78,8 @@ class TrainApp:
     def stop(self):
         try:
             self._track_loop.cancel()
-            self._barrier_ltr.stop()
+            for task in self._task_runners:
+                task.stop()
         except asyncio.CancelledError:
             pass
 
@@ -114,7 +117,7 @@ class TrainApp:
                 provider.ensure_payment_received(
                     sender_address=self.network_topology.sender_address,
                     token_address=self.network_topology.token_address,
-                    nonce=current_nonce, poll_interval=0.05)
+                    nonce=self.current_nonce, poll_interval=0.05)
             )
             barrier_event_task = self._barrier_etf.create_await_event_task()
             log.info('Waiting for payment to provider={}, nonce={}'.format(provider.address,
@@ -165,6 +168,7 @@ class TrainApp:
                     assert False
 
     def _on_new_provider(self):
+        log.info(f'New provider chosen: {self.current_provider_address}')
         if self.barcode_handler is not None:
             self.barcode_handler.save_barcode(self.current_provider_address, self.current_nonce)
 
@@ -191,10 +195,9 @@ class TrainApp:
             log.debug('Mocking Arduino serial')
             arduino_track_control = MockArduinoTrackControl()
         else:
-            arduino_serial = ArduinoSerial(port='/dev/ttyACM0', baudrate=9600, timeout=.1)
-            # arduino_serial = ArduinoSerial(port='/dev/cu.usbmodem1421', baudrate=9600, timeout=.1)
+            # arduino_serial = ArduinoSerial(port='/dev/ttyACM0', baudrate=9600, timeout=.1)
+            arduino_serial = ArduinoSerial(port='/dev/cu.usbmodem1421', baudrate=9600, timeout=.1)
             arduino_track_control = ArduinoTrackControl(arduino_serial)
-            arduino_track_control.connect()
 
         if mock_raiden:
             raiden_node_cls = RaidenNodeMock

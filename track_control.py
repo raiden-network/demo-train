@@ -21,6 +21,7 @@ class OutMessage(Enum):
     POWER_ON = 3
     DISTANCE_MEASURE_OFF = 4
     DISTANCE_MEASURE_ON = 5
+    KEEPALIVE = 6
 
     @classmethod
     def encode(cls, message: 'OutMessage'):
@@ -39,6 +40,8 @@ class OutMessage(Enum):
             encoded = bytes([3])
         elif message is cls.DISTANCE_MEASURE_ON:
             encoded = bytes([4])
+        elif message is cls.KEEPALIVE:
+            encoded = bytes([5])
         else:
             ValueError('Message not known')
         return encoded
@@ -157,6 +160,9 @@ class ArduinoTrackControl:
     def connect(self):
         return self._serial.do_handshake()
 
+    def send_keepalive(self):
+        self._serial.send_message(OutMessage.KEEPALIVE)
+
     def power_on(self):
         self._serial.send_message(OutMessage.POWER_ON)
 
@@ -192,6 +198,9 @@ class MockArduinoTrackControl:
 
     def connect(self):
         return True
+
+    def send_keepalive(self):
+        pass
 
     def power_on(self):
         self._power_state = PowerState.POWER_ON
@@ -273,14 +282,34 @@ class BarrierLoopTaskRunner(LoopTaskRunner):
         pass
 
 
+class KeepAliveTaskRunner(LoopTaskRunner):
+
+    def __init__(self, track_control: 'TrackControl'):
+        self._track_control = track_control
+        self._barrier_task = None
+
+    def is_running(self):
+        return not self._barrier_task.done()
+
+    def start(self):
+        self._barrier_task = asyncio.create_task(self._track_control.run_keepalive_loop())
+
+    def stop(self):
+        # TODO implement
+        pass
+
+
 class TrackControl:
 
     def __init__(self, arduino_track_control):
-        # the ArduinoTrackControl is assumed to be connected already!
+        # the ArduinoTrackControl is assumed to NOT be connected already!
         self.arduino_track_control = arduino_track_control
         self._barrier_events = set()
         # sleep for x seconds when barrier was triggered
         self._barrier_sleep_time = 4.
+
+    def connect(self):
+        return self.arduino_track_control.connect()
 
     @property
     def is_powered(self):
@@ -322,6 +351,13 @@ class TrackControl:
                     break
             else:
                 await asyncio.sleep(0.1)
+
+    async def run_keepalive_loop(self):
+        while True:
+            self.arduino_track_control.send_keepalive()
+            # send keepalive every second -
+            # after 8s of no keepalive, the arduino will reset
+            await asyncio.sleep(1.)
 
     def trigger_barrier(self):
         for event in self._barrier_events:

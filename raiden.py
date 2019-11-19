@@ -82,6 +82,7 @@ class RaidenNode:
                         if event["event"] == "EventPaymentReceivedSuccess" and \
                            event["amount"] == 1 and \
                            event["identifier"] == nonce:
+                            log.debug(f"{self} has payment-event for nonce: {nonce}")
                             return True
                     # Event not found in event list:
                     return False
@@ -133,6 +134,6 @@ class RaidenNodeMock(RaidenNode):
 
     async def query_for_payment_received(self, sender_address, token_address, nonce):
         # TODO remove
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(3)
         # always say the payment was received for now
         return True
