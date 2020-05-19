@@ -14,13 +14,12 @@ from const import TOKEN_ADDRESS, RECEIVER_LIST
 
 
 def start_scanning():
-    camera = Camera('/dev/video0', 640, 240)
-    controls = camera.get_controls()
+    camera = Camera('/dev/video0')
 
-    for control in controls:
-        print(control.name)
-
-
+    """ Video settings """
+    #controls = camera.get_controls()
+    #for control in controls:
+    #    print(control.name)
     # Video setting options are:
     # options = [ControlIDs.AUTO_WHITE_BALANCE, ControlIDs.BACKLIGHT_COMPENSATION,
     #           ControlIDs.BLACK_LEVEL, ControlIDs.BLUE_BALANCE, ControlIDs.BRIGHTNESS,
@@ -31,7 +30,8 @@ def start_scanning():
     #           ControlIDs.SATURATION, ControlIDs.SHARPNESS, ControlIDs.VFLIP,
     #           ControlIDs.WHITENESS, ControlIDs.WHITE_BALANCE_TEMPERATURE]
 
-    camera.set_control_value(ControlIDs.BRIGHTNESS, 48)
+    camera.set_control_value(ControlIDs.CONTRAST, 10)
+    camera.set_control_value(ControlIDs.SATURATION, 10)
 
     pathlib.Path('images').mkdir(parents=True, exist_ok=True)
 
@@ -45,8 +45,8 @@ def start_scanning():
                                  'RGB')
 
             # Convert the image to a numpy array and back to the pillow image
-            arr = numpy.asarray(im)
-            im = Image.fromarray(numpy.uint8(arr))
+            # arr = numpy.asarray(im)
+            # im = Image.fromarray(numpy.uint8(arr))
             # Display the image to show that everything works fine
             im.save(f"images/test{time.monotonic()}.jpg")
             try:

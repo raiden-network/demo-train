@@ -4,14 +4,16 @@ password-file = './wallet_password.txt'
 
 # Networking
 eth-rpc-endpoint = "http://parity.goerli.ethnodes.brainbot.com:8545"
+routing-mode = "pfs"
+api-address = "localhost:5001"
+matrix-server = "https://raidentransport.test001.env.raiden.network"
+pathfinding-service-address = "https://pfs.raidentransport.test001.env.raiden.network"
 network-id = "goerli"
-routing-mode = "local"
-matrix-server = "https://transport04.raiden.network"
+
 
 # Misc
 environment-type = "development"
 accept-disclaimer = true
-web-ui = false
 
 [log-config]
 "raiden" = "ERROR"
