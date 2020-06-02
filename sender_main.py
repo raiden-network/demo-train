@@ -13,8 +13,7 @@ from pyzbar.pyzbar import decode
 from const import TOKEN_ADDRESS, RECEIVER_LIST
 
 
-def start_scanning():
-    camera = Camera('/dev/video0')
+def start_scanning(camera=None):
 
     """ Video settings """
     #controls = camera.get_controls()
@@ -30,31 +29,28 @@ def start_scanning():
     #           ControlIDs.SATURATION, ControlIDs.SHARPNESS, ControlIDs.VFLIP,
     #           ControlIDs.WHITENESS, ControlIDs.WHITE_BALANCE_TEMPERATURE]
 
-    camera.set_control_value(ControlIDs.CONTRAST, 10)
-    camera.set_control_value(ControlIDs.SATURATION, 10)
-
     pathlib.Path('images').mkdir(parents=True, exist_ok=True)
 
     while True:
         start = time.monotonic()
-        for _ in range(2):
-            frame = camera.get_frame()
+        frame = camera.get_frame()
 
-            # Decode the image
-            im = Image.frombytes('RGB', (camera.width, camera.height), frame, 'raw',
+        # Decode the image
+        im = Image.frombytes('RGB', (camera.width, camera.height), frame, 'raw',
                                  'RGB')
+        im = im.crop((0, 200, im.width, im.height - 200))
 
-            # Convert the image to a numpy array and back to the pillow image
-            # arr = numpy.asarray(im)
-            # im = Image.fromarray(numpy.uint8(arr))
-            # Display the image to show that everything works fine
-            im.save(f"images/test{time.monotonic()}.jpg")
-            try:
-                data = decode(im)[0].data
-                camera.close()
-                return eval(data.decode('utf8'))
-            except IndexError:
-                print("Couldn't find any QR codes")
+        # Convert the image to a numpy array and back to the pillow image
+        # arr = numpy.asarray(im)
+        # im = Image.fromarray(numpy.uint8(arr))
+        # Display the image to show that everything works fine
+        im.save(f"images/test{time.monotonic()}.jpg")
+        try:
+            data = decode(im)[0].data
+            print(data)
+            return tuple(int(i) for i in data.decode('utf8').split(","))
+        except IndexError:
+            print("Couldn't find any QR codes")
             print("Stream reading and QR detection took us %s s" % (time.monotonic() - start))
 
 
@@ -82,8 +78,11 @@ def get_channels():
 def run():
     # We assume that Raiden is already started
     previous_receiver_info = (0, 0)
+    camera = Camera('/dev/video0')
+    camera.set_control_value(ControlIDs.CONTRAST, 10)
+    camera.set_control_value(ControlIDs.SATURATION, 10)
     while True:
-        address_id, nonce = start_scanning()
+        address_id, nonce = start_scanning(camera)
         if (address_id, nonce) == previous_receiver_info:
             continue
         address = RECEIVER_LIST[address_id]
