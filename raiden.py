@@ -5,6 +5,8 @@ import logging
 
 from os import PathLike
 
+from const import TOKEN_ADDRESS
+
 log = logging.getLogger()
 
 
@@ -17,18 +19,22 @@ class RaidenNode:
         self._raiden_process = None
 
     def __repr__(self):
-        return "{}<address={}, api-endpoint={}>".format(self.__class__.__name__, self.address, self.api_endpoint)
+        return "{}<address={}, api-endpoint={}>".format(self.__class__.__name__, self.address,
+                                                        self.api_endpoint)
 
     def start(self):
         # start the subprocess
         # FIXME better stripping of http:// in api-address
-        raiden = "raiden"\
-                 + " --address " + str(self.address) \
-                 + " --api-address " + str(self.api_endpoint[7:])
-        if self.config_file is not None:
-            raiden += " --config-file " + str(self.config_file)
-        # TODO determine if still neccessary
-        raiden += "&"
+        raiden = [
+            "nodejs",
+            "/home/train/demo-train/light-client/raiden-cli/build/index.js",
+            "--token", TOKEN_ADDRESS,
+            "--ethNode", "http://parity.goerli.ethnodes.brainbot.com:8545"
+            "--store", f"./store_{self.address}",
+            "--password", "raiden",
+            "--serve", self.api_endpoint[-4:],
+            "--privateKey", f"./receiver/key_storage/UTC--{self.address}"
+        ]
         log.info("Starting {}".format(self))
         with open(f'./raiden_{self.address[:10]}.log', 'w') as logfile:
             self._raiden_process = subprocess.Popen(
@@ -80,8 +86,8 @@ class RaidenNode:
                 if response.status == 200:
                     for event in data:
                         if event["event"] == "EventPaymentReceivedSuccess" and \
-                           event["amount"] == 1 and \
-                           event["identifier"] == nonce:
+                                event["amount"] == 1 and \
+                                event["identifier"] == nonce:
                             return True
                     # Event not found in event list:
                     return False
@@ -136,3 +142,7 @@ class RaidenNodeMock(RaidenNode):
         await asyncio.sleep(0.1)
         # always say the payment was received for now
         return True
+
+
+if __name__ == "__main__":
+    RaidenNode.start()
