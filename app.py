@@ -39,7 +39,7 @@ class BarcodeHandler():
         return address, nonce
 
     def _save_barcode(self, address, nonce):
-        barcode = code128.image("(" + str(address) + "," + str(nonce) + ")")
+        barcode = code128.image(str(address) + "," + str(nonce))
         factor = 4
         barcode = barcode.resize((int(barcode.width * factor), int(barcode.height * factor)))
         barcode.save(str(BAR_CODE_FILE_PATH))
