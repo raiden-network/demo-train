@@ -29,7 +29,7 @@ class RaidenNode:
             "nodejs",
             "/home/train/demo-train/light-client/raiden-cli/build/index.js",
             "--token", TOKEN_ADDRESS,
-            "--ethNode", "http://parity.goerli.ethnodes.brainbot.com:8545"
+            "--ethNode", "http://parity.goerli.ethnodes.brainbot.com:8545",
             "--store", f"./store_{self.address}",
             "--password", "raiden",
             "--serve", self.api_endpoint[-4:],
@@ -143,6 +143,3 @@ class RaidenNodeMock(RaidenNode):
         # always say the payment was received for now
         return True
 
-
-if __name__ == "__main__":
-    RaidenNode.start()
