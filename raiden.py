@@ -27,12 +27,11 @@ class RaidenNode:
         # FIXME better stripping of http:// in api-address
         raiden = "nodejs" + \
                  " /home/train/demo-train/light-client/raiden-cli/build/index.js" + \
-                 " --token " + TOKEN_ADDRESS + \
                  " --ethNode " + "http://parity.goerli.ethnodes.brainbot.com:8545" + \
                  " --store " + f"./store_{self.address}" + \
                  " --password " + "raiden" + \
-                 " --serve " + self.api_endpoint[-4:] + \
-                 " --privateKey " + f"./receiver/key_storage/UTC--{self.address}"
+                 " --port " + self.api_endpoint[-4:] + \
+                 " --privateKey " + f"./receiver/key_storage/UTC--{self.address} &"
         log.info("Starting {}".format(self))
         with open(f'./raiden_{self.address[:10]}.log', 'w') as logfile:
             self._raiden_process = subprocess.Popen(
@@ -54,6 +53,7 @@ class RaidenNode:
                     data = await response.json()
                     if response.status == 200:
                         if data["our_address"] == self.address:
+                            log.info(f"Succesfully started node {self.address}")
                             return True
                         raise ValueError("Address doesn't match expected address")
                     else:
