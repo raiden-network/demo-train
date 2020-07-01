@@ -184,28 +184,18 @@ class TrainApp:
         self._provider_nonces[self.current_provider_address] += 1
 
     @classmethod
-    def build_app(cls, network: NetworkTopology, mock_arduino=False, mock_raiden=False,
-                  config_file=None):
+    def build_app(cls, network: NetworkTopology):
         raiden_node_cls = RaidenNode
-        if mock_arduino:
-            log.debug('Mocking Arduino serial')
-            arduino_track_control = MockArduinoTrackControl()
-        else:
-            arduino_serial = ArduinoSerial(port='/dev/ttyACM0', baudrate=9600, timeout=.1)
-            # arduino_serial = ArduinoSerial(port='/dev/cu.usbmodem1421', baudrate=9600, timeout=.1)
-            arduino_track_control = ArduinoTrackControl(arduino_serial)
-            arduino_track_control.connect()
-
-        if mock_raiden:
-            raiden_node_cls = RaidenNodeMock
-            log.debug('Mocking RaidenNode')
+        arduino_serial = ArduinoSerial(port='/dev/ttyACM0', baudrate=9600, timeout=.1)
+        # arduino_serial = ArduinoSerial(port='/dev/cu.usbmodem1421', baudrate=9600, timeout=.1)
+        arduino_track_control = ArduinoTrackControl(arduino_serial)
+        arduino_track_control.connect()
 
         # TODO for mock nodes, we should skip the deployment script
         # FIXME asyncio.run() is not the correct method
         try:
             raiden_nodes_dict = asyncio.run(
-                start_raiden_nodes(raiden_node_cls, receivers=network.receivers,
-                                   config_file=config_file))
+                start_raiden_nodes(raiden_node_cls, receivers=network.receivers))
         except (asyncio.TimeoutError, TimeoutError):
             log.info(
                 'Not all raiden nodes could get started, check the log files for more info. Shutting down')

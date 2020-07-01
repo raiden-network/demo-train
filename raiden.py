@@ -1,11 +1,9 @@
-import subprocess
 import asyncio
-import aiohttp
 import logging
-
+import subprocess
 from os import PathLike
 
-from const import TOKEN_ADDRESS
+import aiohttp
 
 log = logging.getLogger()
 
@@ -58,7 +56,6 @@ class RaidenNode:
                         raise ValueError("Address doesn't match expected address")
                     else:
                         # no 200 OK means the Raiden Node is somehow not available
-                        # TODO handle different connection errors
                         log.info("Node not available: {}".format(self))
                         return False
             # If Raiden not online it will raise a ClientConnectorError
@@ -91,7 +88,6 @@ class RaidenNode:
                     return False
                 else:
                     # no 200 OK means the Raiden Node is somehow not available
-                    # TODO handle different connection errors
                     # This should probably raise an exception, since the node is unhealthy or
                     # something in the query is wrong
                     log.info("Node not available: {}".format(self))
@@ -107,36 +103,3 @@ class RaidenNode:
             if received is True:
                 return True
             await asyncio.sleep(poll_interval)
-
-
-class RaidenNodeMock(RaidenNode):
-    # TODO instead of mocking the node in-process, rather use the FakeRaiden server in the background
-    # to allow actual network requests and the logic of the RaidenNode
-    """
-    this is mainly to provide the same interface as a raiden node without actually starting
-    a subprocess and querying the raiden api
-    """
-
-    def __init__(self, address: str, api_endpoint: str, config_file: PathLike):
-        super(RaidenNodeMock, self).__init__(address, api_endpoint, config_file)
-        self._started = False
-
-    def start(self):
-        # don't start the raiden subprocess, but
-        # TODO rather start the FakeRaiden server
-        self._started = True
-
-    def stop(self):
-        # TODO stop the FakeRaiden server
-        self._started = False
-
-    async def query_for_started(self):
-        # TODO remove
-        await asyncio.sleep(0.1)
-        return self._started
-
-    async def query_for_payment_received(self, sender_address, token_address, nonce):
-        # TODO remove
-        await asyncio.sleep(0.1)
-        # always say the payment was received for now
-        return True

@@ -54,7 +54,7 @@ def build_app(mock='', config_file=DEFAULT_CONFIG_FILE):
     if config_file:
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), config_file)
 
-    train_app = TrainApp.build_app(network, mock_arduino, mock_raiden, config_file)
+    train_app = TrainApp.build_app(network)
 
     return app
 
