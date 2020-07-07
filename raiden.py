@@ -81,8 +81,8 @@ class RaidenNode:
                 if response.status == 200:
                     for event in data:
                         if event["event"] == "EventPaymentReceivedSuccess" and \
-                                event["amount"] == 1 and \
-                                event["identifier"] == nonce:
+                                int(event["amount"]) == 1 and \
+                                int(event["identifier"]) == nonce:
                             return True
                     # Event not found in event list:
                     return False
