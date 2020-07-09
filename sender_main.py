@@ -38,12 +38,23 @@ def start_scanning(camera=None):
         # Decode the image
         im = Image.frombytes('RGB', (camera.width, camera.height), frame, 'raw',
                                  'RGB')
-        im = im.crop((0, 200, im.width, im.height - 200))
+        im = im.crop((100, 200, im.width - 100, im.height - 150)).rotate(3)
+        # im = im.crop((100, 200, im.width - 100, im.height - 150))
+
+        # enhancer = ImageEnhance.Sharpness(im)
+
+        # im = enhancer.enhance(2)
+
+
+        #thresh = 130
+        #fn = lambda x: 255 if x > thresh else 0
+        #im = im.convert('L').point(fn, mode='1')
 
         # Convert the image to a numpy array and back to the pillow image
         # arr = numpy.asarray(im)
         # im = Image.fromarray(numpy.uint8(arr))
         # Display the image to show that everything works fine
+
         im.save(f"images/test{time.monotonic()}.jpg")
         try:
             data = decode(im)[0].data
@@ -52,6 +63,8 @@ def start_scanning(camera=None):
         except IndexError:
             print("Couldn't find any QR codes")
             print("Stream reading and QR detection took us %s s" % (time.monotonic() - start))
+        except ValueError:
+            print("Decodation of the QR code failed due to wrong result")
 
 
 def send_payment(address, nonce):
@@ -60,7 +73,7 @@ def send_payment(address, nonce):
     payment_url = 'http://localhost:5001/api/v1/payments/'
     print("Request URL is: %s" % (payment_url + token_address + "/" + str(address)))
     r = requests.post(payment_url + token_address + "/" + str(address),
-                      json={"amount": 1, "identifier": nonce}
+                      json={"amount": 1, "identifier": str(nonce)}
                       )
     if r.status_code == 200:
         # TODO querry payment history if nonce is used in PaymentSentSuccessfullEvent
@@ -78,7 +91,7 @@ def get_channels():
 def run():
     # We assume that Raiden is already started
     previous_receiver_info = (0, 0)
-    camera = Camera('/dev/video0')
+    camera = Camera('/dev/video0', 1024, 576)
     camera.set_control_value(ControlIDs.CONTRAST, 10)
     camera.set_control_value(ControlIDs.SATURATION, 10)
     while True:
