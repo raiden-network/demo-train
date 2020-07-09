@@ -32,6 +32,9 @@ import processing.net.*;
   int xBarcode = int(545*screenScale);  // position of barcode
   int yBarcode = int(1450*screenScale);
 
+  int xPaymentReceived = int(3000);  // position of payment textbox
+  int yPaymentReceived = int(4000)
+
   int current_channel = 0;        // active node
 
   int railJitter = 2;             // graphical jitter for rail segments
@@ -113,7 +116,8 @@ void steerFrontend(){
     break;
    case 'p':                                  // payment received
     if(debug)println("received payment");
-    drawBarcode(xBarcode,yBarcode); 
+    drawBarcode(xBarcode,yBarcode);
+    paymentSignal(xPaymentReceived, yPaymentReceived);
     break;
    case 'm':                                  // payment failed
     if(debug)println("a payment is missing");
@@ -240,6 +244,13 @@ void drawBarcode(int x, int y){
 
   image(img,0,0,465*screenScale,83*screenScale);
   popMatrix();
+}
+
+void paymentSignal(int x, int y){
+  stroke(128);
+  fill(128,12,43);
+  textSize(50);
+  text("Payment Received",x,y);
 }
 
 // draw textbox that is following the train
