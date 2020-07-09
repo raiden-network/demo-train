@@ -67,17 +67,17 @@ class NetTopo{
     colors[1] = color(#0066DD);   // blue
     colors[2] = color(#00DDCC);   // tuerkis
     colors[3] = color(#77DD00);   // bluegreen
-    colors[4] = color(#BBBBBB);   // grey
+    colors[4] = color(#FFFF00);   // yellow
     colors[5] = color(#DD1100);   // red
     colors[6] = color(#DD00AA);   // pink 
 
-    nodeNames[0] = "Demo Train";
-    nodeNames[1] = "Deep Blue";
-    nodeNames[2] = "Aquarius";
-    nodeNames[3] = "Greenhorn";
-    nodeNames[4] = "Cougar";
-    nodeNames[5] = "Red Cat";
-    nodeNames[6] = "Mr. Pink";
+    nodeNames[0] = "Train";
+    nodeNames[1] = "Blue ink";
+    nodeNames[2] = "Aquarius AG";
+    nodeNames[3] = "Green Ltd";
+    nodeNames[4] = "Yellow Group";
+    nodeNames[5] = "Red Systems";
+    nodeNames[6] = "Pink Industries";
 
     
      // the position of the nodes is also hardcoded below
