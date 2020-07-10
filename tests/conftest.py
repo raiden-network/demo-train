@@ -37,6 +37,12 @@ def default_raiden_config_file():
 
 
 @pytest.fixture
+def raiden_mock(address, api_endpoint, default_raiden_config_file):
+    raiden = RaidenNodeMock(address, api_endpoint, default_raiden_config_file)
+    return raiden
+
+
+@pytest.fixture
 def raiden(address, api_endpoint, default_raiden_config_file):
     raiden = RaidenNode(address, api_endpoint, default_raiden_config_file)
     return raiden

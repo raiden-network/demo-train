@@ -12,8 +12,8 @@ from const import RAIDEN_NODE_TIMEOUT, KEYSTORE_PATH_RECEIVER
 log = logging.getLogger()
 
 
-async def start_raiden_nodes(raiden_cls, receivers, delete_keystore=False,
-                             timeout=RAIDEN_NODE_TIMEOUT):
+async def start_raiden_nodes(raiden_cls, receivers, delete_keystore=False, timeout=RAIDEN_NODE_TIMEOUT,
+                             config_file=None):
     # TODO define the datadir separately to avoid deleting all raiden data!
     # TODO find a possibility to persist blockchain data for faster startup
     if delete_keystore:

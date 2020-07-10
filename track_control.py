@@ -176,6 +176,53 @@ class ArduinoTrackControl:
         self._barrier_state = BarrierState.decode(barrier_byte)
 
 
+class MockArduinoTrackControl:
+
+    def __init__(self):
+        self._barrier_state = None
+        self._power_state = None
+
+    @property
+    def barrier_state(self):
+        return self._barrier_state
+
+    @property
+    def power_state(self):
+        return self._power_state
+
+    def connect(self):
+        return True
+
+    def power_on(self):
+        self._power_state = PowerState.POWER_ON
+
+    def power_off(self):
+        self._power_state = PowerState.POWER_OFF
+
+    def start_measure(self):
+        # start with not triggering
+        pass
+
+    def stop_measure(self):
+        self._barrier_state = BarrierState.NOT_MEASURING
+
+    def update_sensor_data(self):
+        # we don't communicate with arduino, so do nothing here
+        pass
+
+    def mock_set_barrier_trigger(self):
+        """
+        only for setting the barrier state manually in the mock class,
+        """
+        self._barrier_state = BarrierState.OBJECT_CLOSE
+
+    def mock_unset_barrier_trigger(self):
+        """
+        only for unsetting the barrier state manually in the mock class
+        """
+        self._barrier_state = BarrierState.OBJECT_NOT_CLOSE
+
+
 class EventTaskFactory:
 
     async def await_event(self):
