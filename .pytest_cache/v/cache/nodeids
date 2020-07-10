@@ -1,0 +1,4 @@
+[
+  "tests.py::test_address_import",
+  "tests.py::test_payment"
+]
