@@ -32,8 +32,8 @@ import processing.net.*;
   int xBarcode = int(545*screenScale);  // position of barcode
   int yBarcode = int(1450*screenScale);
 
-  int xPaymentTextbox = int(3000);  // position of payment textbox
-  int yPaymentTextbox = int(4000)
+  int xPaymentTextbox = int(11500*screenScale);  // position of payment textbox
+  int yPaymentTextbox = int(6666*screenScale);
 
   int current_channel = 0;        // active node
 
@@ -248,23 +248,17 @@ void drawBarcode(int x, int y){
 }
 
 void paymentSignal(int x, int y){   // XXX Fixme this needs to be
-  stroke(128);
-  fill(128,12,43);
-  textSize(50);
-    time = millis();
-  if( millis() < time + 2000){
-    text("Payment Received",x,y);
-  }
+  textSize(32);
+  fill(255,255,255);
+  rotate(HALF_PI);
+  text("Payment received", x, y);
 }
 
 void newPaymentCredentials(int x, int y){ // XXX Fixme this needs to be
-  stroke(128);
-  fill(128,12,43);
-  textSize(50);
-  time = millis();
-  if( millis() < time + 2000){
-    text("Awaiting new payment",x,y);
-  }
+  textSize(32);
+  fill(255,255,255);
+  rotate(HALF_PI);
+  text("New Payment required", x, y);
 }
 
 // draw textbox that is following the train
@@ -433,6 +427,7 @@ void keyPressed(){
    if(debug)println("slow me down: " + trainSpeed);
   }
   else if(keyCode == 68){
+    newPaymentCredentials(xPaymentTextbox, yPaymentTextbox);
     debug = !debug;
   }
    else if(keyCode == 32){
