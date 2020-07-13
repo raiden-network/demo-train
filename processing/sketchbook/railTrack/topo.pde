@@ -72,7 +72,7 @@ class NetTopo{
     colors[6] = color(#DD00AA);   // pink 
 
     nodeNames[0] = "Train";
-    nodeNames[1] = "Blue ink";
+    nodeNames[1] = "Blue inc";
     nodeNames[2] = "Aquarius AG";
     nodeNames[3] = "Green Ltd";
     nodeNames[4] = "Yellow Group";

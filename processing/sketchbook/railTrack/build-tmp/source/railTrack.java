@@ -820,13 +820,13 @@ class NetTopo{
     colors[5] = color(0xffDD1100);   // red
     colors[6] = color(0xffDD00AA);   // pink 
 
-    nodeNames[0] = "Demo Train";
-    nodeNames[1] = "Deep Blue";
-    nodeNames[2] = "Aquarius";
-    nodeNames[3] = "Greenhorn";
-    nodeNames[4] = "Cougar";
-    nodeNames[5] = "Red Cat";
-    nodeNames[6] = "Mr. Pink";
+    nodeNames[0] = "Train";
+    nodeNames[1] = "Blue inc";
+    nodeNames[2] = "Aquarius AG";
+    nodeNames[3] = "Green Ltd";
+    nodeNames[4] = "Yellow Group";
+    nodeNames[5] = "Red Systems";
+    nodeNames[6] = "Pink Industries";
 
     
      // the position of the nodes is also hardcoded below
