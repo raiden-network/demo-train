@@ -32,8 +32,8 @@ import processing.net.*;
   int xBarcode = int(545*screenScale);  // position of barcode
   int yBarcode = int(1450*screenScale);
 
-  int xPaymentTextbox = int(2020*screenScale);  // position of payment textbox
-  int yPaymentTextbox = int(3750*screenScale);
+  int xPaymentTextbox = int(1100);  // position of info textbox
+  int yPaymentTextbox = int(620);
 
   int current_channel = 0;        // active node
 
@@ -118,7 +118,6 @@ void steerFrontend(){
    case 'p':                                  // payment received
     if(debug)println("received payment");
     drawBarcode(xBarcode,yBarcode);
-    paymentSignal(xPaymentTextbox, yPaymentTextbox);
     break;
    case 'm':                                  // payment failed
     if(debug)println("a payment is missing");
@@ -247,18 +246,12 @@ void drawBarcode(int x, int y){
   popMatrix();
 }
 
-void paymentSignal(int x, int y){   // XXX Fixme this needs to be
-  textSize(32);
+void newPaymentCredentials(int x, int y){
+  stroke(128);
   fill(255,255,255);
-  rotate(HALF_PI);
-  text("Payment received", x, y);
-}
-
-void newPaymentCredentials(int x, int y){ // XXX Fixme this needs to be
-  textSize(32);
-  fill(255,255,255);
-  rotate(HALF_PI);
-  text("New Payment required", x, y);
+  textSize(30);
+  // rotate(HALF_PI);
+  text("New Payment\n required", x, y);
 }
 
 // draw textbox that is following the train
