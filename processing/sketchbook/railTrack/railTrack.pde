@@ -32,8 +32,8 @@ import processing.net.*;
   int xBarcode = int(545*screenScale);  // position of barcode
   int yBarcode = int(1450*screenScale);
 
-  int xPaymentTextbox = int(11500*screenScale);  // position of payment textbox
-  int yPaymentTextbox = int(6666*screenScale);
+  int xPaymentTextbox = int(2020*screenScale);  // position of payment textbox
+  int yPaymentTextbox = int(3750*screenScale);
 
   int current_channel = 0;        // active node
 
