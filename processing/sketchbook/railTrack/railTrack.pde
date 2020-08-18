@@ -27,7 +27,7 @@ import processing.net.*;
 
   PVector[] railSegmentsLookUp;   // holds coordinates of track
 
-  float railOffset = .75;         // where is the barrier (in %)
+  float railOffset = .90;         // where is the barrier (in %)
 
   int xBarcode = int(545*screenScale);  // position of barcode
   int yBarcode = int(1450*screenScale);
@@ -70,10 +70,10 @@ void draw(){
   float trainP = getTrainPosition();
    
   clearRails();
-  drawTrain(2, trainP, 5,42);       // draw train illuminations
-  drawTrain(2, trainP, 10,32);
-  drawTrain(2, trainP, 25,22);
-  drawTrain(2, trainP, 35,12);
+  //drawTrain(2, trainP, 5,42);       // draw train illuminations
+  //drawTrain(2, trainP, 10,32);
+  //drawTrain(2, trainP, 25,22);
+  //drawTrain(2, trainP, 35,12);
   drawRails(trainP);                // animate the rails
   drawBarcode(xBarcode,yBarcode);
 
@@ -113,7 +113,7 @@ void steerFrontend(){
   case 't':                                   // distance-probe trigger
     if(debug)text("tell me why\nthe train passed by", width/4., height/2);
     setTrainSpeed();
-    newPaymentCredentials(xPaymentTextbox, yPaymentTextbox);
+    // newPaymentCredentials(xPaymentTextbox, yPaymentTextbox);
     break;
    case 'p':                                  // payment received
     if(debug)println("received payment");
@@ -207,7 +207,9 @@ void setTrainSpeed(){
      trainSpeeds[0]=tmpTS;
 
      trainSpeed = (trainSpeeds[0] + trainSpeeds[0] + trainSpeeds[0])/3.;
-     
+     // trainSpeed = 0.5;     
+
+
      if(debug){
       fill(255);
       println("new train speed accepted: " + trainSpeed);
@@ -218,6 +220,7 @@ void setTrainSpeed(){
    if(debug)println(oldLoopCounter);
    if(debug)println(loopCounter);
    oldLoopCounter = loopCounter;
+   // trainSpeed = 0.5;
 }
 
 // calculates position of train based on current speed and system-time
@@ -411,11 +414,11 @@ void mouseClicked(){
 // some debug functionality
 void keyPressed(){
   
-  if(keyCode == 139){
+  if(keyCode == 43){
    trainSpeed += 0.01;
    if(debug)println("speed me up: " + trainSpeed);
   }
-  else if(keyCode == 140){
+  else if(keyCode == 45){
    trainSpeed -= 0.01;
    if(debug)println("slow me down: " + trainSpeed);
   }
