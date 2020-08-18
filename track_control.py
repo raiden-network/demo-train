@@ -98,7 +98,7 @@ class ArduinoSerial:
     def do_handshake(self):
         # this is only for when the arduinos setup() function was already called.
         # it will force the arduino to do the handshake again
-        self._serial.write(OutMessage.INITIATE_HANDSHAKE)
+        self._serial.write(OutMessage.encode(OutMessage.INITIATE_HANDSHAKE))
         self._wait_for_read(b'H')
         send_value = OutMessage.encode(OutMessage.ACK)
         self._serial.write(send_value)
