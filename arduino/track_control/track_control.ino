@@ -104,13 +104,13 @@ void loop() {
 void establishContact() {
 
   Serial.flush();
-  while (serial.available() <= 0) {
-     sendhandshake();
+  while (Serial.available() <= 0) {
+     sendHandshake();
     delay(300);
   }
 
   while (Serial.read() != ACK) {
-	sendhandshake();
+	sendHandshake();
 	delay(300);
 }
   sendAck();
