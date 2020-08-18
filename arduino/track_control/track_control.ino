@@ -24,6 +24,16 @@ int barrierSensor = 0;
 int inByte = 0;
 
 int maxTriggerDistance = 20;
+enum messages {
+	ACK,
+	REQUEST_SENSOR,
+	POWER_OFF,
+	POWER_ON,
+	DISTANCE_MEASURE_OFF,
+	DISTANCE_MEASURE_ON,
+	INITIATE_HANDSHAKE
+}
+
 
 void setup() {
  pinMode(3, OUTPUT); //make the pin (3) as output
@@ -43,29 +53,32 @@ void loop() {
 
    switch (inByte) {
     //  send Sensor data
-    case 0:
+    case REQUEST_SENSOR:
       updateSensorData();
       delayMicroseconds(10);
       sendAck();
       sendSensorData();
       break;
     //  Turn Train power off
-    case 1:
+    case POWER_OFF:
       turnPowerOff();
       sendAck();
       break;
       //  Turn Train power on
-    case 2:
+    case POWER_ON:
       turnPowerOn();
       sendAck();
       break;
-    case 3:
+    case DISTANCE_MEASURE_OFF:
       measuring = false;
       sendAck();
       break;
-    case 4:
+    case DISTANCE_MEASURE_ON:
       measuring = true;
       sendAck();
+    case INITIATE_HANDSHAKE:
+      measuring = false;
+      establishContact();
     default:
 //      if no bytes are present, the client is not expecting computation from us
 //      TODO just continue loop
@@ -89,21 +102,15 @@ void loop() {
 }
 
 void establishContact() {
+  Serial.flush()
   while (Serial.available() <= 0) {
      sendHandshake();
     delay(300);
   }
 
-  while (true) {
-   if (Serial.available() > 0){
-     inByte = Serial.read();
-//   we expect the ACK from the client
-     if (inByte == 0){
-      sendAck();
-      break;
-     }
-    }
-  }
+  Serial.findUntil(ACK)
+  sendAck();
+  Serial.flush()
 }
 
 void sendSensorData() {

@@ -21,6 +21,7 @@ class OutMessage(Enum):
     POWER_ON = 3
     DISTANCE_MEASURE_OFF = 4
     DISTANCE_MEASURE_ON = 5
+    INITIATE_HANDSHAKE = 6
 
     @classmethod
     def encode(cls, message: 'OutMessage'):
@@ -30,15 +31,17 @@ class OutMessage(Enum):
         if message is cls.ACK:
             encoded = bytes([0])
         elif message is cls.REQUEST_SENSOR:
-            encoded = bytes([0])
-        elif message is cls.POWER_OFF:
             encoded = bytes([1])
-        elif message is cls.POWER_ON:
+        elif message is cls.POWER_OFF:
             encoded = bytes([2])
-        elif message is cls.DISTANCE_MEASURE_OFF:
+        elif message is cls.POWER_ON:
             encoded = bytes([3])
-        elif message is cls.DISTANCE_MEASURE_ON:
+        elif message is cls.DISTANCE_MEASURE_OFF:
             encoded = bytes([4])
+        elif message is cls.DISTANCE_MEASURE_ON:
+            encoded = bytes([5])
+        elif message is cls.INITIATE_HANDSHAKE:
+            encoded = bytes([6])
         else:
             ValueError('Message not known')
         return encoded
@@ -93,12 +96,15 @@ class ArduinoSerial:
         time.sleep(2)
 
     def do_handshake(self):
+        # this is only for when the arduinos setup() function was already called.
+        # it will force the arduino to do the handshake again
+        self._serial.write(OutMessage.INITIATE_HANDSHAKE)
         self._wait_for_read(b'H')
         send_value = OutMessage.encode(OutMessage.ACK)
         self._serial.write(send_value)
         # wait for ACK from Arduino
         self._wait_for_read(b'A', allowed_prepending=[b'H'])
-        log.debug('Handshake with Arduino succesful')
+        log.debug('Handshake with Arduino successful')
         return True
 
     def send_message(self, message):
@@ -132,7 +138,7 @@ class ArduinoSerial:
                 tried += 1
                 if tried > max_tries:
                     break
-            time.sleep(0.05)
+            time.sleep(0.005)
 
         was_expected = bool(val == expected)
         if was_expected is False:
@@ -316,9 +322,11 @@ class TrackControl:
                         self.trigger_barrier()
                         self.arduino_track_control.stop_measure()
                         await asyncio.sleep(self._barrier_sleep_time)
+                        break
                     else:
                         await asyncio.sleep(0.1)
                     # break out of loop to trigger measure again
+                    # FIXME the while loop is unnecessary here?
                     break
             else:
                 await asyncio.sleep(0.1)
