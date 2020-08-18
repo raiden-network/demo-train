@@ -100,14 +100,19 @@ void loop() {
  }
 }
 
+
 void establishContact() {
+
   Serial.flush();
-  while (Serial.available() <= 0) {
-     sendHandshake();
+  while (serial.available() <= 0) {
+     sendhandshake();
     delay(300);
   }
 
-  Serial.find(ACK);
+  while (Serial.read() != ACK) {
+	sendhandshake();
+	delay(300);
+}
   sendAck();
   Serial.flush();
 }

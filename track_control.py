@@ -133,12 +133,12 @@ class ArduinoSerial:
         allowed_prepending_signals = {b'', *allowed_prepending}
 
         while val in allowed_prepending_signals:
-            val = self._serial.read()
             if max_tries is not None:
                 tried += 1
                 if tried > max_tries:
                     break
             time.sleep(0.005)
+            val = self._serial.read()
 
         was_expected = bool(val == expected)
         if was_expected is False:
