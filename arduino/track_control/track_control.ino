@@ -46,7 +46,6 @@ void setup() {
 }
 
 void loop() {
- int data;
   
  if (Serial.available() > 0){
    inByte = Serial.read();
@@ -108,7 +107,7 @@ void establishContact() {
     delay(300);
   }
 
-  Serial.findUntil(ACK);
+  Serial.find(ACK);
   sendAck();
   Serial.flush();
 }
