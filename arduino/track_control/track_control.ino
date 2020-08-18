@@ -32,7 +32,7 @@ enum messages {
 	DISTANCE_MEASURE_OFF,
 	DISTANCE_MEASURE_ON,
 	INITIATE_HANDSHAKE
-}
+};
 
 
 void setup() {
@@ -102,15 +102,15 @@ void loop() {
 }
 
 void establishContact() {
-  Serial.flush()
+  Serial.flush();
   while (Serial.available() <= 0) {
      sendHandshake();
     delay(300);
   }
 
-  Serial.findUntil(ACK)
+  Serial.findUntil(ACK);
   sendAck();
-  Serial.flush()
+  Serial.flush();
 }
 
 void sendSensorData() {
