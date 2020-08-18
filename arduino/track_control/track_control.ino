@@ -24,7 +24,7 @@ int barrierSensor = 0;
 int inByte = 0;
 
 int maxTriggerDistance = 20;
-enum messages {
+typedef enum message_t {
 	UNKNOWN,
 	ACK,
 	REQUEST_SENSOR,
@@ -33,30 +33,36 @@ enum messages {
 	DISTANCE_MEASURE_OFF,
 	DISTANCE_MEASURE_ON,
 	INITIATE_HANDSHAKE
-};
+} message_t;
 
 
-message readSerial(){
+struct SerialRead {
+   bool success;
+   message_t message;
+}
+
+SerialRead readSerial(){
 	inByte =  Serial.read();
 	switch (inByte){
 		case -1:
-			return NULL;
+			return {false, UNKNOWN};
 		case 0:
-			return ACK;
+			return {true, ACK};
 		case 1:
-			return REQUEST_SENSOR;
+			return {true, REQUEST_SENSOR};
 		case 2:
-			return POWER_OFF;
+			return {true, POWER_OFF};
 		case 3:
-			return POWER_ON;
+			return {true, POWER_ON};
 		case 4:
-			return DISTANCE_MEASURE_OFF;
+			return {true, DISTANCE_MEASURE_OFF};
 		case 5:
-			return DISTANCE_MEASURE_ON;
+			return {true, DISTANCE_MEASURE_ON};
 		case 6:
-			return INITIATE_HANDSHAKE;
+			return {true, INITIATE_HANDSHAKE};
 		default:
-			return UNKNOWN;
+			return {true, UNKNOWN};
+	}
 }
 
 
