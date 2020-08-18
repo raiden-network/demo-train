@@ -25,6 +25,7 @@ int inByte = 0;
 
 int maxTriggerDistance = 20;
 enum messages {
+	UNKNOWN,
 	ACK,
 	REQUEST_SENSOR,
 	POWER_OFF,
@@ -33,6 +34,30 @@ enum messages {
 	DISTANCE_MEASURE_ON,
 	INITIATE_HANDSHAKE
 };
+
+
+message readSerial(){
+	inByte =  Serial.read();
+	switch (inByte){
+		case -1:
+			return NULL;
+		case 0:
+			return ACK;
+		case 1:
+			return REQUEST_SENSOR;
+		case 2:
+			return POWER_OFF;
+		case 3:
+			return POWER_ON;
+		case 4:
+			return DISTANCE_MEASURE_OFF;
+		case 5:
+			return DISTANCE_MEASURE_ON;
+		case 6:
+			return INITIATE_HANDSHAKE;
+		default:
+			return UNKNOWN;
+}
 
 
 void setup() {
@@ -48,9 +73,9 @@ void setup() {
 void loop() {
   
  if (Serial.available() > 0){
-   inByte = Serial.read();
+	mess = readSerial();
 
-   switch (inByte) {
+   switch (mess) {
     //  send Sensor data
     case REQUEST_SENSOR:
       updateSensorData();
@@ -100,7 +125,6 @@ void loop() {
  }
 }
 
-
 void establishContact() {
 
   Serial.flush();
@@ -109,7 +133,7 @@ void establishContact() {
     delay(300);
   }
 
-  while (Serial.read() != ACK) {
+  while (readSerial() != ACK) {
 	sendHandshake();
 	delay(300);
 }
