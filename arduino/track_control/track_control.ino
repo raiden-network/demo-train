@@ -134,14 +134,11 @@ void loop() {
 void establishContact() {
 
   Serial.flush();
-  while (Serial.available() <= 0) {
-     sendHandshake();
-    delay(300);
-  }
-
-  while (readSerial() != ACK) {
+  read_data = readSerial()
+  while (read_data.success  != false || read_data.message != ACK) {
 	sendHandshake();
 	delay(300);
+  	read_data = readSerial()
 }
   sendAck();
   Serial.flush();

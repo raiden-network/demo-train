@@ -58,7 +58,7 @@ class TrainApp:
         self._current_provider = None
         self._provider_nonces = {provider.address: 0 for provider in self.raiden_nodes}
         self._barrier_ltr = None
-        self._barrier_etf = None
+        self._barrier_etf: Optional[BarrierEventTaskFactory] = None
         self._possible_providers = None
 
     def start(self):
@@ -71,6 +71,11 @@ class TrainApp:
         self._barrier_etf = BarrierEventTaskFactory(self.track_control)
         self._barrier_ltr.start()
         self._track_loop = asyncio.create_task(self.run())
+
+        # TODO create a Keyboard input task that can:
+        #   -) trigger the barrier with a keypress
+        #   -) (circumvent the payment requirement (set() all waiting ensure_payment_received events))
+    
 
     # FIXME make awaitable so that errors can raise
     # FIXME handle gracefully
@@ -129,6 +134,7 @@ class TrainApp:
                     payment_successful = True
                     server.payment_received()
             else:
+                log.debug("Barrier was triggered.")
                 assert barrier_event_task in done
                 assert payment_received_task in pending
                 # cancel the payment received task
@@ -138,7 +144,9 @@ class TrainApp:
             if payment_successful is True:
                 log.info("Payment received")
                 assert barrier_event_task in pending
+                # wait for the next trigger of the barrier
                 await barrier_event_task
+                log.debug("Barrier was triggered.")
                 server.barrier_triggered()
                 # increment the nonce after the barrier was triggered
                 self._increment_nonce_for_current_provider()
@@ -160,10 +168,8 @@ class TrainApp:
                     self.track_control.power_on()
                     server.payment_received()
                     log.info("Payment received, turning track power on again")
-                else:
-                    # this shouldn't happen
-                    # FIXME remove assert in production code
-                    assert False
+                # we don't expect the task to return with anything else then True
+                assert payment_received_task.result() is True
 
     def _on_new_provider(self):
         if self.barcode_handler is not None:
@@ -201,6 +207,7 @@ class TrainApp:
             arduino_serial = ArduinoSerial(port='/dev/ttyACM0', baudrate=9600, timeout=.1)
             # arduino_serial = ArduinoSerial(port='/dev/cu.usbmodem1421', baudrate=9600, timeout=.1)
             arduino_track_control = ArduinoTrackControl(arduino_serial)
+            log.debug('Connecting to Arduino serial.')
             arduino_track_control.connect()
 
         if mock_raiden:
