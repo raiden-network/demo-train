@@ -39,7 +39,7 @@ typedef enum message_t {
 struct SerialRead {
    bool success;
    message_t message;
-}
+};
 
 SerialRead readSerial(){
 	inByte =  Serial.read();
@@ -77,11 +77,11 @@ void setup() {
 }
 
 void loop() {
-  
  if (Serial.available() > 0){
-	mess = readSerial();
+	 SerialRead readData;
+	readData = readSerial();
 
-   switch (mess) {
+   switch (readData.message) {
     //  send Sensor data
     case REQUEST_SENSOR:
       updateSensorData();
@@ -106,9 +106,11 @@ void loop() {
     case DISTANCE_MEASURE_ON:
       measuring = true;
       sendAck();
+      break;
     case INITIATE_HANDSHAKE:
       measuring = false;
       establishContact();
+      break;
     default:
 //      if no bytes are present, the client is not expecting computation from us
 //      TODO just continue loop
@@ -132,17 +134,17 @@ void loop() {
 }
 
 void establishContact() {
-
-  Serial.flush();
-  read_data = readSerial()
-  while (read_data.success  != false || read_data.message != ACK) {
-	sendHandshake();
-	delay(300);
-  	read_data = readSerial()
-}
-  sendAck();
-  Serial.flush();
-}
+	SerialRead read_data;
+	Serial.flush();
+	read_data = readSerial();
+	while (read_data.success  == false || read_data.message != ACK) {
+		sendHandshake();
+		delay(300);
+		read_data = readSerial();
+	}
+	sendAck();
+	Serial.flush();
+	}
 
 void sendSensorData() {
   Serial.write(powerSensor);

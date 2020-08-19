@@ -107,12 +107,13 @@ class ArduinoSerial:
         log.debug('Handshake with Arduino successful')
         return True
 
-    def send_message(self, message):
+    def send_message(self, message, expect_ack=True):
         send_value = OutMessage.encode(message)
         log.debug(f'Send message to Arduino: {message}<{send_value}>')
         self._serial.write(send_value)
         # wait for ACK from Arduino
-        self._wait_for_read(b'A')
+        if expect_ack is True:
+            self._wait_for_read(b'A')
         log.debug('Got ACK from Arduino')
 
     def read_bytes(self, nof_bytes):
@@ -346,3 +347,9 @@ class TrackControl:
         self.arduino_track_control.update_sensor_data()
         # assert self.arduino_track_control.is_powered()
         log.info("Turned power for train on")
+
+    def toggle_power(self):
+        if self.arduino_track_control.power_state is PowerState.POWER_ON:
+            self.power_off()
+        elif self.arduino_track_control.power_state is PowerState.POWER_OFF:
+            self.power_off()
