@@ -68,11 +68,6 @@ class TrainApp:
         because we need a running loop!
         :return:
         """
-        self._barrier_ltr = BarrierLoopTaskRunner(self.track_control)
-        self._barrier_etf = BarrierEventTaskFactory(self.track_control)
-        self._barrier_ltr.start()
-        self._track_loop = asyncio.create_task(self.run())
-
         # Starting frontend
         subprocess.Popen(
             "DISPLAY=:0.0 "
@@ -88,8 +83,12 @@ class TrainApp:
         time.sleep(2)
         self._frontend.start()
         time.sleep(2)
-        # TODO create a Keyboard input task that can:
-        #   -) (circumvent the payment requirement (set() all waiting ensure_payment_received events))
+
+        self._barrier_ltr = BarrierLoopTaskRunner(self.track_control)
+        self._barrier_etf = BarrierEventTaskFactory(self.track_control)
+        self._barrier_ltr.start()
+        self._track_loop = asyncio.create_task(self.run())
+
 
     # FIXME make awaitable so that errors can raise
     # FIXME handle gracefully
@@ -132,7 +131,7 @@ class TrainApp:
                     if barrier_event_task in pending_tasks:
                         # wait for the barrier to stay in sync
                         await barrier_event_task
-                        time.sleep(POST_BARRIER_WAIT_TIME)
+                        await asyncio.sleep(POST_BARRIER_WAIT_TIME)
                         assert barrier_event_task.done()
                         pending_tasks.remove(barrier_event_task)
                         assert len(pending_tasks) == 0
@@ -171,7 +170,7 @@ class TrainApp:
         # combination twice, even if it happens to see the barcode twice
         await barrier_task
         log.info("Syncing finished, the first round was free!")
-        time.sleep(POST_BARRIER_WAIT_TIME)
+        await asyncio.sleep(POST_BARRIER_WAIT_TIME)
 
         # now the paid round begins!
         while True:
