@@ -10,13 +10,19 @@ log = logging.getLogger()
 class Server:
 
     def __init__(self, host='', port=5204):
+        # FIXME in the methods, infinite recursive behaviour is possible
         self.host = host
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.conn = None
+        self.addr = None
+
+    def connect(self):
         self.socket.bind((self.host, self.port))
         self.socket.listen(5)
         self.conn, self.addr = self.socket.accept()
         log.info("Socket to communicate with processing started")
+
 
     def barrier_triggered(self):
         try:

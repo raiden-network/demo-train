@@ -79,6 +79,8 @@ def send_payment(address, nonce):
         # TODO querry payment history if nonce is used in PaymentSentSuccessfullEvent
         print("Payment successfull")
     else:
+        # FIXME we need a backoff strategy, this will recursively fire a
+        # lot of requests if the payment never goes through and will never stop.
         print("Response = %s" % r.text)
         send_payment(address, nonce)
 

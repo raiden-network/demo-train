@@ -7,7 +7,7 @@ from typing import List, Optional
 
 import code128
 
-from const import BAR_CODE_FILE_PATH, RECEIVER_LIST
+from const import BAR_CODE_FILE_PATH, RECEIVER_LIST, POST_BARRIER_WAIT_TIME
 from deployment import start_raiden_nodes
 from raiden import RaidenNode, RaidenNodeMock
 from server import Server
@@ -60,6 +60,7 @@ class TrainApp:
         self._barrier_ltr = None
         self._barrier_etf: Optional[BarrierEventTaskFactory] = None
         self._possible_providers = None
+        self._frontend = Server()
 
     def start(self):
         """
@@ -72,24 +73,6 @@ class TrainApp:
         self._barrier_ltr.start()
         self._track_loop = asyncio.create_task(self.run())
 
-        # TODO create a Keyboard input task that can:
-        #   -) trigger the barrier with a keypress
-        #   -) (circumvent the payment requirement (set() all waiting ensure_payment_received events))
-    
-
-    # FIXME make awaitable so that errors can raise
-    # FIXME handle gracefully
-    def stop(self):
-        try:
-            self._track_loop.cancel()
-            self._barrier_ltr.stop()
-        except asyncio.CancelledError:
-            pass
-
-    async def run(self):
-        # TODO make sure that every neccessary task is running:
-        # (barrier_etf, barrier_ltr instantiated, etc)
-        log.info("Track loop started")
         # Starting frontend
         subprocess.Popen(
             "DISPLAY=:0.0 "
@@ -101,75 +84,101 @@ class TrainApp:
         )
         log.info("Started subprocess for Frontend")
         time.sleep(5)
-        server = Server()
+        self._frontend.connect()
         time.sleep(2)
-        server.start()
+        self._frontend.start()
         time.sleep(2)
-        self.track_control.power_on()
+        # TODO create a Keyboard input task that can:
+        #   -) (circumvent the payment requirement (set() all waiting ensure_payment_received events))
+
+    # FIXME make awaitable so that errors can raise
+    # FIXME handle gracefully
+    def stop(self):
+        try:
+            self._track_loop.cancel()
+            self._barrier_ltr.stop()
+        except asyncio.CancelledError:
+            pass
+
+    def _prepare_cycle(self):
+        self._set_next_provider()
+        self._frontend.new_receiver(ADDRESS_MAP[self.current_provider_address])
+
+    async def _process_cycle(self, provider, nonce):
+        payment_received_task = asyncio.create_task(
+            provider.ensure_payment_received(
+                sender_address=self.network_topology.sender_address,
+                token_address=self.network_topology.token_address,
+                nonce=nonce, poll_interval=0.05)
+        )
+        barrier_event_task = self._barrier_etf.create_await_event_task()
+
+        log.info(f'Waiting for payment to provider={provider.address}, nonce={nonce}')
+        pending_tasks = [payment_received_task, barrier_event_task]
         while True:
-            # Pick a random receiver
-            self._set_next_provider()
-            provider = self._current_provider
-            server.new_receiver(ADDRESS_MAP[self.current_provider_address])
-            current_nonce = self.current_nonce
+            # Wait for payment and for barrier events, but return when one of them is finished first
+            done, pending_tasks = await asyncio.wait(pending_tasks,
+                                                return_when=asyncio.FIRST_COMPLETED)
 
-            # Sleeping 4 s to make sure that the train completely passed the light barrier
-            time.sleep(4)
-
-            payment_received_task = asyncio.create_task(
-                provider.ensure_payment_received(
-                    sender_address=self.network_topology.sender_address,
-                    token_address=self.network_topology.token_address,
-                    nonce=current_nonce, poll_interval=0.05)
-            )
-            barrier_event_task = self._barrier_etf.create_await_event_task()
-            log.info('Waiting for payment to provider={}, nonce={}'.format(provider.address,
-                                                                           current_nonce))
-            # await both awaitables but return when one of them is finished first
-            done, pending = await asyncio.wait([payment_received_task, barrier_event_task],
-                                               return_when=asyncio.FIRST_COMPLETED)
-            payment_successful = False
             if payment_received_task in done:
                 if payment_received_task.result() is True:
-                    payment_successful = True
-                    server.payment_received()
+                    log.info("Payment received")
+                    self._frontend.payment_received()
+                    if not self.track_control.is_powered:
+                        # we have shut down the power before!
+                        self.track_control.power_on()
+                        log.info("Turning track power on.")
+
+                    if barrier_event_task in pending_tasks:
+                        # wait for the barrier to stay in sync
+                        await barrier_event_task
+                        time.sleep(POST_BARRIER_WAIT_TIME)
+                        assert barrier_event_task.done()
+                        pending_tasks.remove(barrier_event_task)
+                        assert len(pending_tasks) == 0
+                        # only at this point we can call this cycle complete!
+                        break
+                else:
+                    # this code path is not expected to be executed,
+                    # but we would need to restart waiting for the payment
+                    payment_received_task = asyncio.create_task(
+                        provider.ensure_payment_received(
+                            sender_address=self.network_topology.sender_address,
+                            token_address=self.network_topology.token_address,
+                            nonce=nonce, poll_interval=0.05)
+                    )
             else:
-                log.debug("Barrier was triggered.")
                 assert barrier_event_task in done
-                assert payment_received_task in pending
-                # cancel the payment received task
-                for task in pending:
-                    task.cancel()
-
-            if payment_successful is True:
-                log.info("Payment received")
-                assert barrier_event_task in pending
-                # wait for the next trigger of the barrier
-                await barrier_event_task
                 log.debug("Barrier was triggered.")
-                server.barrier_triggered()
-                # increment the nonce after the barrier was triggered
-                self._increment_nonce_for_current_provider()
-            else:
-                log.info("Payment not received before next barrier trigger")
+                self._frontend.barrier_triggered()
+                assert payment_received_task in pending_tasks
+                log.info("Payment not received before barrier trigger")
                 self.track_control.power_off()
-                server.payment_missing()
+                log.info("Shut off track power")
+                self._frontend.payment_missing()
 
-                payment_received_task = asyncio.create_task(
-                    provider.ensure_payment_received(
-                        sender_address=self.network_topology.sender_address,
-                        token_address=self.network_topology.token_address,
-                        nonce=self.current_nonce,
-                        poll_interval=0.05)
-                )
-                await payment_received_task
-                if payment_received_task.result() is True:
-                    self._increment_nonce_for_current_provider()
-                    self.track_control.power_on()
-                    server.payment_received()
-                    log.info("Payment received, turning track power on again")
-                # we don't expect the task to return with anything else then True
-                assert payment_received_task.result() is True
+    async def run(self):
+        # TODO make sure that every neccessary task is running:
+        # (barrier_etf, barrier_ltr instantiated, etc)
+        
+        self._prepare_cycle()
+        barrier_task = self._barrier_etf.create_await_event_task()
+        self.track_control.power_on()
+        log.info("Track loop started")
+
+        # Just wait for the trigger to sync up, then sleep a little until the train is passed
+        # this is the extra round to sync up, the train will not pay the same addres/nonce
+        # combination twice, even if it happens to see the barcode twice
+        await barrier_task
+        log.info("Syncing finished, the first round was free!")
+        time.sleep(POST_BARRIER_WAIT_TIME)
+
+        # now the paid round begins!
+        while True:
+            await self._process_cycle(self._current_provider, self.current_nonce)
+            self._increment_nonce_for_current_provider()
+            self._prepare_cycle()
+
 
     def _on_new_provider(self):
         if self.barcode_handler is not None:

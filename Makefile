@@ -1,7 +1,7 @@
 .PHONY: start start_mocked test arduino
 
 start: 
-	hypercorn 'webserver:build_app(config_file="raiden_config.toml")'
+	DISPLAY=:0 hypercorn 'webserver:build_app(config_file="raiden_config.toml")'
 
 start_mocked:
 	hypercorn 'webserver:build_app(mock="raiden arduino", config_file="raiden_config.toml")'

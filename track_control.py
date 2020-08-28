@@ -109,12 +109,10 @@ class ArduinoSerial:
 
     def send_message(self, message, expect_ack=True):
         send_value = OutMessage.encode(message)
-        log.debug(f'Send message to Arduino: {message}<{send_value}>')
         self._serial.write(send_value)
         # wait for ACK from Arduino
         if expect_ack is True:
             self._wait_for_read(b'A')
-        log.debug('Got ACK from Arduino')
 
     def read_bytes(self, nof_bytes):
         values = []
@@ -123,7 +121,6 @@ class ArduinoSerial:
             if val is b'':
                 raise ValueError('No bytes to read')
             values.append(val)
-        log.debug(f"Read bytes from Arduino: {values}")
         return tuple(values)
 
     def _wait_for_read(self, expected, max_tries: Optional[int]=None, allowed_prepending: Optional[List]=None):
@@ -231,6 +228,8 @@ class MockArduinoTrackControl:
 
 
 class EventTaskFactory:
+    # REFACTOR remove this class and
+    # move create_await_event_task method one up in the class hiearchy
 
     async def await_event(self):
         raise NotImplementedError
@@ -240,6 +239,9 @@ class EventTaskFactory:
 
 
 class LoopTaskRunner:
+    # REFACTOR remove this class or make it an ABC 
+    # (not necessary)
+    
 
     def is_running(self):
         raise NotImplementedError

@@ -2,6 +2,7 @@ import logging
 import os
 
 from app import TrainApp
+from keyboard import KeyboardListenerTask
 import code128
 
 from quart import Quart, jsonify, send_file, safe_join
@@ -15,6 +16,8 @@ from const import (
     RECEIVER_5_ADDRESS,
     RECEIVER_2_ADDRESS,
     RECEIVER_6_ADDRESS,
+    KEYBOARD_BARRIER_KEY,
+    KEYBOARD_POWER_KEY
 )
 from deployment import get_receiver_addresses
 from network import NetworkTopology
@@ -28,6 +31,7 @@ app = Quart(__name__)
 app = cors(app)
 
 train_app = None
+keyboard_task = None
 network = NetworkTopology(NETWORK_GRAPH, SENDER_ADDRESS, get_receiver_addresses())
 current_provider = None
 
@@ -43,7 +47,7 @@ def barcode_factory(address, nonce):
 
 
 def build_app(mock='', config_file=DEFAULT_CONFIG_FILE):
-    global train_app
+    global train_app, keyboard_task
     mock_arduino = False
     mock_raiden = False
 
@@ -63,17 +67,20 @@ def build_app(mock='', config_file=DEFAULT_CONFIG_FILE):
     train_app = TrainApp.build_app(network, mock_arduino, mock_raiden, config_file, 
                                    possible_receiver_addresses=possible_receiver_nodes)
 
+    keyboard_task = KeyboardListenerTask(train_app.track_control, KEYBOARD_POWER_KEY, KEYBOARD_BARRIER_KEY )
     return app
 
 
 @app.before_serving
 async def start_services():
+    keyboard_task.run()
     train_app.start()
     log.debug('Initialization completed')
 
 
 @app.after_serving
 async def end_services():
+    keyboard_task.stop()
     train_app.stop()
 
 
