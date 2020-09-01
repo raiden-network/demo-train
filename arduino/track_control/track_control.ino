@@ -1,4 +1,5 @@
 // defines pins numbers
+const int relaisPin = 3;
 const int trigPin = 6;
 const int echoPin = 7;
 // defines variables
@@ -67,8 +68,7 @@ SerialRead readSerial(){
 
 
 void setup() {
- pinMode(3, OUTPUT); //make the pin (3) as output
- pinMode(13, OUTPUT); //make the LED pin (13) as output
+ pinMode(relaisPin, OUTPUT); //make the relaisPin as output
  pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
  pinMode(echoPin, INPUT); // Sets the echoPin as an Input
  Serial.begin(9600); // Starts the serial communication

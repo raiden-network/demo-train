@@ -17,7 +17,6 @@ class KeyboardListenerTask:
         self.barrier_key = barrier_trigger_key
         self._loop = None
 
-
     def on_press_threadsafe(self, key):
         self._loop.call_soon_threadsafe(self._on_press, key)
 
@@ -29,13 +28,14 @@ class KeyboardListenerTask:
             key_string = key_string
 
         if key_string == self.power_key:
-            func = self._tc.toggle_power
+            self._tc.toggle_power()
             log.debug(f"Registered keypress: {key}. Toggled power.")
         elif key_string == self.barrier_key:
-            func = self._tc.trigger_barrier()
+            self._tc.trigger_barrier()
             log.debug(f"Registered keypress: {key}. Triggered barrier.")
         else:
             log.debug(f"Registered keypress: {key}. Ignoring.")
+
 
     def run(self):
         self._loop = asyncio.get_running_loop()

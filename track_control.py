@@ -3,8 +3,9 @@ import time
 import asyncio
 import logging
 from typing import List, Optional
-
 from enum import Enum
+
+from const import POST_BARRIER_WAIT_TIME
 
 log = logging.getLogger()
 
@@ -289,7 +290,7 @@ class TrackControl:
         self.arduino_track_control = arduino_track_control
         self._barrier_events = set()
         # sleep for x seconds when barrier was triggered
-        self._barrier_sleep_time = 4.
+        self._barrier_sleep_time = POST_BARRIER_WAIT_TIME
 
     @property
     def is_powered(self):
@@ -324,6 +325,12 @@ class TrackControl:
                     if barrier_state is BarrierState.OBJECT_CLOSE:
                         self.trigger_barrier()
                         self.arduino_track_control.stop_measure()
+                        # FIXME what if the train stops in front of the barrier,
+                        # will this cause problems on restart?
+                        # It probably can immediately trigger the next round, thus thinking
+                        # the train already passed the next round!
+                        # So we need to stop waiting for barriers after receiving the payment and the
+                        # resulting power on!!
                         await asyncio.sleep(self._barrier_sleep_time)
                         break
                     else:
@@ -335,6 +342,9 @@ class TrackControl:
                 await asyncio.sleep(0.1)
 
     def trigger_barrier(self):
+        if len(self._barrier_events) == 0:
+            log.warning("Triggered barrier, but no event was waiting for trigger")
+            # FIXME if this happens, we eventually need a queue of trigger events?
         for event in self._barrier_events:
             event.set()
 

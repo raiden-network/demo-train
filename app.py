@@ -127,6 +127,9 @@ class TrainApp:
                         # we have shut down the power before!
                         self.track_control.power_on()
                         log.info("Turning track power on.")
+                        # wait so that the train can move out of the barrier after a power on
+                        # (where the train is standing close to the barrier!)
+                        await asyncio.sleep(POST_BARRIER_WAIT_TIME)
 
                     if barrier_event_task in pending_tasks:
                         # wait for the barrier to stay in sync
@@ -170,6 +173,7 @@ class TrainApp:
         # combination twice, even if it happens to see the barcode twice
         await barrier_task
         log.info("Syncing finished, the first round was free!")
+        assert barrier_task.done()
         await asyncio.sleep(POST_BARRIER_WAIT_TIME)
 
         # now the paid round begins!
