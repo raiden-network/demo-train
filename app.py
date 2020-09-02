@@ -118,8 +118,13 @@ class TrainApp:
                 if payment_received_task.result() is True:
                     log.info("Payment received")
                     self._frontend.payment_received()
+                    self._increment_nonce_for_current_provider()
                     if not self.track_control.is_powered:
                         # we have shut down the power before!
+                        # TODO here, already show a different barcode
+                        self._prepare_cycle()
+                        # let the train see the new qr code while it is still standing
+                        await asyncio.sleep(2.)
                         self.track_control.power_on()
                         log.info("Turning track power on.")
                         # wait so that the train can move out of the barrier after a power on
@@ -127,15 +132,22 @@ class TrainApp:
                         await asyncio.sleep(POST_BARRIER_WAIT_TIME)
 
                     if barrier_event_task in pending_tasks:
+                        # The train pre-paid already, but we are still waiting for it to trigger
+                        # the barrier
                         # wait for the barrier to stay in sync
                         await barrier_event_task
+                        # TODO check if the time is enough for the train to register the QR code!
+                        # since the new qr code will only be triggered once it hits the barrier
+                        # Maybe already change the qr code before the await barrier event?
+                        # But if the train pays too fast, this could cause, that the 
+                        # train will pay as many nodes as possible after a trigger, whithout
+                        # completing one loop
+                        self._prepare_cycle()
                         await asyncio.sleep(POST_BARRIER_WAIT_TIME)
                         assert barrier_event_task.done()
                         pending_tasks.remove(barrier_event_task)
                         assert len(pending_tasks) == 0
                         # only at this point we can call this cycle complete!
-                        # TODO check if the time is enough for the train to register the QR code!
-                        # since the new qr code will only be triggered once it hits the barrier
                     return
                 else:
                     # this code path is not expected to be executed,
@@ -179,8 +191,6 @@ class TrainApp:
         # now the paid round begins!
         while True:
             await self._process_cycle(self._current_provider, self.current_nonce)
-            self._increment_nonce_for_current_provider()
-            self._prepare_cycle()
 
 
     def _on_new_provider(self):
