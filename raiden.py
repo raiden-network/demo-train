@@ -75,27 +75,29 @@ class RaidenNode:
                 return True
             await asyncio.sleep(poll_interval)
 
-    async def query_for_payment_received(self, sender_address, token_address, nonce):
-
+    async def get_payment_received_events(self, sender_address, token_address):
         url = self.api_endpoint + "/api/v1/payments/{}/{}".format(token_address, sender_address)
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 data = await response.json()
                 if response.status == 200:
-                    for event in data:
-                        if event["event"] == "EventPaymentReceivedSuccess" and \
-                                int(event["amount"]) == 1 and \
-                                int(event["identifier"]) == nonce:
-                            return True
-                    # Event not found in event list:
-                    return False
+                    return [event for event in data if event["event"] == "EventPaymentReceivedSuccess"]
                 else:
                     # no 200 OK means the Raiden Node is somehow not available
                     # TODO handle different connection errors
                     # This should probably raise an exception, since the node is unhealthy or
                     # something in the query is wrong
                     log.info("Node not available: {}".format(self))
-                    return False
+                    raise IOError("Node not available")
+
+    async def query_for_payment_received(self, sender_address, token_address, nonce):
+        payment_received_events = await self.get_payment_received_events(sender_address, token_address)
+        for event in payment_received_events:
+            if int(event["amount"]) == 1 and int(event["identifier"]) == nonce:
+                return True
+                    # Event not found in event list:
+        return False
+
 
     async def ensure_payment_received(self,
                                       sender_address,
@@ -109,6 +111,7 @@ class RaidenNode:
                 log.debug(f"Got payment received from raiden node: sender_address={sender_address}, token_address={token_address}, nonce={nonce}")
                 return True
             await asyncio.sleep(poll_interval)
+
 
 
 class RaidenNodeMock(RaidenNode):

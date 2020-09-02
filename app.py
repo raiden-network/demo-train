@@ -54,7 +54,28 @@ class TrainApp:
         self.barcode_handler = barcode_handler
         self._track_loop = None
         self._current_provider = None
-        self._provider_nonces = {provider.address: 0 for provider in self.raiden_nodes}
+
+        # TODO get the payments that are already present and set the nonce accordingly
+
+        provider_nonces = {}
+        for node in self.raiden_nodes:
+            # XXX do this synchronously for now
+            payment_events = asyncio.run(node.get_payment_received_events(network_topology.sender_address, 
+                                             network_topology.token_address))
+            nonce = 0
+            for event in payment_events:
+                if int(event["amount"]) >= 1:
+                    try:
+                        # just naively take the max
+                        nonce = max(int(event["identifier"]), nonce)
+                    except ValueError:
+                        # the ID was no correct nonce, instead of crashing the node upon
+                        # incorrect type casting,
+                        # just ignore this
+                        pass
+            provider_nonces[node.address] = nonce + 1
+        log.debug(f"Initial provider noncens: {provider_nonces}")
+        self._provider_nonces = provider_nonces 
         self._barrier_loop_task = None
         self._possible_providers = None
         self._frontend = Server()
@@ -118,6 +139,7 @@ class TrainApp:
                 if payment_received_task.result() is True:
                     log.info("Payment received")
                     self._frontend.payment_received()
+                    # FIXME will this be shown directly in the ui?
                     self._increment_nonce_for_current_provider()
                     if not self.track_control.is_powered:
                         # we have shut down the power before!
@@ -165,6 +187,7 @@ class TrainApp:
                 self._frontend.barrier_triggered()
                 assert payment_received_task in pending_tasks
                 assert len(pending_tasks) == 1
+                assert len(done) == 1
                 log.info("Payment not received before barrier trigger")
                 self.track_control.power_off()
                 log.info("Shut off track power")
@@ -172,9 +195,7 @@ class TrainApp:
                 log.info(f'Waiting for payment to provider={provider.address}, nonce={nonce}')
 
     async def run(self):
-        # TODO make sure that every neccessary task is running:
-        # (barrier_etf, barrier_ltr instantiated, etc)
-        
+
         self._prepare_cycle()
         barrier_task = asyncio.create_task(self.track_control.wait_for_barrier_event())
         self.track_control.power_on()
