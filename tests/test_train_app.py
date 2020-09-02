@@ -36,7 +36,6 @@ async def test_track_loop(fake_raiden, token_address, sender_address, train_app,
 
     # test internals for now
     assert train_app._barrier_ltr.is_running
-    assert train_app._barrier_etf is not None
     assert not train_app._track_loop.done()
 
     assert train_app.track_control == track_control

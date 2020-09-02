@@ -266,23 +266,6 @@ class BarrierEventTaskFactory(EventTaskFactory):
         self._track_control.unregister_barrier_event(event)
 
 
-class BarrierLoopTaskRunner(LoopTaskRunner):
-
-    def __init__(self, track_control: 'TrackControl'):
-        self._track_control = track_control
-        self._barrier_task = None
-
-    def is_running(self):
-        return not self._barrier_task.done()
-
-    def start(self):
-        self._barrier_task = asyncio.create_task(self._track_control.run_barrier_loop())
-
-    def stop(self):
-        # TODO implement
-        pass
-
-
 class TrackControl:
 
     def __init__(self, arduino_track_control):
@@ -302,6 +285,12 @@ class TrackControl:
             if not event.is_set():
                 return True
         return False
+
+    async def wait_for_barrier_event(self):
+        event = asyncio.Event()
+        self._track_control.register_barrier_event(event)
+        await event.wait()
+        self._track_control.unregister_barrier_event(event)
 
     def register_barrier_event(self, event: asyncio.Event):
         if not event.is_set():
@@ -339,6 +328,7 @@ class TrackControl:
                     # FIXME the while loop is unnecessary here?
                     break
             else:
+                log.debug('No event is waiting currently!')
                 await asyncio.sleep(0.1)
 
     def trigger_barrier(self):

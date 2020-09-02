@@ -57,8 +57,7 @@ class TrainApp:
         self._track_loop = None
         self._current_provider = None
         self._provider_nonces = {provider.address: 0 for provider in self.raiden_nodes}
-        self._barrier_ltr = None
-        self._barrier_etf: Optional[BarrierEventTaskFactory] = None
+        self._barrier_loop_task = None
         self._possible_providers = None
         self._frontend = Server()
 
@@ -84,18 +83,15 @@ class TrainApp:
         self._frontend.start()
         time.sleep(2)
 
-        self._barrier_ltr = BarrierLoopTaskRunner(self.track_control)
-        self._barrier_etf = BarrierEventTaskFactory(self.track_control)
-        self._barrier_ltr.start()
+        self._barrier_loop_task = asyncio.create_task(self.track_control.run_barrier_loop())
         self._track_loop = asyncio.create_task(self.run())
-
 
     # FIXME make awaitable so that errors can raise
     # FIXME handle gracefully
     def stop(self):
+        self.track_control.power_off()
         try:
             self._track_loop.cancel()
-            self._barrier_ltr.stop()
         except asyncio.CancelledError:
             pass
 
@@ -110,7 +106,7 @@ class TrainApp:
                 token_address=self.network_topology.token_address,
                 nonce=nonce, poll_interval=0.05)
         )
-        barrier_event_task = self._barrier_etf.create_await_event_task()
+        barrier_event_task = asyncio.create_task(self.track_control.wait_for_barrier_event())
 
         log.info(f'Waiting for payment to provider={provider.address}, nonce={nonce}')
         pending_tasks = [payment_received_task, barrier_event_task]
@@ -164,7 +160,7 @@ class TrainApp:
         # (barrier_etf, barrier_ltr instantiated, etc)
         
         self._prepare_cycle()
-        barrier_task = self._barrier_etf.create_await_event_task()
+        barrier_task = asyncio.create_task(self.track_control.wait_for_barrier_event())
         self.track_control.power_on()
         log.info("Track loop started")
 
@@ -227,7 +223,6 @@ class TrainApp:
             log.debug('Mocking RaidenNode')
 
         # TODO for mock nodes, we should skip the deployment script
-        # FIXME asyncio.run() is not the correct method
         try:
             raiden_nodes_dict = asyncio.run(
                 start_raiden_nodes(raiden_node_cls, receivers=network.receivers,
