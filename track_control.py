@@ -250,9 +250,9 @@ class TrackControl:
 
     async def wait_for_barrier_event(self):
         event = asyncio.Event()
-        self._track_control.register_barrier_event(event)
+        self.register_barrier_event(event)
         await event.wait()
-        self._track_control.unregister_barrier_event(event)
+        self.unregister_barrier_event(event)
 
     def register_barrier_event(self, event: asyncio.Event):
         if not event.is_set():
