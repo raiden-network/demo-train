@@ -110,6 +110,7 @@ class TrainApp:
         pending_tasks = [payment_received_task, barrier_event_task]
         while True:
             # Wait for payment and for barrier events, but return when one of them is finished first
+            log.debug(f'Waiting for pending tasks={pending_tasks}')
             done, pending_tasks = await asyncio.wait(pending_tasks,
                                                 return_when=asyncio.FIRST_COMPLETED)
 
@@ -133,9 +134,12 @@ class TrainApp:
                         pending_tasks.remove(barrier_event_task)
                         assert len(pending_tasks) == 0
                         # only at this point we can call this cycle complete!
-                        return
+                        # TODO check if the time is enough for the train to register the QR code!
+                        # since the new qr code will only be triggered once it hits the barrier
+                    return
                 else:
                     # this code path is not expected to be executed,
+                    assert False
                     # but we would need to restart waiting for the payment
                     payment_received_task = asyncio.create_task(
                         provider.ensure_payment_received(
@@ -153,6 +157,7 @@ class TrainApp:
                 self.track_control.power_off()
                 log.info("Shut off track power")
                 self._frontend.payment_missing()
+                log.info(f'Waiting for payment to provider={provider.address}, nonce={nonce}')
 
     async def run(self):
         # TODO make sure that every neccessary task is running:
