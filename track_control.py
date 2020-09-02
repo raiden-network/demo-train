@@ -316,4 +316,4 @@ class TrackControl:
         if self.arduino_track_control.power_state is PowerState.POWER_ON:
             self.power_off()
         elif self.arduino_track_control.power_state is PowerState.POWER_OFF:
-            self.power_off()
+            self.power_on()
