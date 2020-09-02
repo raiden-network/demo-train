@@ -266,7 +266,7 @@ class TrackControl:
     def remove_all_barrier_events(self):
         self._barrier_events = set()
 
-    async def run_barrier_loop(self):
+    async def run(self):
         while True:
             if self._any_event_is_waiting:
                 self.arduino_track_control.start_measure()

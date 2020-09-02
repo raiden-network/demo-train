@@ -103,8 +103,10 @@ class RaidenNode:
                                       nonce,
                                       poll_interval=1):
         while True:
+            log.debug(f"Polling for payment received: sender_address={sender_address}, token_address={token_address}, nonce={nonce}")
             received = await self.query_for_payment_received(sender_address, token_address, nonce)
             if received is True:
+                log.debug(f"Got payment received from raiden node: sender_address={sender_address}, token_address={token_address}, nonce={nonce}")
                 return True
             await asyncio.sleep(poll_interval)
 

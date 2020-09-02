@@ -81,7 +81,7 @@ class TrainApp:
         self._frontend.start()
         time.sleep(2)
 
-        self._barrier_loop_task = asyncio.create_task(self.track_control.run_barrier_loop())
+        self._barrier_loop_task = asyncio.create_task(self.track_control.run())
         self._track_loop = asyncio.create_task(self.run())
 
     # FIXME make awaitable so that errors can raise
@@ -133,7 +133,7 @@ class TrainApp:
                         pending_tasks.remove(barrier_event_task)
                         assert len(pending_tasks) == 0
                         # only at this point we can call this cycle complete!
-                        break
+                        return
                 else:
                     # this code path is not expected to be executed,
                     # but we would need to restart waiting for the payment
@@ -148,6 +148,7 @@ class TrainApp:
                 log.debug("Barrier was triggered.")
                 self._frontend.barrier_triggered()
                 assert payment_received_task in pending_tasks
+                assert len(pending_tasks) == 1
                 log.info("Payment not received before barrier trigger")
                 self.track_control.power_off()
                 log.info("Shut off track power")
