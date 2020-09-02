@@ -46,8 +46,14 @@ def barcode_factory(address, nonce):
     return code128.image("(" + str(address) + "," + str(nonce) + ")")
 
 
-def build_app(mock='', config_file=DEFAULT_CONFIG_FILE):
+def build_app(mock='', config_file=DEFAULT_CONFIG_FILE, log_level='info'):
     global train_app, keyboard_task
+
+    if log_level is 'debug':
+        log.setLevel(logging.DEBUG)
+    else:
+        log.setLevel(logging.INFO)
+
     mock_arduino = False
     mock_raiden = False
 
