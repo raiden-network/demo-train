@@ -228,44 +228,6 @@ class MockArduinoTrackControl:
         self._barrier_state = BarrierState.OBJECT_NOT_CLOSE
 
 
-class EventTaskFactory:
-    # REFACTOR remove this class and
-    # move create_await_event_task method one up in the class hiearchy
-
-    async def await_event(self):
-        raise NotImplementedError
-
-    def create_await_event_task(self):
-        return asyncio.create_task(self.await_event())
-
-
-class LoopTaskRunner:
-    # REFACTOR remove this class or make it an ABC 
-    # (not necessary)
-    
-
-    def is_running(self):
-        raise NotImplementedError
-
-    def start(self):
-        raise NotImplementedError
-
-    def stop(self):
-        raise NotImplementedError
-
-
-class BarrierEventTaskFactory(EventTaskFactory):
-
-    def __init__(self, track_control: 'TrackControl'):
-        self._track_control = track_control
-
-    async def await_event(self):
-        event = asyncio.Event()
-        self._track_control.register_barrier_event(event)
-        await event.wait()
-        self._track_control.unregister_barrier_event(event)
-
-
 class TrackControl:
 
     def __init__(self, arduino_track_control):

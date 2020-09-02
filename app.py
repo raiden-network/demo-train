@@ -15,9 +15,7 @@ from track_control import (
     TrackControl,
     ArduinoSerial,
     ArduinoTrackControl,
-    MockArduinoTrackControl,
-    BarrierEventTaskFactory,
-    BarrierLoopTaskRunner
+    MockArduinoTrackControl
 )
 from network import NetworkTopology
 import logging

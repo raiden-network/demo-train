@@ -5,19 +5,14 @@ from track_control import (
     ArduinoSerial,
     TrackControl,
     ArduinoTrackControl,
-    BarrierEventTaskFactory,
-    BarrierLoopTaskRunner
 )
 
 
 async def barrier_trigger_print(ser):
+    # FIXME tests do not run
     tc = TrackControl(ArduinoTrackControl(ser))
-    etf = BarrierEventTaskFactory(tc)
-    ltf = BarrierLoopTaskRunner(tc)
-    ltf.start()
 
     while True:
-        task = etf.create_await_event_task()
         done, pending = await asyncio.wait([task])
         print(f'{time.time()}: Triggered Barrier')
 
