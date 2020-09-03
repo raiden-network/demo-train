@@ -146,7 +146,7 @@ class TrainApp:
                         # TODO here, already show a different barcode
                         self._prepare_cycle()
                         # let the train see the new qr code while it is still standing
-                        await asyncio.sleep(2.)
+                        # await asyncio.sleep(2.)
                         self.track_control.power_on()
                         log.info("Turning track power on.")
                         # wait so that the train can move out of the barrier after a power on
@@ -158,6 +158,8 @@ class TrainApp:
                         # the barrier
                         # wait for the barrier to stay in sync
                         await barrier_event_task
+                        self._frontend.barrier_triggered()
+                        log.debug("Barrier was triggered.")
                         # TODO check if the time is enough for the train to register the QR code!
                         # since the new qr code will only be triggered once it hits the barrier
                         # Maybe already change the qr code before the await barrier event?
