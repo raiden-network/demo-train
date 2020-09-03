@@ -285,13 +285,13 @@ class TrackControl:
                         await asyncio.sleep(self._barrier_sleep_time)
                         break
                     else:
-                        await asyncio.sleep(0.1)
+                        await asyncio.sleep(0.01)
                     # break out of loop to trigger measure again
                     # FIXME the while loop is unnecessary here?
                     break
             else:
                 log.debug('No event is waiting currently!')
-                await asyncio.sleep(0.1)
+                await asyncio.sleep(0.01)
 
     def trigger_barrier(self):
         if len(self._barrier_events) == 0:
