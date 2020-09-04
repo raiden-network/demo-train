@@ -206,7 +206,7 @@ void setTrainSpeed(){
      trainSpeeds[1]=trainSpeeds[0];
      trainSpeeds[0]=tmpTS;
 
-     trainSpeed = (trainSpeeds[0] + trainSpeeds[0] + trainSpeeds[0])/3.;
+     trainSpeed = (trainSpeeds[0] + trainSpeeds[1] + trainSpeeds[2])/3.;
      // trainSpeed = 0.5;     
 
 

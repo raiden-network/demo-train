@@ -266,32 +266,27 @@ class TrackControl:
     def remove_all_barrier_events(self):
         self._barrier_events = set()
 
+    def _get_barrier_state(self):
+        # Run in different thread?
+        self.arduino_track_control.update_sensor_data()
+        return self.arduino_track_control.barrier_state
+
     async def run(self):
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, self.arduino_track_control.start_measure)
         while True:
-            if self._any_event_is_waiting:
-                self.arduino_track_control.start_measure()
-                while True:
-                    self.arduino_track_control.update_sensor_data()
-                    barrier_state = self.arduino_track_control.barrier_state
-                    if barrier_state is BarrierState.OBJECT_CLOSE:
-                        self.trigger_barrier()
-                        self.arduino_track_control.stop_measure()
-                        # FIXME what if the train stops in front of the barrier,
-                        # will this cause problems on restart?
-                        # It probably can immediately trigger the next round, thus thinking
-                        # the train already passed the next round!
-                        # So we need to stop waiting for barriers after receiving the payment and the
-                        # resulting power on!!
-                        await asyncio.sleep(self._barrier_sleep_time)
-                        break
-                    else:
-                        await asyncio.sleep(0.01)
-                    # break out of loop to trigger measure again
-                    # FIXME the while loop is unnecessary here?
-                    break
-            else:
-                log.debug('No event is waiting currently!')
-                await asyncio.sleep(0.01)
+            # if self._any_event_is_waiting:
+            barrier_state = await loop.run_in_executor(None, self._get_barrier_state)
+            if barrier_state is BarrierState.OBJECT_CLOSE:
+                self.trigger_barrier()
+                await loop.run_in_executor(None, self.arduino_track_control.stop_measure)
+                await asyncio.sleep(self._barrier_sleep_time)
+                await loop.run_in_executor(None, self.arduino_track_control.start_measure)
+            # else:
+                # await asyncio.sleep(0.001)
+            # else:
+                # log.debug('No event is waiting currently!')
+                # await asyncio.sleep(0.001)
 
     def trigger_barrier(self):
         if len(self._barrier_events) == 0:

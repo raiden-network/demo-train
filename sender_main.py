@@ -8,8 +8,8 @@ from PIL import Image
 from PyV4L2Camera.camera import Camera
 from PyV4L2Camera.controls import ControlIDs
 
-from pyzbar.pyzbar import decode
 
+from pyzbar.pyzbar import decode
 from const import TOKEN_ADDRESS, RECEIVER_LIST
 
 
@@ -59,7 +59,13 @@ def start_scanning(camera=None):
         try:
             data = decode(im)[0].data
             print(data)
-            return tuple(int(i) for i in data.decode('utf8').split(","))
+            # FIXME sometimes, the decoding seems to miss something,
+            # resulting in a string that is split in a tuple of len 1.
+            # this cause
+            return_val = tuple(int(i) for i in data.decode('utf8').split(","))
+            if return_val == 2:
+                return return_val
+            print(f"Did not find comma separated value: {data.decode('utf8')}")
         except IndexError:
             print("Couldn't find any QR codes")
             print("Stream reading and QR detection took us %s s" % (time.monotonic() - start))

@@ -143,7 +143,6 @@ class TrainApp:
                     self._increment_nonce_for_current_provider()
                     if not self.track_control.is_powered:
                         # we have shut down the power before!
-                        # TODO here, already show a different barcode
                         self._prepare_cycle()
                         # let the train see the new qr code while it is still standing
                         # await asyncio.sleep(2.)

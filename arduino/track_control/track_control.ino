@@ -119,7 +119,7 @@ void loop() {
 }
 
  if (measuring == true){
-   int value = getAverage();
+   int value = getDistance();
    if (value < maxTriggerDistance){
      barrierSensor = 2;
    }
@@ -194,6 +194,8 @@ int getDistance(){
 }
 
 int getAverage(){ 
+// TODO this takes quite some time,
+// so that every cycle when (distance measuring is on) blocks!
 
 int i;
 float avg;
