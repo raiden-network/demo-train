@@ -133,7 +133,7 @@ class TrainApp:
                         log.info("Turning track power on.")
                         # wait so that the train can move out of the barrier after a power on
                         # (where the train is standing close to the barrier!)
-                        #await asyncio.sleep(POST_BARRIER_WAIT_TIME)
+                        await asyncio.sleep(POST_BARRIER_WAIT_TIME)
 
                     if barrier_event_task in pending_tasks:
                         # The train pre-paid already, but we are still waiting for it to trigger
