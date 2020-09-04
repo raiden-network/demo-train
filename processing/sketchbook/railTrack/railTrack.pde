@@ -200,7 +200,7 @@ void setTrainSpeed(){
   tmpTS = ((1. * railSegmentsLookUp.length / (loopCounter - oldLoopCounter)));
   if(debug)println("train speed current round: " + tmpTS);
   if(debug)println(tmpTS);
-     if(tmpTS > (trainSpeed - 0.01) && tmpTS < (trainSpeed + 0.01)){
+     //if(tmpTS > (trainSpeed - 0.01) && tmpTS < (trainSpeed + 0.01)){
 
      trainSpeeds[2]=trainSpeeds[1];
      trainSpeeds[1]=trainSpeeds[0];
@@ -216,7 +216,7 @@ void setTrainSpeed(){
       text("new train speed: " + trainSpeed, 100, 100);
      }
      
-   }
+   //}
    if(debug)println(oldLoopCounter);
    if(debug)println(loopCounter);
    oldLoopCounter = loopCounter;

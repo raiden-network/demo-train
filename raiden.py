@@ -80,6 +80,7 @@ class RaidenNode:
         url = self.api_endpoint + "/api/v1/payments/{}/{}".format(token_address, sender_address)
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
+                log.debug('Awaiting response from raiden')
                 data = await response.json()
                 if response.status == 200:
                     for event in data:

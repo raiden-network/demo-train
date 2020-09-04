@@ -30,7 +30,7 @@ CODE_FILE_NAME = 'current_barcode.jpg'
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 BAR_CODE_FILE_PATH = os.path.abspath(CODE_FILE_NAME)
 
-POST_BARRIER_WAIT_TIME = 0.5
+POST_BARRIER_WAIT_TIME = 4
 
 KEYBOARD_BARRIER_KEY = 'j' 
 KEYBOARD_POWER_KEY = 'k'

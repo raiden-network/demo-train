@@ -267,21 +267,21 @@ class TrackControl:
         self._barrier_events = set()
 
     def _get_barrier_state(self):
-        # Run in different thread?
         self.arduino_track_control.update_sensor_data()
         return self.arduino_track_control.barrier_state
 
     async def run(self):
-        loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, self.arduino_track_control.start_measure)
+        self.arduino_track_control.start_measure()
         while True:
             # if self._any_event_is_waiting:
-            barrier_state = await loop.run_in_executor(None, self._get_barrier_state)
-            if barrier_state is BarrierState.OBJECT_CLOSE:
+            if self._get_barrier_state() is BarrierState.OBJECT_CLOSE:
+                log.debug('Barrier triggered in run loop')
                 self.trigger_barrier()
-                await loop.run_in_executor(None, self.arduino_track_control.stop_measure)
+                #await loop.run_in_executor(None, self.arduino_track_control.stop_measure)
                 await asyncio.sleep(self._barrier_sleep_time)
-                await loop.run_in_executor(None, self.arduino_track_control.start_measure)
+                #await loop.run_in_executor(None, self.arduino_track_control.start_measure)
+            # force context switch
+            await asyncio.sleep(0.0001)
             # else:
                 # await asyncio.sleep(0.001)
             # else:
@@ -291,7 +291,6 @@ class TrackControl:
     def trigger_barrier(self):
         if len(self._barrier_events) == 0:
             log.warning("Triggered barrier, but no event was waiting for trigger")
-            # FIXME if this happens, we eventually need a queue of trigger events?
         for event in self._barrier_events:
             event.set()
 

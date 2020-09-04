@@ -108,7 +108,9 @@ class TrainApp:
 
         log.info(f'Waiting for payment to provider={provider.address}, nonce={nonce}')
         pending_tasks = [payment_received_task, barrier_event_task]
+        power_shut_off_last_round = False
         while True:
+            assert len(pending_tasks) > 0
             # Wait for payment and for barrier events, but return when one of them is finished first
             log.debug(f'Waiting for pending tasks={pending_tasks}')
             done, pending_tasks = await asyncio.wait(pending_tasks,
@@ -119,7 +121,10 @@ class TrainApp:
                     log.info("Payment received")
                     self._frontend.payment_received()
                     self._increment_nonce_for_current_provider()
-                    if not self.track_control.is_powered:
+                    if power_shut_off_last_round is True:
+                        assert barrier_event_task not in pending_tasks
+                        assert len(pending_tasks) == 0
+                        assert len(done) == 1
                         # we have shut down the power before!
                         self._prepare_cycle()
                         # let the train see the new qr code while it is still standing
@@ -128,7 +133,7 @@ class TrainApp:
                         log.info("Turning track power on.")
                         # wait so that the train can move out of the barrier after a power on
                         # (where the train is standing close to the barrier!)
-                        await asyncio.sleep(POST_BARRIER_WAIT_TIME)
+                        #await asyncio.sleep(POST_BARRIER_WAIT_TIME)
 
                     if barrier_event_task in pending_tasks:
                         # The train pre-paid already, but we are still waiting for it to trigger
@@ -144,7 +149,7 @@ class TrainApp:
                         # train will pay as many nodes as possible after a trigger, whithout
                         # completing one loop
                         self._prepare_cycle()
-                        await asyncio.sleep(POST_BARRIER_WAIT_TIME)
+                        #await asyncio.sleep(POST_BARRIER_WAIT_TIME)
                         assert barrier_event_task.done()
                         pending_tasks.remove(barrier_event_task)
                         assert len(pending_tasks) == 0
@@ -171,6 +176,7 @@ class TrainApp:
                 log.info("Shut off track power")
                 self._frontend.payment_missing()
                 log.info(f'Waiting for payment to provider={provider.address}, nonce={nonce}')
+                power_shut_off_last_round = True
 
     async def run(self):
         # TODO make sure that every neccessary task is running:
@@ -187,7 +193,7 @@ class TrainApp:
         await barrier_task
         log.info("Syncing finished, the first round was free!")
         assert barrier_task.done()
-        await asyncio.sleep(POST_BARRIER_WAIT_TIME)
+        #await asyncio.sleep(POST_BARRIER_WAIT_TIME)
 
         # now the paid round begins!
         while True:
