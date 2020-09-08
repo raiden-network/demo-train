@@ -3,8 +3,7 @@ const int relaisPin = 3;
 const int trigPin = 6;
 const int echoPin = 7;
 // defines variables
-long duration;
-float distance;
+unsigned long duration;
 bool measuring;
 int value = 9;
 
@@ -24,7 +23,7 @@ int barrierSensor = 0;
 // 4: turn barrier measuring on
 int inByte = 0;
 
-int maxTriggerDistance = 20;
+float maxTriggerDistance = 20.;
 typedef enum message_t {
 	UNKNOWN,
 	ACK,
@@ -119,8 +118,14 @@ void loop() {
 }
 
  if (measuring == true){
-   int value = getDistance();
-   if (value < maxTriggerDistance){
+   duration = getDuration();
+   if (duration == 0){
+	   // we got a timeout, and no pulse was recorded.
+	   barrierSensor = 1;
+	   return;
+   }
+   float distance = duration*0.034/2;
+   if (distance < maxTriggerDistance){
      barrierSensor = 2;
    }
    else {
@@ -176,7 +181,7 @@ void updateSensorData() {
 }
 
 
-int getDistance(){
+int getDuration(){
   // Clears the trigPin
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -188,26 +193,22 @@ int getDistance(){
   // Reads the echoPin, returns the sound wave travel time in microseconds
   duration = pulseIn(echoPin, HIGH);
   interrupts();
-  // Calculating the distance
-  distance = duration*0.034/2;
-  // Prints the distance on the Serial Monitor
-
-  return(distance);
+  return (duration);
 }
 
-int getAverage(){ 
-// TODO this takes quite some time,
-// so that every cycle when (distance measuring is on) blocks!
+/*int getAverage(){ */
+/*// TODO this takes quite some time,*/
+/*// so that every cycle when (distance measuring is on) blocks!*/
 
-int i;
-float avg;
-float measure;
+/*int i;*/
+/*float avg;*/
+/*float measure;*/
 
-  avg = getDistance();
-  for (i=0; i<10; i++){
-    measure=getDistance();
-    avg=(0.8*avg) + (0.2*measure);
-    delayMicroseconds(1000);
-    }
-  return(avg);
-}
+  /*avg = getDistance();*/
+  /*for (i=0; i<10; i++){*/
+    /*measure=getDistance();*/
+    /*avg=(0.8*avg) + (0.2*measure);*/
+    /*delayMicroseconds(1000);*/
+    /*}*/
+  /*return(avg);*/
+/*}*/
