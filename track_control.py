@@ -119,7 +119,7 @@ class ArduinoSerial:
         values = []
         for _ in range(nof_bytes):
             val = self._serial.read()
-            if val is b'':
+            if val == b'':
                 raise ValueError('No bytes to read')
             values.append(val)
         return tuple(values)
