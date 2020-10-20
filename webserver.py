@@ -12,6 +12,8 @@ from const import (
     SCRIPT_PATH,
     SENDER_ADDRESS,
     NETWORK_GRAPH,
+    RECEIVER_1_ADDRESS,
+    RECEIVER_5_ADDRESS,
 )
 from deployment import get_receiver_addresses
 from network import NetworkTopology
@@ -54,7 +56,10 @@ def build_app(mock='', config_file=DEFAULT_CONFIG_FILE):
     if config_file:
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), config_file)
 
-    train_app = TrainApp.build_app(network, mock_arduino, mock_raiden, config_file)
+    # HACK this should be configurable in a config, this is a hotfix for now
+    possible_receiver_nodes = [RECEIVER_1_ADDRESS, RECEIVER_5_ADDRESS]
+    train_app = TrainApp.build_app(network, mock_arduino, mock_raiden, config_file, 
+                                   possible_receiver_addresses=possible_receiver_nodes)
 
     return app
 

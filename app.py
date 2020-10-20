@@ -59,6 +59,7 @@ class TrainApp:
         self._provider_nonces = {provider.address: 0 for provider in self.raiden_nodes}
         self._barrier_ltr = None
         self._barrier_etf = None
+        self._possible_providers = None
 
     def start(self):
         """
@@ -168,8 +169,14 @@ class TrainApp:
         if self.barcode_handler is not None:
             self.barcode_handler.save_barcode(self.current_provider_address, self.current_nonce)
 
-    def _set_next_provider(self):
-        self._current_provider = random.choice(self.raiden_nodes)
+    def set_possible_providers(self, nodes):
+        if not set(nodes).issubset(set(self.raiden_nodes)):
+            raise ValueError("Possible providers have to be known raiden nodes.")
+        self._possible_providers = nodes
+
+    def _set_next_provider(self): 
+        nodes_to_choose_from = self._possible_providers or self.raiden_nodes
+        self._current_provider = random.choice(nodes_to_choose_from)
         self._on_new_provider()
 
     @property
@@ -185,7 +192,7 @@ class TrainApp:
 
     @classmethod
     def build_app(cls, network: NetworkTopology, mock_arduino=False, mock_raiden=False,
-                  config_file=None):
+                  config_file=None, possible_receiver_addresses=None):
         raiden_node_cls = RaidenNode
         if mock_arduino:
             log.debug('Mocking Arduino serial')
@@ -211,7 +218,13 @@ class TrainApp:
                 'Not all raiden nodes could get started, check the log files for more info. Shutting down')
             sys.exit()
         raiden_nodes = list(raiden_nodes_dict.values())
+        # TODO 
         track_control = TrackControl(arduino_track_control)
 
         barcode_handler = BarcodeHandler()
-        return cls(track_control, raiden_nodes, network, barcode_handler)
+
+        obj = cls(track_control, raiden_nodes, network, barcode_handler)
+        if possible_receiver_addresses is not None:
+            possible_receiver_nodes = [raiden_nodes_dict[addr] for addr in possible_receiver_addresses]
+            obj.set_possible_providers(possible_receiver_nodes)
+        return obj
