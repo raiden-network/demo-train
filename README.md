@@ -2,21 +2,21 @@
 A model train  is traveling the world (in our case it's just a circle but hey we all have fanatasy ;) ).
 During its travels it passes multiple tollgates asking it to pay for the next section.
 The train however has a Raiden node on board and an open payment channel with it's home toll station.
-Since the tollgate mafia knows eachother they all have statechannels among them in such a ways as Displayed in Image 1 \
+Since the tollgate mafia knows eachother they all have paymentchannels among them in such a ways as displayed in Image 1 \
 [Image 1 - Network Topology](./Images/Network_topology.png) \
-With the Raiden Network the train is now able to pay each and every tollage on it's travel in real time, without the need to stop at any point in time. 
+With the Raiden Network the train is now able to pay each and every tollgate on it's travel in real time, without the need to stop at any point in time. 
 
 ## Setup on the "main" Computer
 The "main computer" is a UDOO x84 Ultra. It has an embedded arduino 101 which is used to control the train's power supply. 
 Therefore the arduino listens to the serial input and gives 3,3V to the GPIO pin 3. This switches the High speed switch on. 
 As soon as the the 3,3V are set to 0V the switch turns off and the train doesn't get any power anymore. 
 A circuit diagram like illustration can be found in [Image 2 - Cicruit Diagram](Images/circuit_diagram.jpg).\
-The UDOO runs a virtualenvironment with all dependencies provided in the requirements.txt as well as raiden installed via pip.
+The UDOO runs all the raiden clients for the "tollmafia" in a virtualenvironment with all dependencies provided in the requirements.txt.
 
-## Setup on the Raspberry Pi Zero W
-The Raspberypi has a Raiden Service in /etc/systemd/system/raiden.service.\
-It calls the shell script in ~/demo-train/StartServiceRaiden/StartService.sh during the bootup process.\
-The raspberry uses two virtualenvironments. One is the "raiden" virtualenv which is used by the shell script to run raiden. Ofcourse it requires raiden to be installed (In this instance done via PyPi: `pip install raiden`). The other virtualenv is called "demo" and runs the "sender_main.py" logic.
+## Setup on the Nanopi
+The Nanopi has a Raiden Service in /etc/systemd/system/raiden.service.\
+It runs a raiden [light-client](https://github.com/raiden-network/light-client) as service.\
+The nanopi uses a virtualenv called "demo" to run the train's logic `python ./sender_main.py`.
 
 ## Blockchain Setup
 Right now the demo uses the Kovan Testnet.\
@@ -31,32 +31,6 @@ The main file is called railTrack.pde
 ./processing-3.4/processing-java --sketch=/home/train/processing/sketchbook/railTrack --force --run
 
 Be aware that just the folder is passed and not the actual pde-file.
-
-### Start on big screen via ssh
-
-DISPLAY=:0.0 ./processing-3.4/processing-java --sketch=/home/train/processing/sketchbook/railTrack --force --run
-
-There is a alias on the RPI for this which is called prorail.
-
-Right now we work with a separate server mock, that provides an endpoint with random addresses. The endpoint will be modelled exactly
-like in a later production version (same endpoints, same JSON-data).
-
-First, you need to install the python dependencies for the asynchronous server:
-It requires Python 3.7 (!Check if this is a problem with raiden!).
-
-`pip install --r requirements.txt`
-
-The http library for processing needs to be put in the processing library folder:
-
-https://github.com/runemadsen/HTTP-Requests-for-Processing/releases
-
-Then the server has to be started:
-
-`hypercorn server_mock:app`
-
-
-Now run the `processing/processing.pde` in Processing 3
-
 
 ## Run the demo
 
