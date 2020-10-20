@@ -1,2 +1,0 @@
-{"raiden": "0.100.5a1.dev841+g3a743144a", "raiden_db_version": 23, "python_implementation": "CPython", "python_version": "3.7.5", "system": "Linux 64bit_ELF 5.4.0-31-generic", "architecture": "x86_64", "distribution": "bundled", "event": "Starting Raiden", "logger": "raiden.ui.runners", "level": "info", "timestamp": "2020-05-28 11:06:59.841340"}
-{"config_file": "/home/oliver/Arbeit/github/demo-train/raiden_config.toml", "event": "Using config file", "logger": "raiden.ui.runners", "level": "debug", "timestamp": "2020-05-28 11:06:59.841908"}

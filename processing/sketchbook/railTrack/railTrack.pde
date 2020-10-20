@@ -200,14 +200,15 @@ void setTrainSpeed(){
   tmpTS = ((1. * railSegmentsLookUp.length / (loopCounter - oldLoopCounter)));
   if(debug)println("train speed current round: " + tmpTS);
   if(debug)println(tmpTS);
-     if(tmpTS > (trainSpeed - 0.01) && tmpTS < (trainSpeed + 0.01)){
+  if(tmpTS > (trainSpeed - 0.01) && tmpTS < (trainSpeed + 0.01)){
 
      trainSpeeds[2]=trainSpeeds[1];
      trainSpeeds[1]=trainSpeeds[0];
      trainSpeeds[0]=tmpTS;
 
-     trainSpeed = (trainSpeeds[0] + trainSpeeds[0] + trainSpeeds[0])/3.;
-     
+     //trainSpeed = (trainSpeeds[0] + trainSpeeds[0] + trainSpeeds[0])/3.;
+     trainSpeed = 0.008;
+
      if(debug){
       fill(255);
       println("new train speed accepted: " + trainSpeed);
@@ -409,13 +410,13 @@ void mouseClicked(){
 }
 
 // some debug functionality
-void keyPressed(){
+void _ükeyPressed(){
   
-  if(keyCode == 139){
+  if(keyCode == 43){
    trainSpeed += 0.01;
    if(debug)println("speed me up: " + trainSpeed);
   }
-  else if(keyCode == 140){
+  else if(keyCode == 44){
    trainSpeed -= 0.01;
    if(debug)println("slow me down: " + trainSpeed);
   }
